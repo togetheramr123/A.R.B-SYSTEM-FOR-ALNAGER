@@ -69,8 +69,7 @@ export default async function middleware(request: NextRequest) {
 
     // 2. Define Protected Routes
     // Public: / (landing), /login
-    // Protected: /dashboard, /sales, /inventory, etc.
-    const isPublicPage = pathnameWithoutLocale === '' || pathnameWithoutLocale === '/' || pathnameWithoutLocale === '/login';
+    const isPublicPage = pathnameWithoutLocale === '/login';
 
     // 3. Logic
     if (isAuthenticated && isPublicPage && pathnameWithoutLocale === '/login') {
