@@ -78,7 +78,11 @@ export async function login(prevState: any, formData: FormData) {
   try {
     const user = await prisma.user.findFirst({
       where: {
-        name: username
+        OR: [
+          { name: username },
+          { email: username },
+          { phone: username }
+        ]
       }
     });
     if (!user) {
