@@ -74,7 +74,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }];
-  return <aside className="w-[68px] bg-white h-screen flex flex-col border-l border-gray-200/80 z-50 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] sticky top-0">
+  return <aside className="hidden md:flex w-[68px] bg-white h-screen flex-col border-l border-gray-200/80 z-50 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] sticky top-0">
       {" "}
       {/* Logo area */}{" "}
       <div className="h-[48px] flex items-center justify-center border-b border-gray-100 shrink-0">

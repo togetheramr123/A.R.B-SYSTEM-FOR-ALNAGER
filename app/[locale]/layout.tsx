@@ -80,6 +80,7 @@ export default async function RootLayout(props: {
 import { CommandPalette } from "@/components/CommandPalette";
 import { LiveClock } from "@/components/LiveClock";
 import { NavigationTracker } from "@/components/NavigationTracker"; // Separate component to use hooks
+import { MobileNavbar } from "@/components/MobileNavbar";
 
 import NextTopLoader from 'nextjs-toploader';
 
@@ -96,7 +97,7 @@ function LayoutContent({
 }) {
   const tCommon = useTranslations('Common');
   return (
-    <div className="min-h-screen flex bg-[#f0f2f5]">
+    <div className="min-h-screen flex bg-[#f0f2f5] pb-[56px] md:pb-0">
       <NextTopLoader color="#4f46e5" showSpinner={false} height={3} shadow="0 0 10px #4f46e5,0 0 5px #4f46e5" />
       <NavigationTracker locale={locale} />
       <CommandPalette />
@@ -129,6 +130,7 @@ function LayoutContent({
           {children}
         </main>
       </div>
+      <MobileNavbar locale={locale} userProfile={userProfile} />
     </div>
   );
 }
