@@ -1,0 +1,5 @@
+DATABASE_URL="file:./dev.db"
+DEV_AUTO_LOGIN=true
+
+# Security
+JWT_SECRET="e4b8b6f3a3a41c2d0f813c9e9b3a0c5d7f2a1b9c4e6f8d0a3c2e1f5b7d9a8c6e"

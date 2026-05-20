@@ -1,0 +1,492 @@
+/* =============================================================
+   Odoo 17/18 Form View Design System
+   Exact CSS specifications matching Odoo's enterprise UI
+   ============================================================= */
+
+:root {
+  /* Core Colors */
+  --odoo-primary: #017E84; 
+  --odoo-primary-hover: #015e63;
+  --odoo-primary-light: rgba(1, 126, 132, 0.1);
+  --odoo-bg: #F8F9FA;
+  --odoo-sheet: #FFFFFF;
+  --odoo-sheet-shadow: 0 1px 3px rgba(0,0,0,0.08);
+
+  /* Text */
+  --odoo-text: #212529;
+  --odoo-text-secondary: #495057;
+  --odoo-label: #495057;
+  --odoo-muted: #6C757D;
+  --odoo-placeholder: #ADB5BD;
+
+  /* Borders */
+  --odoo-border: #DEE2E6;
+  --odoo-border-light: #E9ECEF;
+  --odoo-border-focus: #017E84;
+
+  /* Status Colors */
+  --odoo-success: #28A745;
+  --odoo-danger: #DC3545;
+  --odoo-warning: #FFC107;
+  --odoo-info: #17A2B8;
+
+  /* Statusbar */
+  --statusbar-inactive-bg: #E9ECEF;
+  --statusbar-inactive-text: #495057;
+  --statusbar-active-bg: #017E84;
+  --statusbar-active-text: #FFFFFF;
+  --statusbar-done-bg: #017E84;
+
+  /* Smart Buttons */
+  --smart-btn-bg: transparent;
+  --smart-btn-hover: rgba(0,0,0,0.04);
+  --smart-btn-border: #DEE2E6;
+  --smart-btn-icon: #017E84;
+
+  /* Font System */
+  --odoo-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, "Droid Sans", "Helvetica Neue", sans-serif;
+  --odoo-font-size: 13px;
+  --odoo-font-size-sm: 12px;
+  --odoo-font-size-lg: 14px;
+  --odoo-font-size-xs: 11px;
+}
+
+/* =============================================================
+   Odoo Form Shell - Container
+   ============================================================= */
+
+.o_form_view {
+  background: var(--odoo-bg);
+  min-height: 100vh;
+  font-family: var(--odoo-font);
+  font-size: var(--odoo-font-size);
+  color: var(--odoo-text);
+}
+
+.o_form_sheet_bg {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.o_form_sheet {
+  background: var(--odoo-sheet);
+  box-shadow: var(--odoo-sheet-shadow);
+  border: 1px solid var(--odoo-border);
+  border-radius: 3px;
+  position: relative;
+  padding: 24px 32px;
+}
+
+/* =============================================================
+   Status Bar - Arrow Pipeline (clip-path)
+   ============================================================= */
+
+.o_statusbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 16px;
+  background: var(--odoo-sheet);
+  border-bottom: 1px solid var(--odoo-border);
+  min-height: 46px;
+  gap: 8px;
+}
+
+.o_statusbar_buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.o_statusbar_status {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  /* Remove direction: ltr to allow inherited RTL */
+}
+
+.o_statusbar_status .o_arrow_button {
+  padding: 6px 24px 6px 16px;
+  font-size: var(--odoo-font-size-sm);
+  font-weight: 700;
+  color: var(--odoo-muted); /* Future steps (لم يأتِ دوره) */
+  background: var(--odoo-bg); /* Transparent/light */
+  border: none;
+  cursor: default;
+  position: relative;
+  white-space: nowrap;
+  
+  /* LTR Default */
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%);
+  margin-left: -7px;
+  
+  transition: background 0.2s, color 0.2s;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.o_statusbar_status .o_arrow_button:first-child {
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%);
+  border-radius: 3px 0 0 3px;
+  margin-left: 0;
+  padding-left: 14px;
+}
+
+.o_statusbar_status .o_arrow_button:last-child {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 14px 50%);
+  border-radius: 0 3px 3px 0;
+  padding-right: 14px;
+}
+
+/* --- RTL Overrides --- */
+[dir="rtl"] .o_statusbar_status .o_arrow_button {
+  /* Chevron points LEFT < */
+  clip-path: polygon(14px 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 14px 100%, 0 50%);
+  margin-left: 0;
+  margin-right: -7px;
+  padding: 6px 16px 6px 24px;
+}
+[dir="rtl"] .o_statusbar_status .o_arrow_button:first-child {
+  /* Rightmost item in RTL DOM */
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 50%, 100% 100%, 0 100%);
+  border-radius: 0 3px 3px 0;
+  margin-right: 0;
+  padding-right: 14px;
+}
+[dir="rtl"] .o_statusbar_status .o_arrow_button:last-child {
+  /* Leftmost item in RTL DOM */
+  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+  border-radius: 3px 0 0 3px;
+  padding-left: 14px;
+}
+/* -------------------- */
+
+.o_statusbar_status .o_arrow_button.o_arrow_button_current {
+  background: var(--statusbar-active-bg);
+  color: var(--statusbar-active-text);
+  font-weight: 800;
+}
+
+.o_statusbar_status .o_arrow_button.o_arrow_button_done {
+  /* "الرمادي الداكن لمن هو تم" - Dark gray text on light background for past steps */
+  background: var(--odoo-bg);
+  color: var(--odoo-text); /* Dark Gray / Black */
+  font-weight: 700;
+  opacity: 1;
+}
+
+.o_statusbar_status .o_arrow_button.clickable {
+  cursor: pointer;
+}
+
+.o_statusbar_status .o_arrow_button.clickable:hover {
+  filter: brightness(0.95);
+}
+
+/* =============================================================
+   Smart Buttons (Button Box)
+   ============================================================= */
+
+.o_button_box {
+  display: flex;
+  border-bottom: 1px solid var(--odoo-border);
+  direction: ltr;
+}
+
+.o_button_box .oe_stat_button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  min-width: 100px;
+  border-left: 1px solid var(--odoo-border);
+  background: var(--smart-btn-bg);
+  cursor: pointer;
+  transition: background 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+
+.o_button_box .oe_stat_button:first-child {
+  border-left: none;
+}
+
+.o_button_box .oe_stat_button:hover {
+  background: var(--smart-btn-hover);
+}
+
+.o_button_box .oe_stat_button .o_stat_icon {
+  color: var(--smart-btn-icon);
+  margin-bottom: 2px;
+  transition: transform 0.15s;
+}
+
+.o_button_box .oe_stat_button:hover .o_stat_icon {
+  transform: scale(1.1);
+}
+
+.o_button_box .o_stat_value {
+  font-size: var(--odoo-font-size);
+  font-weight: 800;
+  color: var(--odoo-text);
+  line-height: 1.2;
+}
+
+.o_button_box .o_stat_text {
+  font-size: var(--odoo-font-size-xs);
+  color: var(--odoo-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* =============================================================
+   Form Fields - Odoo Style
+   ============================================================= */
+
+.o_form_sheet .o_group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 48px;
+  padding: 16px 24px;
+}
+
+.o_form_sheet .o_field_row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.o_form_sheet .o_field_label {
+  font-size: var(--odoo-font-size);
+  font-weight: 700;
+  color: var(--odoo-label);
+  white-space: nowrap;
+}
+
+.o_form_sheet .o_field_widget input,
+.o_form_sheet .o_field_widget select {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid transparent;
+  outline: none;
+  padding: 4px 2px;
+  font-size: var(--odoo-font-size);
+  color: var(--odoo-text);
+  background: transparent;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.o_form_sheet .o_field_widget input:hover,
+.o_form_sheet .o_field_widget select:hover {
+  border-bottom-color: var(--odoo-border);
+}
+
+.o_form_sheet .o_field_widget input:focus,
+.o_form_sheet .o_field_widget select:focus {
+  border-bottom-color: var(--odoo-border-focus);
+  border-bottom-width: 2px;
+  padding-bottom: 3px;
+}
+
+/* =============================================================
+   Notebook Tabs
+   ============================================================= */
+
+.o_notebook_tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--odoo-border);
+  padding: 0 24px;
+}
+
+.o_notebook_tab {
+  padding: 8px 16px;
+  font-size: var(--odoo-font-size);
+  font-weight: 700;
+  color: var(--odoo-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.o_notebook_tab:hover {
+  color: var(--odoo-text);
+}
+
+.o_notebook_tab.active {
+  color: var(--odoo-primary);
+  border-bottom-color: var(--odoo-primary);
+}
+
+/* =============================================================
+   Side Chatter Layout
+   ============================================================= */
+
+.o_form_view_container {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  max-width: 100%;
+  margin: 0;
+  padding-bottom: 40px;
+}
+
+.o_form_view_container .o_content_area {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0;
+}
+
+.o_form_view_container .o_chatter_area {
+  flex: 0 0 auto;
+  width: 100%;
+  border: 1px solid var(--odoo-border);
+  border-radius: 3px;
+  background: var(--odoo-sheet);
+  padding: 16px;
+}
+
+/* =============================================================
+   Action Buttons
+   ============================================================= */
+
+.o_statusbar_buttons .o_btn_primary {
+  background: var(--odoo-primary);
+  color: #FFFFFF;
+  border: 1px solid var(--odoo-primary);
+  padding: 6px 16px;
+  border-radius: 3px;
+  font-size: var(--odoo-font-size);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.o_statusbar_buttons .o_btn_primary:hover {
+  background: var(--odoo-primary-hover);
+  border-color: var(--odoo-primary-hover);
+}
+
+.o_statusbar_buttons .o_btn_primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.o_statusbar_buttons .o_btn_secondary {
+  background: #FFFFFF;
+  color: var(--odoo-text);
+  border: 1px solid var(--odoo-border);
+  padding: 6px 16px;
+  border-radius: 3px;
+  font-size: var(--odoo-font-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.o_statusbar_buttons .o_btn_secondary:hover {
+  background: rgba(0,0,0,0.05);
+  border-color: var(--odoo-border);
+}
+
+/* =============================================================
+   Totals Section
+   ============================================================= */
+
+.o_totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 16px 24px;
+  gap: 6px;
+}
+
+.o_totals .o_total_row {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  font-size: var(--odoo-font-size);
+}
+
+.o_totals .o_total_row.o_total_grand {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--odoo-text);
+  border-top: 2px solid var(--odoo-text);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+/* =============================================================
+   Title Section
+   ============================================================= */
+
+.o_form_title {
+  padding: 16px 24px 8px;
+}
+
+.o_form_title .o_title_label {
+  font-size: var(--odoo-font-size-sm);
+  color: var(--odoo-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.o_form_title h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--odoo-text);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* =============================================================
+   Responsive
+   ============================================================= */
+
+@media (max-width: 1200px) {
+  .o_form_view_container .o_chatter_area {
+    display: none;
+  }
+  .o_form_view_container .o_content_area {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .o_form_sheet .o_group {
+    grid-template-columns: 1fr;
+  }
+  .o_statusbar {
+    flex-direction: column-reverse;
+    gap: 8px;
+    padding: 8px;
+  }
+  .o_statusbar_status {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+/* =============================================================
+   Notifications & Toasts (Silent Success)
+   Odoo does not show noisy success popups for basic CRUD.
+   ============================================================= */
+[data-sonner-toast][data-type="success"] {
+  display: none !important;
+}

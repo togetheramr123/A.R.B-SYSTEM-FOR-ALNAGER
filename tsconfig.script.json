@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "node"
+    },
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS"
+        }
+    },
+    "include": [
+        "scripts/**/*.ts",
+        "app/**/*.ts",
+        "lib/**/*.ts",
+        "prisma/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

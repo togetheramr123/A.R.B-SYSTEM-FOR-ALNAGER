@@ -1,0 +1,2777 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// --- Foundation Core ---
+
+model User {
+  id        String   @id @default(uuid())
+  email     String?  @unique
+  password  String   @default("")
+  name      String?
+  phone     String?  @unique
+  whatsapp  String?
+  image     String?
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Presence tracking
+  isOnline     Boolean   @default(false)
+  lastActiveAt DateTime?
+
+  // Chat Relations
+  sentChatMessages     ChatMessage[]         @relation("SentChatMessages")
+  receivedChatMessages ChatMessage[]         @relation("ReceivedChatMessages")
+  chatRooms            ChatRoomParticipant[]
+  chatReactions        ChatMessageReaction[]
+
+  managerId String?
+
+  // --- Granular Permissions ---
+  canViewCost           Boolean @default(true)
+  allowedCustomerType   String  @default("ALL") // "ALL", "CASH", "COMMERCIAL"
+  canCreateFreeVouchers Boolean @default(true)
+  canAccessTreasury     Boolean @default(true)
+
+  manager      User?  @relation("UserManager", fields: [managerId], references: [id])
+  subordinates User[] @relation("UserManager")
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  // Access Rights
+  groups ResGroup[]
+
+  saleOrders SaleOrder[]
+
+  requestedApprovals ApprovalRequest[] @relation("RequesterRelation")
+  approvedApprovals  ApprovalRequest[] @relation("ApproverRelation")
+
+  notifications            Notification[]
+  enforceNotificationBlock Boolean        @default(true) // Per-user notification block toggle
+
+  receivedShares RecordShareLink[] @relation("SharedWithUser")
+  grantedShares  RecordShareLink[] @relation("SharedByUser")
+
+  assignedFollowUps DebtFollowUp[]        @relation("AssignedFollowUps")
+  followUpHistory   DebtFollowUpHistory[]
+
+  // --- Cash Register Permissions ---
+  cashRegisterEnabled Boolean @default(false) // هل يتعامل مع الخزينة؟
+  canReceive          Boolean @default(false) // سند قبض
+  canDisburse         Boolean @default(false) // سند صرف
+  autoSettle          Boolean @default(true) // ترحيل تلقائي آخر اليوم؟
+  visibleRegisterIds  String  @default("") // IDs خزائن مرئية (مفصولة بفاصلة)
+
+  cashRegister             CashRegister?
+  cashTransactions         CashTransaction[]
+  cashSettlements          CashSettlement[]  @relation("SettlementUser")
+  cashSettlementsPerformed CashSettlement[]  @relation("SettlementPerformer")
+
+  // --- Partner Ledger Permissions ---
+  canViewPartnerLedger       Boolean @default(true) // هل يستطيع رؤية كشف الحساب السريع؟
+  allowedLedgerCustomerTypes String  @default("all") // all, commercial, cash
+
+  // --- Sales Permissions ---
+  canSellFractions Boolean @default(false) // هل يملك صلاحية بيع كميات بكسور عشرية؟
+
+  createdPayments       Payment[]      @relation("PaymentCreator")
+  createdJournalEntries JournalEntry[] @relation("JournalEntryCreator")
+
+  // --- Smart Coach & Performance ---
+  efficiencyScore      Float                       @default(100.0) // 0-100%
+  lockedUntil          DateTime? // إذا كان الحساب موقوف مؤقتاً بسبب الأخطاء
+  performanceLogs      UserPerformanceLog[]
+  inventoryAdjustments InventoryAdjustmentRecord[]
+
+  // CRM / Tickets
+  assignedTickets Ticket[]        @relation("TicketAssignee")
+  createdTickets  Ticket[]        @relation("TicketCreator")
+  ticketMessages  TicketMessage[]
+}
+
+model UserPerformanceLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  errorType String // DUPLICATE_ITEM, UNBILLED_RECEIPT_IGNORED, etc.
+  severity  Int      @default(1) // 1 to 5
+  context   String? // Description of what happened
+  createdAt DateTime @default(now())
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+// --- Access Rights ---
+
+model ResGroup {
+  id          String  @id @default(uuid())
+  name        String  @unique // e.g. "المبيعات / مدير"
+  category    String? // e.g. "المبيعات"
+  permissions String? // JSON blob storing granular feature permissions
+
+  users        User[]
+  accessRights IrModelAccess[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model IrModelAccess {
+  id    String @id @default(uuid())
+  name  String @unique
+  model String // e.g. "product"
+
+  groupId String
+  group   ResGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  canViewWholesale          Boolean @default(false)
+  maxDiscountLimit          Float   @default(0.0)
+  canPrintInvoices          Boolean @default(false)
+  canChangePrices           Boolean @default(false)
+  canAllowNegativeInventory Boolean @default(false)
+  canAccessBeta             Boolean @default(false)
+
+  permRead   Boolean @default(false)
+  permWrite  Boolean @default(false)
+  permCreate Boolean @default(false)
+  permUnlink Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id                  String   @id @default(uuid())
+  name                String
+  logoUrl             String?
+  currency            String   @default("EGP")
+  taxId               String?
+  address             String?
+  phone               String?
+  email               String?
+  allowHalfQuantities Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  users             User[]
+  priceLists        PriceList[]
+  warehouses        Warehouse[]
+  locations         Location[]
+  partners          Partner[]
+  accounts          Account[]
+  journals          Journal[]
+  apiKeys           ApiKey[]
+  contractTemplates ContractTemplate[]
+
+  // Back relations for multi-tenancy
+  products        Product[]
+  saleOrders      SaleOrder[]
+  purchaseOrders  PurchaseOrder[]
+  invoices        Invoice[]
+  pickings        StockPicking[]
+  stockMoves      StockMove[]
+  stockQuants     StockQuant[]
+  payments        Payment[]
+  chatMessages    ChatMessage[]
+  chatRooms       ChatRoom[]
+  assets          Asset[]
+  assetCategories AssetCategory[]
+  supplierInfos   ProductSupplierInfo[]
+
+  journalEntries JournalEntry[]
+  journalItems   JournalItem[]
+
+  approvalRequests ApprovalRequest[]
+
+  // From deep Odoo audit
+  entreprises     Entreprise[]
+  salesTeams      SalesTeam[]
+  fiscalPositions FiscalPosition[]
+  performanceLogs UserPerformanceLog[]
+  notifications   Notification[]
+
+  debtFollowUps      DebtFollowUp[]
+  cheques            Cheque[]
+  auditLogs          AuditLog[]
+  fiscalYearClosings FiscalYearClosing[]
+
+  notificationBlockHours Int @default(24) // Hours before blocking
+
+  recordShareLinks RecordShareLink[]
+
+  // === إعدادات الفترات المالية ===
+  fiscalYearLockDate DateTime? // قفل السنة المالية (لا يمكن إنشاء قيود قبل هذا التاريخ)
+  periodLockDate     DateTime? // قفل الفترة للمستخدمين العاديين
+  advisorLockDate    DateTime? // قفل المدير المالي فقط (أقوى)
+
+  // === بوابة التجّار ===
+  isTraderPortalEnabled Boolean @default(false) // هل بوابة التجّار مفعلة لهذه الشركة؟
+
+  // === النسخة التجريبية ===
+  demoPin String @default("3000") // الرقم السري للنسخة التجريبية
+
+  portalUsers               PortalUser[]
+  portalBanners             PortalBanner[]
+  companyPaymentMethods     CompanyPaymentMethod[]
+  accountStatementRequests  AccountStatementRequest[]
+  InventoryAdjustmentRecord InventoryAdjustmentRecord[]
+  Ticket                    Ticket[]
+}
+
+model Currency {
+  id     String  @id @default(uuid())
+  code   String  @unique
+  name   String
+  symbol String
+  rate   Decimal @default(1.0)
+  active Boolean @default(true)
+}
+
+model PriceList {
+  id         String   @id @default(uuid())
+  name       String
+  currencyId String
+  companyId  String
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  type      String    @default("sale") // sale or purchase
+  partnerId String? // Legacy single partner (backward compat)
+  partner   Partner?  @relation("PricelistPartner", fields: [partnerId], references: [id])
+  partners  Partner[] @relation("PriceListPartners") // Multi-partner support
+
+  company Company         @relation(fields: [companyId], references: [id])
+  items   PriceListItem[]
+
+  saleOrders     SaleOrder[]
+  purchaseOrders PurchaseOrder[]
+
+  producingCompany String?
+  arCode           String?
+
+  categoryId String?
+  category   ProductCategory? @relation("PriceListCategory", fields: [categoryId], references: [id])
+}
+
+model PriceListItem {
+  id          String    @id @default(uuid())
+  priceListId String
+  priceList   PriceList @relation(fields: [priceListId], references: [id])
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  appliedOn  String           @default("1_product") // '3_global', '2_category', '1_product'
+  categoryId String?
+  category   ProductCategory? @relation("CategoryPricelists", fields: [categoryId], references: [id])
+
+  computePrice String  @default("fixed") // 'fixed', 'percentage'
+  percentPrice Decimal @default(0)
+
+  minQuantity Decimal  @default(0)
+  price       Decimal // Sell Price (Fixed)
+  buyPrice    Decimal? // Optional Buy Price (Fixed fallback)
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  isSaleFixed Boolean @default(false)
+  isBuyFixed  Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Attachments & Media ---
+
+model Attachment {
+  id        String   @id @default(uuid())
+  fileName  String
+  fileUrl   String
+  fileType  String // image/png, application/pdf, etc.
+  fileSize  Int
+  createdAt DateTime @default(now())
+
+  // Polymorphic-like associations (simplified for SQLite)
+  productId       String?
+  product         Product?       @relation(fields: [productId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+  saleOrderId     String?
+  saleOrder       SaleOrder?     @relation(fields: [saleOrderId], references: [id])
+  stockMoveId     String?
+  stockMove       StockMove?     @relation(fields: [stockMoveId], references: [id])
+  invoiceId       String?
+  invoice         Invoice?       @relation(fields: [invoiceId], references: [id])
+  messageId       String?
+  message         Message?       @relation(fields: [messageId], references: [id])
+  paymentId       String?
+  payment         Payment?       @relation("AttachmentPayment", fields: [paymentId], references: [id])
+}
+
+// --- Integration & API ---
+
+model ApiKey {
+  id        String    @id @default(uuid())
+  name      String
+  key       String    @unique
+  secret    String
+  active    Boolean   @default(true)
+  lastUsed  DateTime?
+  companyId String
+  company   Company   @relation(fields: [companyId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+model Webhook {
+  id        String   @id @default(uuid())
+  url       String
+  event     String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+// --- Shared Catalogs (PDF) ---
+
+model Catalog {
+  id          String   @id @default(uuid())
+  title       String // عنوان الكتالوج
+  description String? // وصف مختصر
+  fileName    String // اسم الملف الأصلي
+  filePath    String // مسار الملف على السيرفر
+  fileSize    Int      @default(0) // حجم الملف بالبايت
+  coverImage  String? // صورة غلاف (اختياري)
+  category    String   @default("general") // تصنيف: general, products, suppliers, ...
+  sortOrder   Int      @default(0) // ترتيب العرض
+  active      Boolean  @default(true) // إخفاء بدون حذف
+  uploadedBy  String? // اسم الرافع
+  companyId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// --- Partners ---
+
+model Partner {
+  id   String @id @default(uuid())
+  name String
+
+  // Identity & Contact
+  type          String         @default("person") // company, person, private, invoice, delivery, other
+  parentId      String?
+  parent        Partner?       @relation("PartnerHierarchy", fields: [parentId], references: [id])
+  children      Partner[]      @relation("PartnerHierarchy")
+  debtFollowUps DebtFollowUp[]
+
+  image    String? // URL or base64 placeholder
+  website  String?
+  lang     String? @default("en_US")
+  title    String? // Mr, Ms, etc.
+  function String? // Job Position
+  mobile   String? // Distinct from phone
+  phone    String?
+  email    String?
+
+  // Address
+  street  String?
+  street2 String?
+  city    String?
+  state   String?
+  zip     String?
+  country String?
+  vat     String?
+
+  // Roles
+  isVendor     Boolean @default(false)
+  isCustomer   Boolean @default(true)
+  customerType String  @default("cash") // commercial (تجاري) or cash (نقدي)
+
+  // Sales & Purchase Settings
+  userId                        String? // Salesperson ID
+  propertyPaymentTermId         String?
+  propertySupplierPaymentTermId String?
+  propertyPriceListId           String?
+  pricelist                     PriceList[] @relation("PricelistPartner")
+  priceListPartners             PriceList[] @relation("PriceListPartners") // Multi-partner support
+  ref                           String? // Reference
+  industry                      String?
+
+  // Accounting (CRITICAL)
+  propertyAccountReceivableId String?
+  propertyAccountReceivable   Account? @relation("AccountReceivable", fields: [propertyAccountReceivableId], references: [id])
+  propertyAccountPayableId    String?
+  propertyAccountPayable      Account? @relation("AccountPayable", fields: [propertyAccountPayableId], references: [id])
+
+  bankAccounts       ResPartnerBank[]
+  tags               PartnerTag[]
+  notes              String? // Internal Notes
+  purchaseAgreements PurchaseAgreement[]
+  saleAgreements     SaleAgreement[]
+
+  supplierInfo ProductSupplierInfo[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  purchaseOrders     PurchaseOrder[]
+  saleOrders         SaleOrder[]
+  invoices           Invoice[]
+  pickings           StockPicking[]
+  messages           Message[]           @relation("MessageSubject")
+  authoredMessages   Message[]           @relation("MessageAuthor")
+  journalEntries     JournalEntry[]
+  payments           Payment[]
+  bankStatementLines BankStatementLine[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  updatedById String?
+
+  odooId      Int?          @unique
+  JournalItem JournalItem[]
+  cheques     Cheque[]
+
+  // --- Portal ---
+  portalUser               PortalUser?
+  accountStatementRequests AccountStatementRequest[]
+  Ticket                   Ticket[]
+}
+
+model PartnerTag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  color    String?
+  partners Partner[]
+}
+
+model ResPartnerBank {
+  id        String  @id @default(uuid())
+  accNumber String
+  bankName  String?
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+}
+
+// --- Accounting Module ---
+
+model AccountTag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  color    String?
+  accounts Account[]
+}
+
+model Account {
+  id        String  @id @default(uuid())
+  code      String
+  name      String
+  type      String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  partnersReceivable Partner[] @relation("AccountReceivable")
+  partnersPayable    Partner[] @relation("AccountPayable")
+
+  journalItems        JournalItem[]
+  purchaseOrderLines  PurchaseOrderLine[]
+  journals            Journal[]           @relation("JournalDefaultAccount")
+  paymentDestinations Payment[]
+
+  assetsAsAsset   AssetCategory[] @relation("AssetAccount")
+  assetsAsDepr    AssetCategory[] @relation("DeprAccount")
+  assetsAsExpense AssetCategory[] @relation("ExpenseAccount")
+
+  // Product Relations
+  productsWithIncomeAccount  Product[] @relation("ProductIncomeAccount")
+  productsWithExpenseAccount Product[] @relation("ProductExpenseAccount")
+
+  invoiceLines InvoiceLine[]
+  budgetLines  BudgetLine[]
+
+  deprecated Boolean @default(false)
+
+  tags            AccountTag[]
+  defaultTaxes    Tax[]        @relation("AccountDefaultTaxes")
+  allowedJournals Journal[]    @relation("AccountAllowedJournals")
+
+  // Journal Relations (Advanced)
+  journalsAsSuspense Journal[] @relation("JournalSuspenseAccount")
+  journalsAsProfit   Journal[] @relation("JournalProfitAccount")
+  journalsAsLoss     Journal[] @relation("JournalLossAccount")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([code, companyId])
+}
+
+model PaymentMethod {
+  id     String  @id @default(uuid())
+  name   String // e.g. "يدوي", "إلكتروني"
+  code   String  @unique
+  type   String  @default("inbound") // inbound, outbound, both
+  active Boolean @default(true)
+
+  journalsInbound  Journal[] @relation("JournalInboundMethods")
+  journalsOutbound Journal[] @relation("JournalOutboundMethods")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Journal {
+  id        String  @id @default(uuid())
+  name      String
+  code      String
+  type      String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  defaultAccountId String?
+  defaultAccount   Account? @relation("JournalDefaultAccount", fields: [defaultAccountId], references: [id])
+
+  entries         JournalEntry[]
+  payments        Payment[]
+  assetCategories AssetCategory[]
+  bankStatements  BankStatement[]
+  cheques         Cheque[]
+  invoices        Invoice[]
+
+  allowedForAccounts Account[] @relation("AccountAllowedJournals")
+
+  // --- Advanced Journal Settings ---
+  suspenseAccountId String?
+  suspenseAccount   Account? @relation("JournalSuspenseAccount", fields: [suspenseAccountId], references: [id])
+
+  profitAccountId String?
+  profitAccount   Account? @relation("JournalProfitAccount", fields: [profitAccountId], references: [id])
+
+  lossAccountId String?
+  lossAccount   Account? @relation("JournalLossAccount", fields: [lossAccountId], references: [id])
+
+  dedicatedPaymentSequence Boolean @default(false)
+
+  inboundPaymentMethods  PaymentMethod[] @relation("JournalInboundMethods")
+  outboundPaymentMethods PaymentMethod[] @relation("JournalOutboundMethods")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([code, companyId])
+}
+
+model JournalEntry {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime @default(now())
+  journalId String
+  journal   Journal  @relation(fields: [journalId], references: [id])
+  ref       String?
+  state     String   @default("draft")
+
+  items   JournalItem[]
+  invoice Invoice?
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  paymentId String?  @unique
+  payment   Payment? @relation(fields: [paymentId], references: [id])
+
+  assetLines AssetLine[]
+  payslip    Payslip?
+
+  stockMoves StockMove[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("JournalEntryCreator", fields: [createdById], references: [id])
+}
+
+model JournalItem {
+  id        String       @id @default(uuid())
+  entryId   String
+  entry     JournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  accountId String
+  account   Account      @relation(fields: [accountId], references: [id])
+  name      String?
+  debit     Decimal      @default(0)
+  credit    Decimal      @default(0)
+  balance   Decimal      @default(0)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  analyticAccountId String?
+  analyticAccount   AnalyticAccount? @relation(fields: [analyticAccountId], references: [id])
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  bankStatementLineId String?
+  bankStatementLine   BankStatementLine? @relation(fields: [bankStatementLineId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+model Invoice {
+  id          String    @id @default(uuid())
+  name        String
+  type        String    @default("out_invoice")
+  partnerId   String?
+  partner     Partner?  @relation(fields: [partnerId], references: [id])
+  dateInvoice DateTime  @default(now())
+  dateDue     DateTime?
+  state       String    @default("draft")
+
+  createdById    String?
+  updatedById    String?
+  approvalStatus String  @default("none")
+
+  amountUntaxed  Decimal @default(0.0)
+  amountTax      Decimal @default(0.0)
+  amountTotal    Decimal @default(0.0)
+  amountResidual Decimal @default(0.0)
+
+  narration        String?
+  invoiceOrigin    String?
+  autoPost         Boolean @default(false)
+  paymentReference String? // مرجع الدفع
+
+  // Journal (from deep Odoo audit)
+  journalId String?
+  journal   Journal? @relation(fields: [journalId], references: [id])
+
+  // Fiscal Position
+  fiscalPositionId String?
+  fiscalPosition   FiscalPosition? @relation(fields: [fiscalPositionId], references: [id])
+
+  journalEntryId String?       @unique
+  journalEntry   JournalEntry? @relation(fields: [journalEntryId], references: [id])
+
+  saleOrderId     String?
+  saleOrder       SaleOrder?     @relation(fields: [saleOrderId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+
+  lines       InvoiceLine[]
+  attachments Attachment[]
+  messages    Message[]
+
+  // === سياسة التحصيل ===
+  collectionPolicy     String? // "accounts" | "salesperson" | "specific"
+  collectionAssigneeId String? // User ID — المسؤول عن التحصيل
+  collectionNotes      String? // ملاحظات التحصيل
+  collectionDueDate    DateTime? // تاريخ السداد المتفق
+  collectionStatus     String    @default("pending") // pending, in_progress, collected, overdue, partial
+
+  collectionMessages CollectionMessage[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  odooId Int? @unique
+
+  // Performance indexes
+  @@index([state])
+  @@index([partnerId, state])
+  @@index([companyId, state])
+  @@index([dateInvoice])
+}
+
+// === رسائل التحصيل بين المستخدمين ===
+model CollectionMessage {
+  id        String  @id @default(uuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  senderId   String // المرسل (User ID)
+  receiverId String // المستقبل (User ID)
+
+  message     String // النص
+  invoiceRef  String? // رقم الفاتورة
+  partnerName String? // اسم العميل
+  amount      Decimal? // المبلغ
+
+  isRead     Boolean @default(false)
+  actionType String  @default("follow_up") // follow_up, collected, reminder, escalation
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InvoiceLine {
+  id            String   @id @default(uuid())
+  sequence      Int      @default(10)
+  invoiceId     String
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id])
+  name          String?
+  quantity      Decimal
+  priceUnit     Decimal
+  priceSubtotal Decimal
+
+  discount1 Decimal @default(0.0)
+  discount2 Decimal @default(0.0)
+  priceNet  Decimal @default(0.0)
+  unitName  String?
+
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+
+  secondaryQuantity Decimal @default(0.0)
+  secondaryUnit     String?
+
+  assetCategoryId String?
+  assetCategory   AssetCategory? @relation(fields: [assetCategoryId], references: [id])
+
+  lineType String @default("line") // line, section, note
+
+  taxes InvoiceLineTax[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Inventory Module ---
+
+model ProductCategory {
+  id       String            @id @default(uuid())
+  name     String
+  parentId String?
+  parent   ProductCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children ProductCategory[] @relation("CategoryHierarchy")
+  products Product[]
+
+  pricelistItems PriceListItem[] @relation("CategoryPricelists")
+  priceLists     PriceList[]     @relation("PriceListCategory")
+
+  // --- Accounting & Valuation ---
+  costingMethod String @default("standard") // standard, fifo, avco
+  valuation     String @default("manual_periodic") // manual_periodic, real_time
+
+  propertyAccountIncomeId  String?
+  propertyAccountExpenseId String?
+  propertyAccountScrapId   String?
+
+  // Stock Valuation specific
+  propertyStockAccountId       String?
+  propertyStockAccountInputId  String?
+  propertyStockAccountOutputId String?
+  propertyStockJournalId       String?
+
+  // Logistics
+  removalStrategy String @default("fifo") // fifo, lifo, closest
+
+  // Accounting
+  propertyAccountPriceDifferenceId String?
+
+  odooId           Int?               @unique
+  companyId        String?
+  StockPutawayRule StockPutawayRule[]
+}
+
+model UomCategory {
+  id   String @id @default(uuid())
+  name String
+  uoms Uom[]
+}
+
+model Uom {
+  id         String      @id @default(uuid())
+  name       String
+  categoryId String
+  category   UomCategory @relation(fields: [categoryId], references: [id])
+  type       String // reference, bigger, smaller
+  ratio      Decimal     @default(1.0)
+  rounding   Decimal     @default(0.01)
+  active     Boolean     @default(true)
+}
+
+model Attribute {
+  id     String           @id @default(uuid())
+  name   String
+  values AttributeValue[]
+
+  productLines ProductAttributeLine[]
+}
+
+model AttributeValue {
+  id          String    @id @default(uuid())
+  name        String
+  attributeId String
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+  color       String? // For color attributes
+
+  productLines ProductAttributeLine[]
+  variants     Product[]              @relation("VariantValues")
+}
+
+model ProductAttributeLine {
+  id          String    @id @default(uuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+
+  values AttributeValue[]
+}
+
+model ProductTag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  color    String?   @default("#000000")
+  products Product[]
+}
+
+model Product {
+  id           String  @id @default(uuid())
+  name         String
+  description  String?
+  barcode      String? @unique
+  sku          String? @unique
+  manufacturer String?
+
+  canBeSold      Boolean @default(true)
+  canBePurchased Boolean @default(true)
+
+  createdById String?
+  updatedById String?
+
+  type            String @default("storable")
+  invoicingPolicy String @default("ordered")
+
+  uom         String @default("Units")
+  purchaseUom String @default("Units")
+
+  hasSecondaryUnit   Boolean @default(false)
+  secondaryUom       String?
+  secondaryUomFactor Decimal @default(1.0)
+  active             Boolean @default(true)
+
+  salePrice Decimal @default(0.0)
+  costPrice Decimal @default(0.0)
+  taxes     Decimal @default(14.0)
+
+  internalReference String?
+
+  // Inventory & Tracking
+  isFavorite Boolean @default(false)
+  tracking   String  @default("none") // none, lot, serial
+  routeBuy   Boolean @default(true)
+
+  saleOrderOptions      SaleOrderOption[]
+  routeMto              Boolean           @default(false)
+  weight                Decimal           @default(0.0)
+  volume                Decimal           @default(0.0)
+  descriptionPicking    String?
+  descriptionPickingout String?
+
+  // Logistics
+  hsCode          String?
+  countryOfOrigin String?
+
+  // Planning & Inventory
+  saleDelay    Int     @default(0)
+  produceDelay Int     @default(0)
+  route        String?
+
+  // Sales Tab
+  availableInPos   Boolean @default(false)
+  websitePublished Boolean @default(false)
+
+  // Purchase Tab
+  controlPolicy       String  @default("ordered")
+  descriptionPurchase String?
+
+  // Accounting
+  incomeAccount  String?
+  expenseAccount String?
+
+  propertyAccountIncomeId  String?
+  propertyAccountIncome    Account? @relation("ProductIncomeAccount", fields: [propertyAccountIncomeId], references: [id])
+  propertyAccountExpenseId String?
+  propertyAccountExpense   Account? @relation("ProductExpenseAccount", fields: [propertyAccountExpenseId], references: [id])
+  assetType                String?
+  priceDifferenceAccount   String?
+
+  categoryId String?
+  category   ProductCategory? @relation(fields: [categoryId], references: [id])
+
+  // Detailed Fields
+  detailedType    String  @default("consu")
+  descriptionSale String?
+
+  tags ProductTag[]
+
+  stockQuants    StockQuant[]
+  stockLots      StockLot[]
+  stockMoves     StockMove[]
+  purchaseLines  PurchaseOrderLine[]
+  saleLines      SaleOrderLine[]
+  invoiceLines   InvoiceLine[]
+  attachments    Attachment[]
+  messages       Message[]
+  attributeLines ProductAttributeLine[]
+  priceListItems PriceListItem[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  // Variants Logic
+  templateId String?
+  template   Product?  @relation("ProductVariants", fields: [templateId], references: [id])
+  variants   Product[] @relation("ProductVariants")
+
+  variantValues AttributeValue[] @relation("VariantValues")
+
+  journalItems JournalItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  odooId Int? @unique
+
+  image String?
+
+  supplierInfo ProductSupplierInfo[]
+  scraps       StockScrap[]
+
+  boms            BillOfMaterial[]      @relation("BOMProduct")
+  bomLines        BOMLine[]             @relation("BOMComponent")
+  valuationLayers StockValuationLayer[]
+  putawayRules    StockPutawayRule[]
+  replenishments  StockReplenishment[]
+  productTaxes    ProductTax[]
+
+  // --- Portal ---
+  portalFavorites         PortalFavorite[]
+  InventoryAdjustmentLine InventoryAdjustmentLine[]
+}
+
+model ProductSupplierInfo {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+
+  productCode String?
+  productName String?
+
+  minQty     Decimal @default(0.0)
+  price      Decimal @default(0.0)
+  currencyId String?
+  delay      Int     @default(0)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Warehouse {
+  id                        String                      @id @default(uuid())
+  name                      String
+  code                      String                      @unique
+  address                   String?
+  companyId                 String?
+  company                   Company?                    @relation(fields: [companyId], references: [id])
+  locations                 Location[]
+  saleOrders                SaleOrder[]
+  InventoryAdjustmentRecord InventoryAdjustmentRecord[]
+}
+
+model Location {
+  id          String     @id @default(uuid())
+  name        String
+  type        String     @default("internal")
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+  parentId    String?
+  parent      Location?  @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children    Location[] @relation("LocationHierarchy")
+
+  stockQuants StockQuant[]
+  sourceMoves StockMove[]  @relation("SourceLocation")
+  destMoves   StockMove[]  @relation("DestLocation")
+
+  pickingSource StockPicking[] @relation("PickingSourceLocation")
+  pickingDest   StockPicking[] @relation("PickingDestLocation")
+
+  scrapSource StockScrap[] @relation("ScrapSource")
+  scrapDest   StockScrap[] @relation("ScrapDest")
+
+  companyId               String?
+  company                 Company?                  @relation(fields: [companyId], references: [id])
+  putawayIn               StockPutawayRule[]        @relation("PutawayIn")
+  putawayOut              StockPutawayRule[]        @relation("PutawayOut")
+  replenishments          StockReplenishment[]      @relation("ReplenishmentLocation")
+  ruleSource              StockRule[]               @relation("RuleSource")
+  ruleDest                StockRule[]               @relation("RuleDest")
+  defaultTypeSource       OperationType[]           @relation("DefaultSource")
+  defaultTypeDest         OperationType[]           @relation("DefaultDest")
+  InventoryAdjustmentLine InventoryAdjustmentLine[]
+}
+
+model StockQuant {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+  quantity    Decimal  @default(0)
+  reservedQty Decimal  @default(0) // Odoo: reserved quantity for confirmed orders
+
+  lotId String?
+  lot   StockLot? @relation(fields: [lotId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  version Int @default(0)
+
+  @@unique([productId, locationId, lotId])
+}
+
+model StockLot {
+  id        String  @id @default(uuid())
+  name      String // Lot/Serial Number
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  ref            String? // Internal Reference
+  expirationDate DateTime?
+  note           String?
+
+  quants     StockQuant[]
+  stockMoves StockMove[]
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, productId])
+}
+
+model StockPicking {
+  id            String    @id @default(uuid())
+  name          String
+  origin        String?
+  status        String    @default("draft")
+  scheduledDate DateTime?
+  dateDone      DateTime?
+  partnerId     String?
+  partner       Partner?  @relation(fields: [partnerId], references: [id])
+
+  pickingType String @default("internal") // internal, incoming, outgoing
+
+  locationId String?
+  location   Location? @relation("PickingSourceLocation", fields: [locationId], references: [id])
+
+  locationDestId String?
+  locationDest   Location? @relation("PickingDestLocation", fields: [locationDestId], references: [id])
+
+  moves StockMove[]
+
+  saleOrderId     String?
+  saleOrder       SaleOrder?     @relation(fields: [saleOrderId], references: [id])
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+
+  // Back Order support
+  backorderId String?
+  backorder   StockPicking?  @relation("BackOrderRelation", fields: [backorderId], references: [id])
+  backorders  StockPicking[] @relation("BackOrderRelation")
+
+  // Entreprise / Branch (from deep Odoo audit)
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  odooId Int? @unique
+
+  messages        Message[]
+  operationTypeId String?
+  operationType   OperationType? @relation(fields: [operationTypeId], references: [id])
+}
+
+model StockMove {
+  id               String    @id @default(uuid())
+  name             String?
+  reference        String?
+  productId        String?
+  product          Product?  @relation(fields: [productId], references: [id])
+  sourceLocationId String?
+  sourceLocation   Location? @relation("SourceLocation", fields: [sourceLocationId], references: [id])
+  destLocationId   String?
+  destLocation     Location? @relation("DestLocation", fields: [destLocationId], references: [id])
+  quantity         Decimal
+  quantityDone     Decimal   @default(0.0)
+  status           String    @default("draft")
+  date             DateTime  @default(now())
+
+  lotId String?
+  lot   StockLot? @relation(fields: [lotId], references: [id])
+
+  pickingId String?
+  picking   StockPicking? @relation(fields: [pickingId], references: [id], onDelete: Cascade)
+
+  purchaseLineId String?
+  purchaseLine   PurchaseOrderLine? @relation(fields: [purchaseLineId], references: [id])
+  saleLineId     String?
+  saleLine       SaleOrderLine?     @relation(fields: [saleLineId], references: [id])
+
+  discount1   Decimal @default(0.0)
+  discount2   Decimal @default(0.0)
+  priceNet    Decimal @default(0.0)
+  unitName    String?
+  secQty      Decimal @default(0.0)
+  secQtyDone  Decimal @default(0.0)
+  secUnitName String?
+
+  scrapId         String? // If this move is part of a scrap
+  scrap           StockScrap?           @relation("ScrapMove") // Inverse of StockScrap.move
+  valuationLayers StockValuationLayer[]
+
+  attachments Attachment[]
+
+  journalEntryId String?
+  journalEntry   JournalEntry? @relation(fields: [journalEntryId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+// --- Purchases Module ---
+
+model PurchaseOrder {
+  id            String   @id @default(uuid())
+  name          String
+  partnerId     String?
+  partner       Partner? @relation(fields: [partnerId], references: [id])
+  dateOrder     DateTime @default(now())
+  createdById   String?
+  updatedById   String?
+  status        String   @default("draft")
+  amountUntaxed Decimal  @default(0.0)
+  amountTax     Decimal  @default(0.0)
+  amountTotal   Decimal  @default(0.0)
+
+  notes String?
+
+  // --- Fields from deep Odoo audit ---
+  receiptReminder Boolean @default(false)
+
+  // Entreprise / Branch
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+
+  // Fiscal Position
+  fiscalPositionId String?
+  fiscalPosition   FiscalPosition? @relation(fields: [fiscalPositionId], references: [id])
+
+  lines       PurchaseOrderLine[]
+  attachments Attachment[]
+  messages    Message[]
+  pickings    StockPicking[]
+  invoices    Invoice[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  priceListId String?
+  priceList   PriceList? @relation(fields: [priceListId], references: [id])
+
+  paymentTermId String?
+  paymentTerm   PaymentTerm? @relation(fields: [paymentTermId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  odooId Int? @unique
+}
+
+model PurchaseOrderLine {
+  id            String        @id @default(uuid())
+  sequence      Int           @default(10)
+  orderId       String
+  order         PurchaseOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product?      @relation(fields: [productId], references: [id])
+  name          String?
+  quantity      Decimal
+  priceUnit     Decimal
+  priceSubtotal Decimal
+  qtyReceived   Decimal       @default(0.0)
+  qtyInvoiced   Decimal       @default(0.0)
+
+  discount1 Decimal @default(0.0)
+  discount2 Decimal @default(0.0)
+  priceNet  Decimal @default(0.0)
+  unitName  String?
+
+  appliedPriceListName String? // Advanced Pricelists: records which list was used
+
+  taxRate Decimal @default(0.0) // Added to match SaleOrderLine and allow optional taxes
+
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+
+  secondaryQuantity Decimal @default(0.0)
+  secondaryUnit     String?
+
+  stockMoves StockMove[]
+  taxes      PurchaseOrderLineTax[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Entreprise / Branch System ---
+model Entreprise {
+  id     String  @id @default(uuid())
+  name   String // "فرع 1", "فرع 2"
+  code   String? @unique
+  active Boolean @default(true)
+
+  saleOrders     SaleOrder[]
+  purchaseOrders PurchaseOrder[]
+  pickings       StockPicking[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+// --- Sales Team ---
+model SalesTeam {
+  id     String  @id @default(uuid())
+  name   String // "المبيعات", "التصدير"
+  active Boolean @default(true)
+
+  saleOrders SaleOrder[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+// --- Fiscal Position ---
+model FiscalPosition {
+  id     String  @id @default(uuid())
+  name   String // "الوضع المالي المحلي", "تصدير معفاة"
+  active Boolean @default(true)
+
+  saleOrders     SaleOrder[]
+  purchaseOrders PurchaseOrder[]
+  invoices       Invoice[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+// --- Sales Module ---
+
+model SaleOrder {
+  id            String   @id @default(uuid())
+  name          String
+  partnerId     String?
+  partner       Partner? @relation(fields: [partnerId], references: [id])
+  dateOrder     DateTime @default(now())
+  createdById   String?
+  updatedById   String?
+  status        String   @default("draft")
+  amountUntaxed Decimal  @default(0.0)
+  amountTax     Decimal  @default(0.0)
+  amountTotal   Decimal  @default(0.0)
+
+  note           String?
+  validityDate   DateTime?
+  approvalStatus String    @default("none")
+
+  // --- Fields discovered from deep Odoo audit ---
+  shippingPolicy  String? // "في أقرب وقت ممكن", "عند جاهزية كل المنتجات"
+  commitmentDate  DateTime? // تاريخ التوصيل
+  deliveryStatus  String? // "تم التوصيل بالكامل", "جزئي", "لم يتم"
+  clientOrderRef  String? // رقم العميل المرجعي
+  onlineSignature Boolean   @default(false) // التأكيد عبر الإنترنت — التوقيع
+  onlinePayment   Boolean   @default(false) // التأكيد عبر الإنترنت — الدفع
+  campaign        String? // الحملة
+  source          String? // المصدر
+  medium          String? // متوسط
+
+  // Warehouse link
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  // Entreprise / Branch
+  entrepriseId String?
+  entreprise   Entreprise? @relation(fields: [entrepriseId], references: [id])
+
+  // Sales Team
+  salesTeamId String?
+  salesTeam   SalesTeam? @relation(fields: [salesTeamId], references: [id])
+
+  // Fiscal Position
+  fiscalPositionId String?
+  fiscalPosition   FiscalPosition? @relation(fields: [fiscalPositionId], references: [id])
+
+  lines       SaleOrderLine[]
+  options     SaleOrderOption[]
+  attachments Attachment[]
+  messages    Message[]
+  pickings    StockPicking[]
+  invoices    Invoice[]
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  paymentTermId String?
+  paymentTerm   PaymentTerm? @relation(fields: [paymentTermId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  priceListId String?
+  priceList   PriceList? @relation(fields: [priceListId], references: [id])
+
+  // --- Reservation System ---
+  reservationState     String    @default("none") // none, pending_approval, reserved, expired, completed
+  reservationExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  odooId Int? @unique
+
+  // Performance indexes
+  @@index([status])
+  @@index([dateOrder])
+  @@index([companyId, status])
+  @@index([partnerId])
+}
+
+model SaleOrderLine {
+  id            String    @id @default(uuid())
+  sequence      Int       @default(10)
+  orderId       String
+  order         SaleOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product?  @relation(fields: [productId], references: [id])
+  name          String?
+  quantity      Decimal
+  priceUnit     Decimal
+  priceSubtotal Decimal
+  qtyDelivered  Decimal   @default(0.0)
+  qtyInvoiced   Decimal   @default(0.0)
+
+  discount1 Decimal @default(0.0)
+  discount2 Decimal @default(0.0)
+  priceNet  Decimal @default(0.0)
+  unitName  String?
+  taxRate   Decimal @default(0.0)
+  lineType  String  @default("line")
+
+  appliedPriceListName String? // Advanced Pricelists: records which list was used
+
+  secondaryQuantity Decimal @default(0.0)
+  secondaryUnit     String?
+
+  stockMoves StockMove[]
+  taxes      SaleOrderLineTax[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SaleOrderOption {
+  id        String    @id @default(uuid())
+  orderId   String
+  order     SaleOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+  name      String
+  quantity  Decimal   @default(1.0)
+  priceUnit Decimal
+  uom       String?
+  discount  Decimal   @default(0.0)
+}
+
+model PaymentTerm {
+  id        String  @id @default(uuid())
+  name      String
+  note      String?
+  companyId String?
+  active    Boolean @default(true)
+
+  saleOrders     SaleOrder[]
+  purchaseOrders PurchaseOrder[]
+  lines          PaymentTermLine[]
+}
+
+model PaymentTermLine {
+  id            String      @id @default(uuid())
+  paymentTermId String
+  paymentTerm   PaymentTerm @relation(fields: [paymentTermId], references: [id], onDelete: Cascade)
+  valueType     String      @default("percent") // percent, fixed, balance
+  value         Decimal     @default(0)
+  days          Int         @default(0)
+  dayOfMonth    Int? // optional: specific day of month
+  sequence      Int         @default(10)
+}
+
+model Message {
+  id      String  @id @default(uuid())
+  body    String?
+  subject String?
+  type    String  @default("comment")
+  subtype String?
+
+  authorId String?
+  author   Partner? @relation("MessageAuthor", fields: [authorId], references: [id])
+
+  partnerId String?
+  partner   Partner? @relation("MessageSubject", fields: [partnerId], references: [id])
+
+  purchaseOrderId String?
+  purchaseOrder   PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+
+  saleOrderId String?
+  saleOrder   SaleOrder? @relation(fields: [saleOrderId], references: [id])
+
+  invoiceId String?
+  invoice   Invoice? @relation(fields: [invoiceId], references: [id])
+
+  stockPickingId String?
+  stockPicking   StockPicking? @relation(fields: [stockPickingId], references: [id])
+
+  paymentId String?
+  payment   Payment? @relation("MessagePayment", fields: [paymentId], references: [id])
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id])
+
+  attachments Attachment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  trackingValues TrackingValue[]
+}
+
+model TrackingValue {
+  id        String  @id @default(uuid())
+  messageId String
+  message   Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  fieldName String
+  fieldDesc String
+
+  oldValue String?
+  newValue String?
+
+  createdAt DateTime @default(now())
+}
+
+model Payment {
+  messages    Message[]    @relation("MessagePayment")
+  attachments Attachment[] @relation("AttachmentPayment")
+
+  id          String  @id @default(uuid())
+  name        String?
+  paymentType String  @default("inbound")
+  partnerType String  @default("customer")
+
+  amount Decimal
+  date   DateTime @default(now())
+  ref    String?
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  journalId String
+  journal   Journal @relation(fields: [journalId], references: [id])
+
+  destinationAccountId String?
+  destinationAccount   Account? @relation(fields: [destinationAccountId], references: [id])
+
+  state String @default("draft")
+
+  journalEntry JournalEntry?
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdById String?
+  createdBy   User?   @relation("PaymentCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Fixed Assets ---
+
+model AssetCategory {
+  id       String @id @default(uuid())
+  name     String
+  method   String @default("linear")
+  duration Int    @default(5)
+
+  // Accounts
+  accountAssetId String?
+  accountAsset   Account? @relation("AssetAccount", fields: [accountAssetId], references: [id])
+
+  accountDeprId String?
+  accountDepr   Account? @relation("DeprAccount", fields: [accountDeprId], references: [id])
+
+  accountExpenseId String?
+  accountExpense   Account? @relation("ExpenseAccount", fields: [accountExpenseId], references: [id])
+
+  journalId String?
+  journal   Journal? @relation(fields: [journalId], references: [id])
+
+  assets       Asset[]
+  invoiceLines InvoiceLine[]
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+}
+
+model Asset {
+  id            String   @id @default(uuid())
+  name          String
+  ref           String?
+  date          DateTime @default(now()) // Acquisition Date
+  originalValue Decimal
+  bookValue     Decimal
+  salvageValue  Decimal  @default(0.0)
+
+  state String @default("draft") // draft, open, closed
+
+  categoryId String?
+  category   AssetCategory? @relation(fields: [categoryId], references: [id])
+
+  // Overrides
+  method   String?
+  duration Int?
+
+  details   AssetLine[]
+  companyId String?
+  company   Company?    @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AssetLine {
+  id      String @id @default(uuid())
+  assetId String
+  asset   Asset  @relation(fields: [assetId], references: [id])
+
+  date        DateTime
+  amount      Decimal
+  depreciated Decimal
+  remaining   Decimal
+
+  moveId String?
+  move   JournalEntry? @relation(fields: [moveId], references: [id])
+
+  posted Boolean @default(false)
+}
+
+// --- HR & Payroll ---
+
+model Department {
+  id        String  @id @default(uuid())
+  name      String
+  managerId String?
+
+  employees Employee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Employee {
+  id       String  @id @default(uuid())
+  name     String
+  email    String?
+  phone    String?
+  jobTitle String?
+
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+
+  contracts Contract[]
+  payslips  Payslip[]
+
+  userId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContractTemplate {
+  id        String   @id @default(uuid())
+  name      String
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  clauses   ContractTemplateClause[]
+  contracts Contract[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContractTemplateClause {
+  id         String           @id @default(uuid())
+  templateId String
+  template   ContractTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  title      String?
+  content    String
+  sequence   Int              @default(10)
+}
+
+model Contract {
+  id         String   @id @default(uuid())
+  name       String
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  wage      Decimal
+  startDate DateTime
+  endDate   DateTime?
+  state     String    @default("open")
+
+  templateId String?
+  template   ContractTemplate? @relation(fields: [templateId], references: [id])
+
+  clauses ContractClause[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContractClause {
+  id         String   @id @default(uuid())
+  contractId String
+  contract   Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  title      String?
+  content    String
+  sequence   Int      @default(10)
+}
+
+model Payslip {
+  id         String   @id @default(uuid())
+  name       String
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id])
+
+  dateFrom DateTime
+  dateTo   DateTime
+
+  basicWage Decimal
+  gross     Decimal
+  net       Decimal
+
+  state String @default("draft")
+
+  // Accounting Link
+  journalEntryId String?       @unique
+  journalEntry   JournalEntry? @relation(fields: [journalEntryId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model StockScrap {
+  id   String   @id @default(uuid())
+  name String
+  date DateTime @default(now())
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity Decimal
+  uomId    String?
+
+  sourceLocationId String
+  sourceLocation   Location @relation("ScrapSource", fields: [sourceLocationId], references: [id])
+
+  scrapLocationId String
+  scrapLocation   Location @relation("ScrapDest", fields: [scrapLocationId], references: [id])
+
+  state String @default("draft")
+
+  moveId String?    @unique
+  move   StockMove? @relation("ScrapMove", fields: [moveId], references: [id])
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Budget Management ---
+
+// --- Stock Valuation ---
+
+model StockValuationLayer {
+  id          String  @id @default(uuid())
+  description String?
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  quantity Decimal @default(0)
+  value    Decimal @default(0)
+  unitCost Decimal @default(0)
+
+  remainingQty   Decimal @default(0)
+  remainingValue Decimal @default(0)
+
+  stockMoveId String?
+  stockMove   StockMove? @relation(fields: [stockMoveId], references: [id])
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Budget Management ---
+
+model Budget {
+  id     String  @id @default(uuid())
+  name   String
+  userId String?
+  // user        User?    @relation(fields: [userId], references: [id]) // User model not fully defined in snippet, assuming it exists or will be linked later. Use String for now if User is not ready.
+  // Actually, User model MIGHT not exist in this snippet. Let's check if User exists.
+  // If not, just store userId string.
+
+  dateFrom DateTime
+  dateTo   DateTime
+
+  state String @default("draft") // draft, confirmed, done, cancelled
+
+  lines     BudgetLine[]
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BudgetLine {
+  id       String @id @default(uuid())
+  budgetId String
+  budget   Budget @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+
+  analyticAccountId String?
+  analyticAccount   AnalyticAccount? @relation(fields: [analyticAccountId], references: [id])
+
+  generalAccountId String?
+  generalAccount   Account? @relation(fields: [generalAccountId], references: [id])
+  // Checking previous context, `Account` model likely exists (used in JournalItem).
+
+  dateFrom DateTime
+  dateTo   DateTime
+
+  plannedAmount     Decimal @default(0.0)
+  practicalAmount   Decimal @default(0.0) // Calculated
+  theoreticalAmount Decimal @default(0.0) // Calculated based on time elapsed
+  percentage        Decimal @default(0.0)
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AnalyticAccount {
+  id       String            @id @default(uuid())
+  name     String
+  code     String?
+  parentId String?
+  parent   AnalyticAccount?  @relation("AnalyticHierarchy", fields: [parentId], references: [id])
+  children AnalyticAccount[] @relation("AnalyticHierarchy")
+
+  budgetLines  BudgetLine[]
+  journalItems JournalItem[]
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Bank Reconciliation ---
+
+model BankStatement {
+  id        String   @id @default(uuid())
+  name      String
+  date      DateTime @default(now())
+  journalId String
+  journal   Journal  @relation(fields: [journalId], references: [id])
+
+  balanceStart Decimal @default(0.0)
+  balanceEnd   Decimal @default(0.0)
+  balanceReal  Decimal @default(0.0)
+
+  state String @default("draft") // draft, open, posted, cancelled
+
+  lines     BankStatementLine[]
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BankStatementLine {
+  id          String        @id @default(uuid())
+  statementId String
+  statement   BankStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+
+  date   DateTime
+  name   String
+  amount Decimal
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  isReconciled Boolean @default(false)
+
+  journalItems JournalItem[]
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Bill of Materials & Manufacturing ---
+
+model BillOfMaterial {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation("BOMProduct", fields: [productId], references: [id])
+  quantity  Decimal @default(1.0)
+  type      String  @default("kit") // kit, manufacture
+
+  lines     BOMLine[]
+  companyId String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model BOMLine {
+  id    String         @id @default(uuid())
+  bomId String
+  bom   BillOfMaterial @relation(fields: [bomId], references: [id], onDelete: Cascade)
+
+  componentId String
+  component   Product @relation("BOMComponent", fields: [componentId], references: [id])
+
+  quantity Decimal
+  uom      String?
+}
+
+// --- Approvals & Notifications System ---
+
+model ApprovalRequest {
+  id     String @id @default(uuid())
+  type   String @default("negative_stock") // negative_stock, discount_limit, etc.
+  status String @default("pending") // pending, approved, rejected
+
+  requesterId String
+  requester   User   @relation("RequesterRelation", fields: [requesterId], references: [id])
+
+  approverId String?
+  approver   User?   @relation("ApproverRelation", fields: [approverId], references: [id])
+
+  resourceId    String? // ID of the Picking or Order
+  resourceModel String? // "StockPicking", "SaleOrder"
+
+  details String? // JSON stringified payload of request details
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RecordShareLink {
+  id            String @id @default(uuid())
+  token         String @unique @default(uuid())
+  resourceModel String // e.g. "SaleOrder", "PurchaseOrder", "Invoice"
+  resourceId    String
+
+  targetUserId String
+  targetUser   User   @relation("SharedWithUser", fields: [targetUserId], references: [id])
+
+  grantedById String
+  grantedBy   User   @relation("SharedByUser", fields: [grantedById], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  expiresAt DateTime // When this link expires (e.g., 24 hours from creation)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id             String    @id @default(uuid())
+  title          String
+  message        String
+  type           String    @default("info") // info, warning, approval_request, negative_stock
+  isRead         Boolean   @default(false)
+  isAcknowledged Boolean   @default(false)
+  snoozedUntil   DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  senderId String?
+
+  linkUrl       String?
+  resourceId    String?
+  resourceModel String?
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Advanced Inventory Configuration ---
+
+model StockPutawayRule {
+  id            String           @id @default(uuid())
+  categoryId    String?
+  category      ProductCategory? @relation(fields: [categoryId], references: [id])
+  productId     String?
+  product       Product?         @relation(fields: [productId], references: [id])
+  inLocationId  String
+  inLocation    Location         @relation("PutawayIn", fields: [inLocationId], references: [id])
+  outLocationId String
+  outLocation   Location         @relation("PutawayOut", fields: [outLocationId], references: [id])
+  sequence      Int              @default(10)
+  companyId     String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model StockReplenishment {
+  id          String   @id @default(uuid())
+  name        String?
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  locationId  String
+  location    Location @relation("ReplenishmentLocation", fields: [locationId], references: [id])
+  minQty      Decimal  @default(0.0)
+  maxQty      Decimal  @default(0.0)
+  qtyMultiple Decimal  @default(1.0)
+  companyId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StockRoute {
+  id        String      @id @default(uuid())
+  name      String
+  sequence  Int         @default(10)
+  active    Boolean     @default(true)
+  rules     StockRule[]
+  companyId String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model StockRule {
+  id            String         @id @default(uuid())
+  name          String
+  action        String         @default("pull") // pull, push, buy, manufacture
+  routeId       String
+  route         StockRoute     @relation(fields: [routeId], references: [id], onDelete: Cascade)
+  sourceLocId   String?
+  sourceLoc     Location?      @relation("RuleSource", fields: [sourceLocId], references: [id])
+  destLocId     String?
+  destLoc       Location?      @relation("RuleDest", fields: [destLocId], references: [id])
+  pickingTypeId String?
+  pickingType   OperationType? @relation(fields: [pickingTypeId], references: [id])
+  sequence      Int            @default(10)
+  companyId     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model OperationType {
+  id              String         @id @default(uuid())
+  name            String
+  code            String?
+  type            String         @default("internal") // internal, incoming, outgoing
+  defaultSourceId String?
+  defaultSource   Location?      @relation("DefaultSource", fields: [defaultSourceId], references: [id])
+  defaultDestId   String?
+  defaultDest     Location?      @relation("DefaultDest", fields: [defaultDestId], references: [id])
+  stockPickings   StockPicking[]
+  stockRules      StockRule[]
+  sequence        Int            @default(10)
+  active          Boolean        @default(true)
+  companyId       String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model DeliveryMethod {
+  id         String   @id @default(uuid())
+  name       String
+  provider   String   @default("fixed") // fixed, based_on_rule
+  fixedPrice Decimal  @default(0.0)
+  active     Boolean  @default(true)
+  companyId  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// --- Tax Engine (Odoo-style) ---
+
+model Tax {
+  id           String  @id @default(uuid())
+  name         String // "ض.ق.م 14%"
+  amountType   String  @default("percent") // percent, fixed, group
+  amount       Decimal @default(0)
+  priceInclude Boolean @default(false) // true = B2C (price includes tax)
+  taxScope     String  @default("sale") // sale, purchase, none
+  active       Boolean @default(true)
+  sequence     Int     @default(10)
+  description  String? // Short label for invoices e.g. "14%"
+  taxGroup     String? // Tax group: "جدول", "قيمة مضافة", "معفاة"
+
+  defaultForAccounts Account[] @relation("AccountDefaultTaxes")
+
+  // ETA (Egyptian Tax Authority) E-Invoicing
+  etaCode    String? // ETA Code for Egyptian E-Invoice integration
+  etaSubType String? // ETA Sub-type code
+
+  // Accounting links
+  accountId       String? // Tax account (liability/receivable)
+  refundAccountId String? // Refund tax account
+
+  companyId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  saleOrderLineTaxes     SaleOrderLineTax[]
+  purchaseOrderLineTaxes PurchaseOrderLineTax[]
+  invoiceLineTaxes       InvoiceLineTax[]
+  productDefaultTaxes    ProductTax[]           @relation("ProductSaleTax")
+  productSupplierTaxes   ProductTax[]           @relation("ProductPurchaseTax")
+}
+
+// Many-to-many junction tables for tax relationships
+model SaleOrderLineTax {
+  id     String        @id @default(uuid())
+  lineId String
+  line   SaleOrderLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  taxId  String
+  tax    Tax           @relation(fields: [taxId], references: [id])
+
+  @@unique([lineId, taxId])
+}
+
+model PurchaseOrderLineTax {
+  id     String            @id @default(uuid())
+  lineId String
+  line   PurchaseOrderLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  taxId  String
+  tax    Tax               @relation(fields: [taxId], references: [id])
+
+  @@unique([lineId, taxId])
+}
+
+model InvoiceLineTax {
+  id     String      @id @default(uuid())
+  lineId String
+  line   InvoiceLine @relation(fields: [lineId], references: [id], onDelete: Cascade)
+  taxId  String
+  tax    Tax         @relation(fields: [taxId], references: [id])
+
+  @@unique([lineId, taxId])
+}
+
+model ProductTax {
+  id        String  @id @default(uuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  taxId     String
+  saleTax   Tax?    @relation("ProductSaleTax", fields: [taxId], references: [id])
+  purchTax  Tax?    @relation("ProductPurchaseTax", fields: [taxId], references: [id])
+  type      String  @default("sale") // sale or purchase
+
+  @@unique([productId, taxId, type])
+}
+
+// --- Centralized Sequence System ---
+
+model IrSequence {
+  id          String    @id @default(uuid())
+  code        String    @unique // "sale.order", "purchase.order", "account.invoice"
+  name        String // "أمر البيع"
+  prefix      String // "S", "P", "INV/"
+  suffix      String? // optional suffix
+  padding     Int       @default(5)
+  nextNumber  Int       @default(1)
+  resetPeriod String    @default("monthly") // monthly, yearly, never
+  lastReset   DateTime?
+  companyId   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// --- Activity Notifications (DB-Backed) ---
+
+model ActivityNotification {
+  id       String  @id @default(uuid())
+  type     String // 'send_to_inventory', 'rfq_expiring', 'cogs_correction', etc.
+  title    String
+  message  String
+  severity String  @default("info") // 'info', 'warning', 'danger'
+  link     String? // Optional link to navigate to
+  isRead   Boolean @default(false)
+
+  // Who should see it
+  recipientRole String? // If null, all users. Otherwise 'WAREHOUSE_MANAGER' etc.
+
+  // Source reference
+  sourceModel String? // 'purchase.order', 'invoice', etc.
+  sourceId    String? // ID of the source record
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Sale & Purchase Agreements ---
+
+model PurchaseAgreement {
+  id        String    @id @default(uuid())
+  partnerId String
+  partner   Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  group     String? // المجموعة
+  discount1 Decimal   @default(0) // خصم 1
+  discount2 Decimal   @default(0) // خصم 2
+  discount3 Decimal   @default(0) // خصم 3
+  addition  Decimal   @default(0) // الإضافة
+  startDate DateTime? // تاريخ البدء
+  endDate   DateTime? // تاريخ الانتهاء
+  season    String? // اللستة أو الموسم
+  branch    String? // الفرع
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model SaleAgreement {
+  id        String    @id @default(uuid())
+  partnerId String
+  partner   Partner   @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  group     String? // المجموعة
+  discount1 Decimal   @default(0) // خصم 1
+  discount2 Decimal   @default(0) // خصم 2
+  discount3 Decimal   @default(0) // خصم 3
+  addition  Decimal   @default(0) // الإضافة
+  startDate DateTime? // تاريخ البدء
+  endDate   DateTime? // تاريخ الانتهاء
+  season    String? // اللستة أو الموسم
+  branch    String? // الفرع
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// === نظام الخزائن (Cash Register System) ===
+
+model CashRegister {
+  id     String  @id @default(uuid())
+  name   String // "خزينة المبيعات / أحمد", "خزينة الحسابات"
+  code   String? @unique // "0001", "0002"
+  userId String? @unique // null = خزينة الحسابات الرئيسية
+  user   User?   @relation(fields: [userId], references: [id])
+
+  isMain  Boolean @default(false) // true = خزينة الحسابات الرئيسية
+  active  Boolean @default(true)
+  balance Decimal @default(0)
+
+  // حساب محاسبي مرتبط (cash account)
+  accountId String?
+
+  companyId String?
+
+  transactions CashTransaction[]
+  settlements  CashSettlement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CashTransaction {
+  id          String   @id @default(uuid())
+  name        String // "RCV/2026/04/0001" أو "DSB/2026/04/0001"
+  type        String // "receipt" سند قبض | "disbursement" سند صرف
+  amount      Decimal
+  date        DateTime @default(now())
+  description String? // البيان (اسم العميل أو الوصف)
+  ref         String? // رقم المستند المرجعي (فاتورة مبيعات مثلاً)
+
+  registerId String
+  register   CashRegister @relation(fields: [registerId], references: [id])
+
+  partnerId String? // العميل / المورد
+
+  userId String // من أنشأ المعاملة
+  user   User   @relation(fields: [userId], references: [id])
+
+  isSettled    Boolean         @default(false) // هل تم ترحيلها؟
+  settlementId String?
+  settlement   CashSettlement? @relation(fields: [settlementId], references: [id])
+
+  // قيد يومية مرتبط
+  journalEntryId String?
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CashSettlement {
+  id   String   @id @default(uuid())
+  name String // "SET/2026/04/19/0001"
+  date DateTime @default(now())
+
+  registerId String
+  register   CashRegister @relation(fields: [registerId], references: [id])
+
+  // المستخدم صاحب الخزينة
+  userId String
+  user   User   @relation("SettlementUser", fields: [userId], references: [id])
+
+  // من نفّذ الترحيل (النظام أو المدير)
+  performedById String?
+  performedBy   User?   @relation("SettlementPerformer", fields: [performedById], references: [id])
+
+  totalReceipts      Decimal @default(0) // إجمالي سندات القبض
+  totalDisbursements Decimal @default(0) // إجمالي سندات الصرف
+  netAmount          Decimal @default(0) // الصافي المُرحَّل
+
+  openingBalance Decimal @default(0) // رصيد أول المدة
+  closingBalance Decimal @default(0) // رصيد آخر المدة (بعد الترحيل)
+
+  transactions CashTransaction[]
+
+  state String @default("done") // done, cancelled
+
+  // قيد يومية الترحيل
+  journalEntryId String?
+
+  companyId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- متابعة مديونية العملاء (Debt Follow-up) ---
+
+model DebtFollowUp {
+  id String @id @default(uuid())
+
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  assignedUserId String
+  assignedUser   User   @relation("AssignedFollowUps", fields: [assignedUserId], references: [id])
+
+  saleOrderId String? // Optional: Link to a specific sale order if needed
+
+  nextFollowUpDate DateTime
+  notes            String?
+  status           String   @default("pending") // pending, completed, snoozed
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  history DebtFollowUpHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DebtFollowUpHistory {
+  id         String       @id @default(uuid())
+  followUpId String
+  followUp   DebtFollowUp @relation(fields: [followUpId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  action       String // "created", "contacted", "snoozed", "completed", "escalated"
+  notes        String?
+  previousDate DateTime?
+  newDate      DateTime?
+
+  createdAt DateTime @default(now())
+}
+
+// === سجل المراجعة المحاسبي (Audit Log) ===
+
+model AuditLog {
+  id         String  @id @default(uuid())
+  userId     String
+  userName   String? // Cached for performance
+  action     String // create, update, delete, post, cancel, lock, unlock, close_year
+  model      String // Invoice, JournalEntry, Payment, Cheque, etc.
+  recordId   String // ID of the affected record
+  recordName String? // Name/ref of the record for readability
+  oldValues  String? // JSON of changed fields (before)
+  newValues  String? // JSON of changed fields (after)
+  ipAddress  String?
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([model, recordId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([companyId, createdAt])
+}
+
+// === إدارة الشيكات ===
+
+model Cheque {
+  id        String   @id @default(uuid())
+  number    String // رقم الشيك
+  type      String // inbound (وارد) | outbound (صادر)
+  amount    Decimal
+  issueDate DateTime // تاريخ الإصدار
+  dueDate   DateTime // تاريخ الاستحقاق
+  bankName  String? // اسم البنك
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  journalId String? // دفتر اليومية المرتبط
+  journal   Journal? @relation(fields: [journalId], references: [id])
+
+  // draft → registered → deposited → collected | bounced | cancelled
+  status String @default("draft")
+
+  notes String?
+  ref   String? // مرجع (رقم فاتورة مثلاً)
+
+  // القيود المحاسبية المرتبطة
+  registerEntryId String? // قيد التسجيل
+  collectEntryId  String? // قيد التحصيل/الرفض
+
+  // إشعارات
+  reminderSent Boolean @default(false) // هل تم إرسال تنبيه الاستحقاق؟
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdById String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([dueDate])
+  @@index([partnerId])
+  @@index([companyId, status])
+}
+
+// === إقفال السنة المالية ===
+
+model FiscalYearClosing {
+  id          String   @id @default(uuid())
+  fiscalYear  Int // السنة المالية (مثلاً 2025)
+  closingDate DateTime // تاريخ الإقفال الفعلي
+
+  totalIncome   Decimal @default(0) // إجمالي الإيرادات
+  totalExpenses Decimal @default(0) // إجمالي المصروفات
+  netProfit     Decimal @default(0) // صافي الربح/الخسارة
+
+  closingEntryId String? // قيد الإقفال
+
+  status String @default("draft") // draft, confirmed, reversed
+
+  performedById String? // من نفذ الإقفال
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fiscalYear, companyId])
+}
+
+// === الإيرادات/المصروفات المؤجلة ===
+
+model DeferredEntry {
+  id          String   @id @default(uuid())
+  name        String // اسم الإدخال المؤجل
+  type        String // deferred_revenue | deferred_expense
+  totalAmount Decimal // المبلغ الإجمالي
+  startDate   DateTime // تاريخ البداية
+  endDate     DateTime // تاريخ النهاية
+  periods     Int // عدد الفترات (أشهر)
+
+  sourceAccountId String // حساب المصدر (إيراد/مصروف مؤجل)
+  targetAccountId String // حساب الهدف (إيراد/مصروف فعلي)
+
+  status String @default("draft") // draft, active, completed, cancelled
+
+  journalId String?
+  invoiceId String? // ربط بفاتورة إن وجد
+
+  companyId   String?
+  createdById String?
+
+  lines DeferredEntryLine[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([type])
+}
+
+model DeferredEntryLine {
+  id              String        @id @default(uuid())
+  deferredEntryId String
+  deferredEntry   DeferredEntry @relation(fields: [deferredEntryId], references: [id], onDelete: Cascade)
+
+  periodDate DateTime // تاريخ الفترة
+  amount     Decimal // المبلغ لهذه الفترة
+
+  journalEntryId String? // قيد اليومية المنشأ
+
+  status String @default("pending") // pending, posted, skipped
+
+  createdAt DateTime @default(now())
+}
+
+// ============================================================
+// === بوابة التجّار (Trader Portal) ===
+// ============================================================
+
+model PortalUser {
+  id       String  @id @default(uuid())
+  username String  @unique // رقم الهاتف أو اسم مستخدم
+  password String // مشفر bcrypt
+  name     String
+  active   Boolean @default(true)
+
+  partnerId String  @unique
+  partner   Partner @relation(fields: [partnerId], references: [id])
+
+  // صلاحيات البوابة
+  canSeeDiscounts     Boolean @default(false) // هل يرى الخصومات المخصصة؟
+  canRequestStatement Boolean @default(false) // هل يمكنه طلب كشف حساب؟
+
+  // المفضلة
+  favorites PortalFavorite[]
+
+  // الجلسة
+  lastLogin DateTime?
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PortalFavorite {
+  id           String     @id @default(uuid())
+  portalUserId String
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([portalUserId, productId])
+}
+
+model PortalBanner {
+  id        String  @id @default(uuid())
+  title     String?
+  imageUrl  String // رابط الصورة
+  linkUrl   String? // رابط عند الضغط (اختياري)
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AccountStatementRequest {
+  id        String  @id @default(uuid())
+  partnerId String
+  partner   Partner @relation(fields: [partnerId], references: [id])
+
+  status       String  @default("pending") // pending, processing, completed, rejected
+  notes        String? // ملاحظة من العميل
+  responseNote String? // رد المحاسب
+  responseFile String? // رابط ملف PDF
+
+  processedById String? // المحاسب الذي رد
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompanyPaymentMethod {
+  id          String  @id @default(uuid())
+  type        String // "bank", "vodafone_cash", "instapay"
+  label       String // "البنك الأهلي" أو "فودافون كاش"
+  accountInfo String // رقم الحساب أو رقم الهاتف
+  iconUrl     String?
+  sortOrder   Int     @default(0)
+  active      Boolean @default(true)
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryAdjustmentRecord {
+  id       String    @id @default(uuid())
+  name     String    @unique // e.g. INV/2026/001
+  date     DateTime  @default(now())
+  lockedAt DateTime?
+  status   String    @default("draft") // draft, active (grace period), locked
+
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  lines InventoryAdjustmentLine[]
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model InventoryAdjustmentLine {
+  id       String                    @id @default(uuid())
+  recordId String
+  record   InventoryAdjustmentRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  bookQty   Decimal @default(0)
+  actualQty Decimal @default(0)
+  diffQty   Decimal @default(0)
+
+  uom String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- CRM / Helpdesk (Ticketing System) ---
+
+model Ticket {
+  id          String  @id @default(uuid())
+  number      String  @unique // e.g. TKT-2026-0001
+  subject     String
+  description String?
+  status      String  @default("open") // open, pending, closed
+  priority    String  @default("normal") // low, normal, high, urgent
+
+  senderEmail String?
+  senderName  String?
+
+  partnerId String?
+  partner   Partner? @relation(fields: [partnerId], references: [id])
+
+  assigneeId String?
+  assignee   User?   @relation("TicketAssignee", fields: [assigneeId], references: [id])
+
+  creatorId String?
+  creator   User?   @relation("TicketCreator", fields: [creatorId], references: [id])
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  messages TicketMessage[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TicketMessage {
+  id   String @id @default(uuid())
+  body String
+
+  ticketId String
+  ticket   Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id])
+
+  isInternal Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// --- Chat & Messaging ---
+
+model ChatRoom {
+  id        String   @id @default(uuid())
+  name      String? // Null for 1-on-1 chats
+  isGroup   Boolean  @default(false)
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ChatRoomParticipant[]
+  messages     ChatMessage[]
+}
+
+model ChatRoomParticipant {
+  id       String   @id @default(uuid())
+  roomId   String
+  room     ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     String   @default("MEMBER") // ADMIN, MEMBER
+  joinedAt DateTime @default(now())
+
+  @@unique([roomId, userId])
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  content   String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User   @relation("SentChatMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId String? // Made optional for group messages
+  receiver   User?   @relation("ReceivedChatMessages", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  roomId String?
+  room   ChatRoom? @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  attachmentUrl  String?
+  attachmentType String? // 'image', 'audio', 'file'
+  fileName       String? // Original file name
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  reactions ChatMessageReaction[]
+}
+
+// --- OCR Mapping Rules ---
+model OCRMappingRule {
+  id         String   @id @default(uuid())
+  keyword    String   @unique
+  productIds String // Comma-separated list of product IDs to suggest
+  defaultUom String? // The default UOM if this keyword is detected (e.g. "كرتونة" for "ك")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model ChatMessageReaction {
+  id        String      @id @default(uuid())
+  messageId String
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String
+  createdAt DateTime    @default(now())
+
+  @@unique([messageId, userId, emoji])
+}
+
+// --- Dynamic Notification Rules Engine ---
+
+model NotificationRule {
+  id          String  @id @default(uuid())
+  eventCode   String  @unique // e.g. NEW_TICKET, LOW_STOCK, INVOICE_CONFIRMED
+  title       String
+  description String?
+  category    String  @default("in_app") // email, in_app, critical
+  isActive    Boolean @default(true)
+  isCritical  Boolean @default(false) // إذا كانت حرجة لا يمكن إغلاقها
+
+  targetType  String @default("all_admins") // all_admins, specific_roles, specific_users, direct_manager
+  targetRoles String @default("") // Comma separated Role/Group IDs
+  targetUsers String @default("") // Comma separated User IDs
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

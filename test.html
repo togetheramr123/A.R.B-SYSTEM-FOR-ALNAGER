@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+<style>
+  .wrapper { width: 800px; overflow-x: auto; position: relative; border: 1px solid black; }
+  table { width: 100%; table-layout: fixed; min-width: max-content; border-collapse: collapse; }
+  th, td { border: 1px solid #ccc; padding: 10px; }
+  .sticky-1 { position: sticky; right: 0; background: red; width: 40px; min-width: 40px; }
+  .sticky-2 { position: sticky; right: 40px; background: yellow; width: 40px; min-width: 40px; }
+  .sticky-3 { position: sticky; right: 80px; background: lightblue; width: 500px; min-width: 500px; }
+  .normal { width: 200px; min-width: 200px; }
+</style>
+</head>
+<body>
+  <div class="wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th class="sticky-1">1</th>
+          <th class="sticky-2">2</th>
+          <th class="sticky-3">3</th>
+          <th class="normal">4</th>
+          <th class="normal">5</th>
+          <th class="normal">6</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="sticky-1">a</td>
+          <td class="sticky-2">b</td>
+          <td class="sticky-3">c</td>
+          <td class="normal">d</td>
+          <td class="normal">e</td>
+          <td class="normal">f</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

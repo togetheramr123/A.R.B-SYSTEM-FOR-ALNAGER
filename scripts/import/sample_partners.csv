@@ -1,0 +1,3 @@
+name,email,phone,is_customer,is_vendor
+"Odoo Sample Customer","customer@example.com","0123456789","true","false"
+"Odoo Sample Vendor","vendor@example.com","9876543210","false","true"

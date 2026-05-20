@@ -1,0 +1,32 @@
+/**
+ * Format a date as numeric string: YYYY/MM/DD  
+ * No text months - numbers only (Odoo style)
+ */
+export function formatDate(date: Date | string | null | undefined): string {
+    if (!date) return '-';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    
+    return `${year}/${month}/${day}`;
+}
+
+/**
+ * Format a date with time: YYYY/MM/DD HH:MM
+ */
+export function formatDateTime(date: Date | string | null | undefined): string {
+    if (!date) return '-';
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '-';
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const hours = String(d.getHours()).padStart(2, '0');
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
+}
