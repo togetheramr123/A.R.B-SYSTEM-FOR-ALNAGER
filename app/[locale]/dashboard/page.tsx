@@ -6,6 +6,9 @@ import { serializeDecimal } from "@/lib/serialize";
 import { BookOpen } from "lucide-react";
 import { getSession } from "@/lib/auth";
 import PendingWorkDashboard from "@/components/dashboard/PendingWorkDashboard";
+import { redirect } from "next/navigation";
+import ClientDashboard from "@/components/dashboard/ClientDashboard";
+
 export default async function DashboardPage(props: {
   params: Promise<{
     locale: string;
@@ -21,6 +24,12 @@ export default async function DashboardPage(props: {
   if (!companyId) {
     redirect(`/${locale}`);
   }
+
+  // --- Client Dashboard Switch ---
+  if (session?.role === "USER") {
+    return <ClientDashboard locale={locale} />;
+  }
+
   /* Get current month start and end dates */
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);

@@ -46,6 +46,9 @@ model User {
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
 
+  partnerId String?  @unique
+  partner   Partner? @relation("UserPartner", fields: [partnerId], references: [id])
+
   // Access Rights
   groups ResGroup[]
 
@@ -448,8 +451,9 @@ model Partner {
   JournalItem JournalItem[]
   cheques     Cheque[]
 
-  // --- Portal ---
+  // --- Portal & User Link ---
   portalUser               PortalUser?
+  erpUser                  User?                     @relation("UserPartner")
   accountStatementRequests AccountStatementRequest[]
   Ticket                   Ticket[]
 }
