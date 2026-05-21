@@ -10,14 +10,31 @@ import { useBreadcrumbStore } from "@/hooks/useBreadcrumbStore";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 export function NarrowSidebar({
   locale,
-  userProfile
+  userProfile,
+  userRole = 'USER'
 }: {
   locale: string;
   userProfile?: { id: string, name: string | null, email: string | null, image: string | null } | null;
+  userRole?: string;
 }) {
   const pathname = usePathname();
   const t = useTranslations("Sidebar"); // assuming we have this
-  const mainModules = [{
+
+  // Role-based route visibility map
+  const ROLE_VISIBLE_ROUTES: Record<string, string[]> = {
+    OWNER: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'hr', 'contacts', 'crm', 'catalogs', 'settings'],
+    ADMIN: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'hr', 'contacts', 'crm', 'catalogs', 'settings'],
+    MANAGER: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'contacts', 'crm', 'catalogs'],
+    WAREHOUSE_MANAGER: ['dashboard', 'inventory', 'purchases', 'contacts', 'crm', 'catalogs'],
+    ACCOUNTANT: ['dashboard', 'accounting', 'contacts', 'crm', 'catalogs'],
+    SALESMAN: ['dashboard', 'sales', 'contacts', 'crm', 'catalogs'],
+    USER: ['dashboard', 'crm', 'catalogs'],
+  };
+
+  const visibleRoutes = ROLE_VISIBLE_ROUTES[userRole] || ROLE_VISIBLE_ROUTES['USER'];
+
+  const allModules = [{
+    key: 'dashboard',
     href: `/${locale}/dashboard`,
     label: t("dashboard") || "اللوحة الرئيسية",
     icon: LayoutDashboard,
@@ -25,6 +42,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'sales',
     href: `/${locale}/sales`,
     label: t("sales") || "المبيعات",
     icon: Store,
@@ -32,6 +50,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'purchases',
     href: `/${locale}/purchases`,
     label: t("purchases") || "المشتريات",
     icon: ShoppingCart,
@@ -39,6 +58,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'inventory',
     href: `/${locale}/inventory`,
     label: t("inventory") || "المخازن",
     icon: Boxes,
@@ -46,6 +66,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'accounting',
     href: `/${locale}/accounting`,
     label: t("accounting") || "الحسابات",
     icon: FileText,
@@ -53,6 +74,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'hr',
     href: `/${locale}/hr`,
     label: t("hr") || "الموارد البشرية",
     icon: Users,
@@ -60,6 +82,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'contacts',
     href: `/${locale}/contacts`,
     label: t("contacts") || "جهات الاتصال",
     icon: Users2,
@@ -67,6 +90,7 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }, {
+    key: 'crm',
     href: `/${locale}/crm/tickets`,
     label: t("crm") || "التذاكر / CRM",
     icon: Headset,
@@ -74,6 +98,11 @@ export function NarrowSidebar({
     activeBg: "bg-[#017E84]/10",
     hover: "hover:bg-slate-50 hover:text-slate-800"
   }];
+
+  const mainModules = allModules.filter(mod => visibleRoutes.includes(mod.key));
+
+  // Only ADMIN/OWNER can see Settings
+  const showSettings = userRole === 'ADMIN' || userRole === 'OWNER';
   return <aside className="hidden md:flex w-[68px] bg-white h-screen flex-col border-l border-gray-200/80 z-50 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] sticky top-0">
       {" "}
       {/* Logo area */}{" "}
@@ -128,7 +157,7 @@ export function NarrowSidebar({
             <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-800" />{" "}
           </div>{" "}
         </Link>{" "}
-        <Link href={`/${locale}/settings`} className="relative group flex justify-center">
+        {showSettings && <Link href={`/${locale}/settings`} className="relative group flex justify-center">
           {" "}
           <div className={cn("w-11 h-11 rounded-sm flex items-center justify-center transition-all duration-200", pathname.includes("/settings") ? "bg-slate-100 text-slate-800 shadow-sm ring-1 ring-black/5" : "text-slate-500 hover:bg-slate-50 hover:text-slate-800")}>
             {" "}
@@ -140,7 +169,7 @@ export function NarrowSidebar({
             الإعدادات{" "}
             <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-800" />{" "}
           </div>{" "}
-        </Link>{" "}
+        </Link>}{" "}
         {/* Profile Dropdown */}
         <div className="relative group">
           <div className="w-9 h-9 rounded-full bg-[#017E84]/10 border-2 border-white ring-2 ring-indigo-50 shadow-sm cursor-pointer hover:ring-indigo-200 transition-all overflow-hidden flex items-center justify-center">

@@ -12,6 +12,7 @@ import { Cairo, Inter } from "next/font/google";
 import { getNotifications } from "@/app/actions/notifications";
 import { Toaster } from 'sonner';
 import AIChatbot from '@/components/common/AIChatbot';
+import FloatingNotes from '@/components/common/FloatingNotes';
 import FloatingChatWidget from '@/components/chat/FloatingChatWidget';
 import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
@@ -48,6 +49,7 @@ export default async function RootLayout(props: {
     notifications = await getNotifications();
   }
   const session = await getSession();
+  const userRole = session?.role || 'USER';
   let userProfile = null;
   if (session?.userId) {
     userProfile = await prisma.user.findUnique({
@@ -63,11 +65,12 @@ export default async function RootLayout(props: {
           <Toaster position="top-center" theme="light" duration={2500} dir={locale === 'ar' ? 'rtl' : 'ltr'} toastOptions={{
             className: cn(locale === 'ar' ? 'font-arabic' : 'font-sans', '!bg-slate-100 !border !border-slate-200 !text-slate-600 !text-xs !py-2 !px-3 !min-h-0 !w-auto !max-w-fit !mx-auto !shadow-sm')
           }} />
-          <LayoutContent locale={locale} notifications={notifications} userProfile={userProfile}>
+          <LayoutContent locale={locale} notifications={notifications} userProfile={userProfile} userRole={userRole}>
             <ShiftTimerProvider role={session?.role}>
               <ArabicNumeralsConverter />
               {children}
               <AIChatbot />
+              {session?.userId && <FloatingNotes />}
               {session?.userId && <FloatingChatWidget currentUserId={session.userId} />}
             </ShiftTimerProvider>
           </LayoutContent>
@@ -88,12 +91,14 @@ function LayoutContent({
   children,
   locale,
   notifications,
-  userProfile
+  userProfile,
+  userRole
 }: {
   children: React.ReactNode;
   locale: string;
   notifications: any[];
   userProfile?: any;
+  userRole: string;
 }) {
   const tCommon = useTranslations('Common');
   return (
@@ -101,7 +106,7 @@ function LayoutContent({
       <NextTopLoader color="#4f46e5" showSpinner={false} height={3} shadow="0 0 10px #4f46e5,0 0 5px #4f46e5" />
       <NavigationTracker locale={locale} />
       <CommandPalette />
-      <NarrowSidebar locale={locale} userProfile={userProfile} />
+      <NarrowSidebar locale={locale} userProfile={userProfile} userRole={userRole} />
       <div className="flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300 ease-in-out relative">
         <header className="bg-white border-b border-gray-200 h-[48px] sticky top-0 z-30 px-4 flex items-center justify-between shadow-sm shrink-0">
           <div className="flex items-center h-full">
@@ -130,7 +135,7 @@ function LayoutContent({
           {children}
         </main>
       </div>
-      <MobileNavbar locale={locale} userProfile={userProfile} />
+      <MobileNavbar locale={locale} userProfile={userProfile} userRole={userRole} />
     </div>
   );
 }

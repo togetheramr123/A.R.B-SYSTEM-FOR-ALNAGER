@@ -7,61 +7,42 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-export function MobileNavbar({ locale, userProfile }: { locale: string; userProfile?: any }) {
+export function MobileNavbar({ locale, userProfile, userRole = 'USER' }: { locale: string; userProfile?: any; userRole?: string }) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const t = useTranslations("Sidebar");
 
-  const navItems = [
-    {
-      href: `/${locale}/dashboard`,
-      label: t("dashboard") || "الرئيسية",
-      icon: LayoutDashboard,
-    },
-    {
-      href: `/${locale}/sales`,
-      label: t("sales") || "المبيعات",
-      icon: Store,
-    },
-    {
-      href: `/${locale}/purchases`,
-      label: t("purchases") || "المشتريات",
-      icon: ShoppingCart,
-    },
-    {
-      href: `/${locale}/inventory`,
-      label: t("inventory") || "المخازن",
-      icon: Boxes,
-    },
+  // Role-based route visibility
+  const ROLE_VISIBLE: Record<string, string[]> = {
+    OWNER: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'hr', 'contacts', 'crm', 'settings'],
+    ADMIN: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'hr', 'contacts', 'crm', 'settings'],
+    MANAGER: ['dashboard', 'sales', 'purchases', 'inventory', 'accounting', 'contacts', 'crm'],
+    WAREHOUSE_MANAGER: ['dashboard', 'inventory', 'purchases', 'contacts', 'crm'],
+    ACCOUNTANT: ['dashboard', 'accounting', 'contacts', 'crm'],
+    SALESMAN: ['dashboard', 'sales', 'contacts', 'crm'],
+    USER: ['dashboard', 'crm'],
+  };
+
+  const visible = ROLE_VISIBLE[userRole] || ROLE_VISIBLE['USER'];
+
+  const allNavItems = [
+    { key: 'dashboard', href: `/${locale}/dashboard`, label: t("dashboard") || "الرئيسية", icon: LayoutDashboard },
+    { key: 'sales', href: `/${locale}/sales`, label: t("sales") || "المبيعات", icon: Store },
+    { key: 'purchases', href: `/${locale}/purchases`, label: t("purchases") || "المشتريات", icon: ShoppingCart },
+    { key: 'inventory', href: `/${locale}/inventory`, label: t("inventory") || "المخازن", icon: Boxes },
   ];
 
-  const moreItems = [
-    {
-      href: `/${locale}/accounting`,
-      label: t("accounting") || "الحسابات",
-      icon: FileText,
-    },
-    {
-      href: `/${locale}/hr`,
-      label: t("hr") || "الموارد البشرية",
-      icon: Users,
-    },
-    {
-      href: `/${locale}/contacts`,
-      label: t("contacts") || "جهات الاتصال",
-      icon: Users2,
-    },
-    {
-      href: `/${locale}/crm/tickets`,
-      label: t("crm") || "التذاكر / CRM",
-      icon: Headset,
-    },
-    {
-      href: `/${locale}/settings`,
-      label: "الإعدادات",
-      icon: Settings,
-    },
+  const navItems = allNavItems.filter(item => visible.includes(item.key));
+
+  const allMoreItems = [
+    { key: 'accounting', href: `/${locale}/accounting`, label: t("accounting") || "الحسابات", icon: FileText },
+    { key: 'hr', href: `/${locale}/hr`, label: t("hr") || "الموارد البشرية", icon: Users },
+    { key: 'contacts', href: `/${locale}/contacts`, label: t("contacts") || "جهات الاتصال", icon: Users2 },
+    { key: 'crm', href: `/${locale}/crm/tickets`, label: t("crm") || "التذاكر / CRM", icon: Headset },
+    { key: 'settings', href: `/${locale}/settings`, label: "الإعدادات", icon: Settings },
   ];
+
+  const moreItems = allMoreItems.filter(item => visible.includes(item.key));
 
   return (
     <>

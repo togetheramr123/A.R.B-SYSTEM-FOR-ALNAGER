@@ -15,6 +15,48 @@ const key = new TextEncoder().encode(secretKey);
 const portalSecretKey = process.env.PORTAL_JWT_SECRET || 'portal-secret-key-change-me';
 const portalKey = new TextEncoder().encode(portalSecretKey);
 
+// ===== Role-Based Access Control (RBAC) =====
+// Define which route prefixes each role can access.
+// ADMIN can access everything (no restrictions).
+const ROLE_ROUTES: Record<string, string[]> = {
+    OWNER: [], // Owner = full access (empty = no restrictions)
+    ADMIN: [], // Admin = full access
+    MANAGER: [
+        '/dashboard', '/sales', '/purchases', '/inventory',
+        '/accounting', '/contacts', '/crm', '/catalogs', '/reports',
+        '/shared', '/analytics',
+    ],
+    WAREHOUSE_MANAGER: [
+        '/dashboard', '/inventory', '/purchases', '/contacts',
+        '/catalogs', '/crm', '/shared',
+    ],
+    ACCOUNTANT: [
+        '/dashboard', '/accounting', '/contacts', '/reports',
+        '/catalogs', '/crm', '/shared',
+    ],
+    SALESMAN: [
+        '/dashboard', '/sales', '/contacts', '/catalogs',
+        '/crm', '/shared',
+    ],
+    USER: [
+        '/dashboard', '/crm', '/catalogs', '/shared',
+    ],
+};
+
+function isRouteAllowed(role: string, pathnameWithoutLocale: string): boolean {
+    // ADMIN and OWNER have full access
+    if (role === 'ADMIN' || role === 'OWNER') return true;
+
+    const allowedPrefixes = ROLE_ROUTES[role] || ROLE_ROUTES['USER'];
+    // Empty array means full access
+    if (allowedPrefixes.length === 0) return true;
+
+    // Root path is always allowed
+    if (pathnameWithoutLocale === '' || pathnameWithoutLocale === '/') return true;
+
+    return allowedPrefixes.some(prefix => pathnameWithoutLocale.startsWith(prefix));
+}
+
 export default async function middleware(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
 
@@ -50,7 +92,7 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // ===== ERP ROUTES (existing logic) =====
+    // ===== ERP ROUTES =====
     const session = request.cookies.get('auth_session')?.value;
 
     // Helper to strip locale
@@ -58,10 +100,12 @@ export default async function middleware(request: NextRequest) {
 
     // 1. Check if user is authenticated
     let isAuthenticated = false;
+    let userRole = 'USER';
     if (session) {
         try {
-            await jwtVerify(session, key, { algorithms: ['HS256'] });
+            const { payload } = await jwtVerify(session, key, { algorithms: ['HS256'] });
             isAuthenticated = true;
+            userRole = (payload as any).role || 'USER';
         } catch (err) {
             isAuthenticated = false;
         }
@@ -71,7 +115,7 @@ export default async function middleware(request: NextRequest) {
     // Public: / (landing), /login
     const isPublicPage = pathnameWithoutLocale === '/login';
 
-    // 3. Logic
+    // 3. Authentication Logic
     if (isAuthenticated && isPublicPage && pathnameWithoutLocale === '/login') {
         // Already logged in, trying to access login -> go to dashboard
         const locale = pathname.match(/^\/(ar|en)/)?.[1] || 'ar';
@@ -84,7 +128,15 @@ export default async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL(`/${locale}/login`, request.url));
     }
 
-    // 4. Continue with Internationalization
+    // 4. Role-Based Access Control — redirect unauthorized routes to dashboard
+    if (isAuthenticated && !isPublicPage) {
+        if (!isRouteAllowed(userRole, pathnameWithoutLocale)) {
+            const locale = pathname.match(/^\/(ar|en)/)?.[1] || 'ar';
+            return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
+        }
+    }
+
+    // 5. Continue with Internationalization
     return intlMiddleware(request);
 }
 
