@@ -70,8 +70,6 @@ export default async function RootLayout(props: {
               <ArabicNumeralsConverter />
               {children}
               <AIChatbot />
-              {session?.userId && <FloatingNotes />}
-              {session?.userId && <FloatingChatWidget currentUserId={session.userId} />}
             </ShiftTimerProvider>
           </LayoutContent>
         </NextIntlClientProvider>
@@ -122,6 +120,8 @@ function LayoutContent({
               </svg>
             </button>
             <LiveClock />
+            {userProfile?.id && <FloatingNotes />}
+            {userProfile?.id && <FloatingChatWidget currentUserId={userProfile.id} />}
           </div>
         </header>
         <div className="bg-white border-b border-slate-300 min-h-[56px] sticky top-[48px] z-20 flex items-center justify-between px-4 sm:px-6 w-full shrink-0">

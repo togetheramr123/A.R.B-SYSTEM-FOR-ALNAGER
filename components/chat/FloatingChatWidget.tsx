@@ -270,9 +270,21 @@ export default function FloatingChatWidget({ currentUserId }: { currentUserId: s
         />
       )}
       
-      <div className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start font-sans" dir="rtl">
-        {isOpen && (
-          <div className={`bg-white border border-slate-200 shadow-2xl rounded-sm flex flex-col overflow-hidden animate-in fade-in transition-all duration-300 ${isMaximized ? "fixed inset-4 sm:inset-10 m-auto z-[10000] w-[95vw] sm:w-[800px] h-[95vh] sm:h-[85vh] max-h-[900px]" : "w-[360px] h-[550px] mb-4"}`}>
+      <button
+        onClick={toggleChat}
+        className="relative w-8 h-8 bg-[#714B67] text-white rounded-lg flex items-center justify-center shadow-sm hover:bg-[#5b3c53] transition-colors"
+      >
+        {isOpen ? <X className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
+        {!isOpen && totalUnread > 0 && (
+          <span className="absolute -top-1 -right-1 bg-rose-500 border border-white text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full animate-bounce">
+            {totalUnread}
+          </span>
+        )}
+      </button>
+
+      {isOpen && (
+        <div className="fixed bottom-6 left-6 z-[9999] flex flex-col items-start font-sans" dir="rtl">
+          <div className={`bg-white border border-slate-200 shadow-2xl rounded-sm flex flex-col overflow-hidden animate-in fade-in transition-all duration-300 ${isMaximized ? "fixed inset-4 sm:inset-10 m-auto z-[10000] w-[95vw] sm:w-[800px] h-[95vh] sm:h-[85vh] max-h-[900px]" : "w-[360px] h-[550px]"}`}>
             {/* Header */}
             <div className="bg-[#714B67] p-4 text-white flex justify-between items-center shadow-md z-10">
               {activeChat ? (
@@ -516,20 +528,8 @@ export default function FloatingChatWidget({ currentUserId }: { currentUserId: s
               </div>
             )}
           </div>
-        )}
-
-        <button
-          onClick={toggleChat}
-          className="w-14 h-14 bg-[#714B67] text-white rounded-full flex items-center justify-center shadow-sm hover:scale-105 active:scale-95 transition-all relative"
-        >
-          {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-          {!isOpen && totalUnread > 0 && (
-            <span className="absolute -top-1 -right-1 bg-rose-500 border-2 border-white text-white text-[10px] font-bold w-6 h-6 flex items-center justify-center rounded-full animate-bounce">
-              {totalUnread}
-            </span>
-          )}
-        </button>
-      </div>
+        </div>
+      )}
     </>
   );
 }

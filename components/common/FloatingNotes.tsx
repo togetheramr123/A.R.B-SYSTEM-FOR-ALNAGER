@@ -215,26 +215,56 @@ export default function FloatingNotes() {
           </div>
         )}
 
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-20 left-6 z-[9999] w-14 h-14 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl shadow-xl hover:shadow-2xl hover:scale-110 transition-all duration-300 flex items-center justify-center group"
-          title="المفكرة الشخصية"
-        >
-          <StickyNote className="w-7 h-7 text-white drop-shadow-sm group-hover:rotate-12 transition-transform" />
-          {notes.filter(n => !n.isDone).length > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-sm">
-              {notes.filter(n => !n.isDone).length}
-            </span>
-          )}
-        </button>
-      </>
-    );
-  }
+      <button
+        onClick={() => setIsOpen(true)}
+        className="relative w-8 h-8 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
+        title="المفكرة الشخصية"
+      >
+        <StickyNote className="w-4 h-4 text-white drop-shadow-sm group-hover:rotate-12 transition-transform" />
+        {notes.filter(n => !n.isDone).length > 0 && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm">
+            {notes.filter(n => !n.isDone).length}
+          </span>
+        )}
+      </button>
+    </>
+  );
 
   // === Main Notepad Window ===
   return (
-    <div
-      ref={dragRef}
+    <>
+      {/* Due Reminder Popup */}
+      {dueReminders.length > 0 && (
+        <div className="fixed bottom-24 left-6 z-[9998] bg-amber-50 border border-amber-300 rounded-xl shadow-2xl p-4 max-w-xs animate-in slide-in-from-bottom-4" dir="rtl">
+          <div className="flex items-center gap-2 mb-2">
+            <Bell className="w-4 h-4 text-amber-600" />
+            <span className="text-sm font-bold text-amber-800">تذكير!</span>
+            <button onClick={() => setDueReminders([])} className="mr-auto text-amber-400 hover:text-amber-700">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          {dueReminders.map(r => (
+            <div key={r.id} className="text-xs text-amber-700 py-1 border-t border-amber-200">{r.content}</div>
+          ))}
+        </div>
+      )}
+
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative w-8 h-8 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-center group"
+        title="المفكرة الشخصية"
+      >
+        <StickyNote className="w-4 h-4 text-white drop-shadow-sm group-hover:rotate-12 transition-transform" />
+        {notes.filter(n => !n.isDone).length > 0 && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center shadow-sm">
+            {notes.filter(n => !n.isDone).length}
+          </span>
+        )}
+      </button>
+
+      {isOpen && (
+        <div
+          ref={dragRef}
       className={cn(
         "fixed z-[9999] flex flex-col bg-white rounded-xl shadow-2xl border border-slate-200/80 overflow-hidden select-none",
         isDragging && "cursor-grabbing opacity-95",
@@ -371,7 +401,9 @@ export default function FloatingNotes() {
           </div>
         </>
       )}
-    </div>
+        </div>
+      )}
+    </>
   );
 }
 

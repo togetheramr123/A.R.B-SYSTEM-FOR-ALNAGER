@@ -98,14 +98,20 @@ export default function ImportClient() {
 
       const parsedRows: ImportedProductRow[] = [];
 
-      const parseNum = (val: any) => {
-        if (!val) return 0;
-        if (typeof val === 'number') return val;
-        let str = String(val).replace(/,/g, '');
+      const convertArabicToEnglishStr = (val: any) => {
+        if (!val) return '';
+        let str = String(val);
         const arabicDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
         for (let j = 0; j < 10; j++) {
           str = str.split(arabicDigits[j]).join(j.toString());
         }
+        return str;
+      };
+
+      const parseNum = (val: any) => {
+        if (!val) return 0;
+        if (typeof val === 'number') return val;
+        let str = convertArabicToEnglishStr(val).replace(/,/g, '');
         const match = str.match(/\d+(\.\d+)?/);
         return match ? Number(match[0]) : 0;
       };
@@ -114,13 +120,13 @@ export default function ImportClient() {
         const rowData = rows[i];
         if (!rowData || !rowData[nameIdx]) continue; // Skip empty rows
 
-        const name = String(rowData[nameIdx]).trim();
+        const name = convertArabicToEnglishStr(rowData[nameIdx]).trim();
         const qtyOnHand = qtyIdx !== -1 ? parseNum(rowData[qtyIdx]) : 0;
         let secondaryRatio = cartonRatioIdx !== -1 ? parseNum(rowData[cartonRatioIdx]) : 0;
         const cost = costIdx !== -1 ? parseNum(rowData[costIdx]) : 0;
-        const uom = uomIdx !== -1 ? String(rowData[uomIdx] || '').trim() : '';
-        let secondaryUom = secUomIdx !== -1 ? String(rowData[secUomIdx] || '').trim() : '';
-        const category = catIdx !== -1 ? String(rowData[catIdx] || '').trim() : '';
+        const uom = uomIdx !== -1 ? convertArabicToEnglishStr(rowData[uomIdx]).trim() : '';
+        let secondaryUom = secUomIdx !== -1 ? convertArabicToEnglishStr(rowData[secUomIdx]).trim() : '';
+        const category = catIdx !== -1 ? convertArabicToEnglishStr(rowData[catIdx]).trim() : '';
 
         // Removed the frontend stripping logic so we pass the full name (e.g. "كرتونه 80") to the backend where it handles it.
 

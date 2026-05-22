@@ -66,14 +66,20 @@ export default function ImportPartnersClient() {
         return partnersMap.get(cleanName)!;
       };
 
-      const parseNum = (val: any) => {
-        if (!val) return 0;
-        if (typeof val === 'number') return val;
-        let str = String(val).replace(/,/g, '');
+      const convertArabicToEnglishStr = (val: any) => {
+        if (!val) return '';
+        let str = String(val);
         const arabicDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
         for (let j = 0; j < 10; j++) {
           str = str.split(arabicDigits[j]).join(j.toString());
         }
+        return str;
+      };
+
+      const parseNum = (val: any) => {
+        if (!val) return 0;
+        if (typeof val === 'number') return val;
+        let str = convertArabicToEnglishStr(val).replace(/,/g, '');
         return Number(str) || 0;
       };
 
@@ -106,9 +112,9 @@ export default function ImportPartnersClient() {
             for (let i = 1; i < rows.length; i++) {
               const row = rows[i];
               if (!row || !row[nameIdx]) continue;
-              const p = getPartner(String(row[nameIdx]));
+              const p = getPartner(convertArabicToEnglishStr(row[nameIdx]));
               p.balance2025 += parseNum(row[balIdx]);
-              if (typeIdx !== -1 && String(row[typeIdx]).toLowerCase().includes('مورد')) {
+              if (typeIdx !== -1 && convertArabicToEnglishStr(row[typeIdx]).toLowerCase().includes('مورد')) {
                 p.type = 'vendor';
               }
             }
@@ -137,9 +143,9 @@ export default function ImportPartnersClient() {
             for (let i = 1; i < rows.length; i++) {
               const row = rows[i];
               if (!row || !row[nameIdx]) continue;
-              const p = getPartner(String(row[nameIdx]));
+              const p = getPartner(convertArabicToEnglishStr(row[nameIdx]));
               
-              if (typeIdx !== -1 && (String(row[typeIdx]).includes('مورد') || String(row[typeIdx]).toLowerCase().includes('bill'))) {
+              if (typeIdx !== -1 && (convertArabicToEnglishStr(row[typeIdx]).includes('مورد') || convertArabicToEnglishStr(row[typeIdx]).toLowerCase().includes('bill'))) {
                 p.type = 'vendor';
               }
 
@@ -155,7 +161,7 @@ export default function ImportPartnersClient() {
               }
 
               p.invoices.push({
-                number: numIdx !== -1 ? String(row[numIdx]) : `INV-${Date.now()}-${i}`,
+                number: numIdx !== -1 ? convertArabicToEnglishStr(row[numIdx]) : `INV-${Date.now()}-${i}`,
                 date: dateObj,
                 total: parseNum(row[totalIdx])
               });
@@ -184,7 +190,7 @@ export default function ImportPartnersClient() {
             for (let i = 1; i < rows.length; i++) {
               const row = rows[i];
               if (!row || !row[nameIdx]) continue;
-              const p = getPartner(String(row[nameIdx]));
+              const p = getPartner(convertArabicToEnglishStr(row[nameIdx]));
               
               let dateObj = new Date();
               if (dateIdx !== -1 && row[dateIdx]) {
@@ -197,7 +203,7 @@ export default function ImportPartnersClient() {
               }
 
               p.payments.push({
-                memo: memoIdx !== -1 ? String(row[memoIdx]) : `PAY-${Date.now()}-${i}`,
+                memo: memoIdx !== -1 ? convertArabicToEnglishStr(row[memoIdx]) : `PAY-${Date.now()}-${i}`,
                 date: dateObj,
                 amount: parseNum(row[amountIdx])
               });
