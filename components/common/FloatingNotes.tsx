@@ -229,6 +229,7 @@ export default function FloatingNotes() {
       </button>
     </>
   );
+}
 
   // === Main Notepad Window ===
   return (
