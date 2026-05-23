@@ -1,7 +1,7 @@
 "use client";
 
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { deleteJournal } from "@/app/actions/journals";
@@ -26,6 +26,7 @@ export function JournalForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("entries");
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const {
     setFormStatus,
     clearStatus
@@ -87,11 +88,17 @@ export function JournalForm({
           // Do not auto-save new records to prevent duplicate creation errors
           return;
         }
-        const t = setTimeout(() => handleSubmit(d => saveData(d, true))(), 1500);
-        return () => clearTimeout(t);
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = setTimeout(() => handleSubmit(d => saveData(d, true))(), 1500);
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [watch, initialData?.id, handleSubmit]);
   useEffect(() => {
     setFormStatus({

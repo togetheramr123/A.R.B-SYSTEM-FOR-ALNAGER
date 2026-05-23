@@ -26,17 +26,17 @@ async function main() {
 
     // --- 1. Company Setup ---
     const realCompany = await prisma.company.create({
-        data: { name: 'My Real Business', currency: 'EGP' }
+        data: { name: 'الشركة الرئيسية', currency: 'EGP' }
     });
     console.log('✅ Company seeded');
 
     // --- 2. Chart of Accounts Setup ---
     const accountsData = [
-        { code: '103029', name: 'Stock Valuation (Automated)', type: 'asset_current' },
-        { code: '103039', name: 'Stock Input (Interim)', type: 'asset_current' },
-        { code: '103049', name: 'Stock Output (Interim)', type: 'asset_current' },
-        { code: '400002', name: 'Cost of Goods Sold', type: 'expense' },
-        { code: '500001', name: 'Product Sales', type: 'income' },
+        { code: '103029', name: 'تقييم المخزون (آلي)', type: 'asset_current' },
+        { code: '103039', name: 'مدخلات المخزون (وسيط)', type: 'asset_current' },
+        { code: '103049', name: 'مخرجات المخزون (وسيط)', type: 'asset_current' },
+        { code: '400002', name: 'تكلفة البضائع المباعة', type: 'expense' },
+        { code: '500001', name: 'مبيعات المنتجات', type: 'income' },
     ];
 
     const createdAccounts: Record<string, any> = {};
@@ -55,7 +55,7 @@ async function main() {
     // --- 3. Default Product Category ---
     const defaultCategory = await prisma.productCategory.create({
         data: {
-            name: 'All',
+            name: 'الكل',
             costingMethod: 'avco',
             valuation: 'real_time',
             propertyStockAccountId: createdAccounts['103029'].id,
@@ -70,15 +70,15 @@ async function main() {
 
     // --- 4. Warehouses & Locations ---
     const warehouse = await prisma.warehouse.create({
-        data: { name: 'Main Warehouse', code: 'WH', companyId: realCompany.id },
+        data: { name: 'المستودع الرئيسي', code: 'WH', companyId: realCompany.id },
     });
 
     const locationsData = [
-        { name: 'WH/Stock', type: 'internal' },
-        { name: 'Partner Locations/Vendors', type: 'supplier' },
-        { name: 'Partner Locations/Customers', type: 'customer' },
-        { name: 'WH/Input', type: 'internal' },
-        { name: 'WH/Output', type: 'internal' },
+        { name: 'المستودع/المخزون', type: 'internal' },
+        { name: 'مواقع الشركاء/الموردين', type: 'supplier' },
+        { name: 'مواقع الشركاء/العملاء', type: 'customer' },
+        { name: 'المستودع/المدخلات', type: 'internal' },
+        { name: 'المستودع/المخرجات', type: 'internal' },
     ];
 
     for (const l of locationsData) {

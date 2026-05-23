@@ -79,6 +79,7 @@ export function CategoryForm({
     },
   });
   const valuationMethod = watch("valuation");
+  const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const [showActionsMenu, setShowActionsMenu] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -131,32 +132,11 @@ export function CategoryForm({
     const subscription = watch((value, { name, type }) => {
       if (type === "change") {
         if (isNewRecord) {
-          if (value.name && String(value.name).trim().length > 0) {
-            const timeoutId = setTimeout(() => {
-              handleSubmit(async (data) => {
-                try {
-                  const cleanData = Object.fromEntries(
-                    Object.entries(data).map(([k, v]) => [
-                      k,
-                      v === "" || v === "null" ? null : v,
-                    ]),
-                  );
-                  const result = await createCategory(cleanData);
-                  clearDraft();
-                  if (result?.id) {
-                    router.push(
-                      `/${locale}/inventory/products/categories/${result.id}`,
-                    );
-                  }
-                } catch (error) {
-                  console.error("Auto-save new category error:", error);
-                }
-              })();
-            }, 2000);
-            return () => clearTimeout(timeoutId);
-          }
+          // Do not auto-save new records to prevent duplicate creation errors
+          return;
         } else {
-          const timeoutId = setTimeout(() => {
+          if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+          autoSaveTimerRef.current = setTimeout(() => {
             handleSubmit(async (data) => {
               try {
                 const cleanData = Object.fromEntries(
@@ -170,20 +150,22 @@ export function CategoryForm({
                 console.error("Auto-save error:", error);
               }
             })();
-          }, 1000);
-          return () => clearTimeout(timeoutId);
+          }, 1500);
         }
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [
     watch,
     isNewRecord,
     handleSubmit,
     category?.id,
-    clearDraft,
-    locale,
-    router,
   ]);
 
   React.useEffect(() => {

@@ -2,7 +2,7 @@
 import React from "react";
 
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createPayment, confirmPayment } from '@/app/actions/payments';
@@ -27,6 +27,7 @@ export function PaymentForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const {
     setFormStatus,
     clearStatus
@@ -82,16 +83,22 @@ export function PaymentForm({
       type: changeType
     }) => {
       if (changeType === 'change') {
-        if (!initialData?.id && value.amount && Number(value.amount) > 0 && value.partnerId) {
-          const t = setTimeout(() => handleSubmit(d => saveData(d, true))(), 2000);
-          return () => clearTimeout(t);
+        if (!initialData?.id) {
+          // Do not auto-save new records to prevent duplicate creation errors
+          return;
         } else if (initialData?.id && !isPosted) {
-          const t = setTimeout(() => handleSubmit(d => saveData(d, true))(), 1500);
-          return () => clearTimeout(t);
+          if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+          autoSaveTimerRef.current = setTimeout(() => handleSubmit(d => saveData(d, true))(), 1500);
         }
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [watch, initialData?.id, isPosted, handleSubmit]);
   useEffect(() => {
     setFormStatus({

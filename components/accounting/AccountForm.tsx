@@ -72,6 +72,7 @@ export function AccountForm({
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'items' | 'info'>('items');
   const isNewRecord = !initialData?.id;
+  const autoSaveTimerRef = React.useRef<NodeJS.Timeout | null>(null);
   const {
     saveDraft,
     loadDraft,
@@ -150,14 +151,11 @@ export function AccountForm({
     }) => {
       if (type === 'change') {
         if (isNewRecord) {
-          if (value.code && value.name && String(value.code).trim().length > 0 && String(value.name).trim().length > 0) {
-            const timeoutId = setTimeout(() => {
-              handleSubmit(onSubmit)();
-            }, 2000);
-            return () => clearTimeout(timeoutId);
-          }
+          // Do not auto-save new records to prevent duplicate creation errors
+          return;
         } else {
-          const timeoutId = setTimeout(() => {
+          if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+          autoSaveTimerRef.current = setTimeout(() => {
             handleSubmit(async data => {
               try {
                 await updateAccount(initialData.id, data);
@@ -165,12 +163,17 @@ export function AccountForm({
                 console.error('Auto-save error:', error);
               }
             })();
-          }, 1000);
-          return () => clearTimeout(timeoutId);
+          }, 1500);
         }
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [watch, isNewRecord, handleSubmit, initialData?.id]);
   useEffect(() => {
     setFormStatus({

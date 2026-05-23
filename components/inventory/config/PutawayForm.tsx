@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Save, Loader2, RotateCcw, AlertCircle, ArrowLeftRight } from "lucide-react";
@@ -23,6 +23,7 @@ export function PutawayForm({
   const router = useRouter();
   const isNew = !initialData?.id;
   const [isSaving, setIsSaving] = useState(false);
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [pageError, setPageError] = useState<string | null>(null);
   const {
     register,
@@ -79,7 +80,8 @@ export function PutawayForm({
       type
     }) => {
       if (type === "change" && !isNew) {
-        const timeoutId = setTimeout(() => {
+        if (autoSaveTimerRef.current) clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = setTimeout(() => {
           handleSubmit(async data => {
             try {
               const {
@@ -98,10 +100,15 @@ export function PutawayForm({
             }
           })();
         }, 1500);
-        return () => clearTimeout(timeoutId);
       }
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+        autoSaveTimerRef.current = null;
+      }
+    };
   }, [watch, isNew, handleSubmit, initialData?.id]);
   return <form onSubmit={handleSubmit(onSubmit)} className={`bg-white border border-slate-300 shadow-sm rounded-sm pb-8 ${isSaving ? "pointer-events-none opacity-60" : ""}`}>
       {" "}
