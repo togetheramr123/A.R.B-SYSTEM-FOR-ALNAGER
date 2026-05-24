@@ -1246,9 +1246,27 @@ export default function PartnerForm({
   return <>
       {" "}
       <MacStatusBar />{" "}
-      {!isModal && isEdit && <TopPortal>
-          {" "}
-          <HeaderDropdowns />{" "}
+      {!isModal && <TopPortal>
+          <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+            {isDirty && (
+              <>
+                <button type="button" onClick={() => handleSubmit(onSubmit)()} disabled={loading} className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+                  {loading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <CloudUpload className="w-4 h-4" />}
+                  حفظ
+                </button>
+                <button type="button" onClick={() => {
+                  setDiscarded();
+                  setStoreUnsaved(false);
+                  setClean();
+                  reset();
+                }} disabled={loading} className="bg-white border border-slate-300 text-slate-700 px-3 py-1 rounded-sm text-sm font-bold hover:bg-slate-50 transition-colors flex items-center gap-2 h-8">
+                  <RotateCcw className="w-4 h-4" />
+                  تجاهل
+                </button>
+              </>
+            )}
+            {isEdit && <HeaderDropdowns />}
+          </div>
         </TopPortal>}{" "}
       <OdooFormShell statusSteps={[]} currentStatus="" contextActions={[]} smartButtons={smartButtonsElement} chatterId={initialData?.id} chatterModel="partner">
         {" "}
