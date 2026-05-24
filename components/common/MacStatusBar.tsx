@@ -12,7 +12,7 @@ export function MacStatusBar() {
   const [portalNode, setPortalNode] = useState<Element | null>(null);
   const prevIsSaving = useRef(isSaving);
   useEffect(() => {
-    setPortalNode(document.getElementById("mac-status-bar-portal"));
+    setPortalNode(document.getElementById("breadcrumb-actions-portal") || document.getElementById("top-actions-portal"));
   }, []);
 
   useEffect(() => {
