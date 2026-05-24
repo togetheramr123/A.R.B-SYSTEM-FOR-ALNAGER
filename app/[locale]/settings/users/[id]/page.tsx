@@ -242,12 +242,52 @@ export default function UserDetailsPage() {
                       <div className="text-xs text-slate-400">مستخدم عادي بصلاحيات محددة بناءً على المجموعات.</div>
                     </div>
                   </label>
-                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
+                    <input type="radio" name="role" value="SALESMAN" checked={user?.role === "SALESMAN"}
+                      onChange={() => updateUser("role", "SALESMAN")} className="w-4 h-4 cursor-pointer accent-slate-800" />
+                    <div>
+                      <div className="font-medium text-sm text-slate-800">مندوب مبيعات</div>
+                      <div className="text-xs text-slate-400">الوصول للمبيعات ونقاط البيع وجهات الاتصال.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
+                    <input type="radio" name="role" value="ACCOUNTANT" checked={user?.role === "ACCOUNTANT"}
+                      onChange={() => updateUser("role", "ACCOUNTANT")} className="w-4 h-4 cursor-pointer accent-slate-800" />
+                    <div>
+                      <div className="font-medium text-sm text-slate-800">محاسب</div>
+                      <div className="text-xs text-slate-400">إدارة الحسابات والقيود والفواتير.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
+                    <input type="radio" name="role" value="WAREHOUSE_MANAGER" checked={user?.role === "WAREHOUSE_MANAGER"}
+                      onChange={() => updateUser("role", "WAREHOUSE_MANAGER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
+                    <div>
+                      <div className="font-medium text-sm text-slate-800">مدير مخازن</div>
+                      <div className="text-xs text-slate-400">إدارة المخزون والمستودعات وعمليات الجرد.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
+                    <input type="radio" name="role" value="MANAGER" checked={user?.role === "MANAGER"}
+                      onChange={() => updateUser("role", "MANAGER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
+                    <div>
+                      <div className="font-medium text-sm text-slate-800">مدير فرع / قسم</div>
+                      <div className="text-xs text-slate-400">إدارة فرع أو قسم بصلاحيات إدارية متقدمة.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
                     <input type="radio" name="role" value="ADMIN" checked={user?.role === "ADMIN"}
                       onChange={() => updateUser("role", "ADMIN")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مدير النظام</div>
-                      <div className="text-xs text-slate-400">صلاحيات كاملة. يتخطى قواعد المجموعات.</div>
+                      <div className="text-xs text-slate-400">صلاحيات كاملة على النظام. يتخطى قواعد المجموعات.</div>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
+                    <input type="radio" name="role" value="OWNER" checked={user?.role === "OWNER"}
+                      onChange={() => updateUser("role", "OWNER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
+                    <div>
+                      <div className="font-medium text-sm text-slate-800">مالك النظام</div>
+                      <div className="text-xs text-slate-400">الصلاحية الأعلى، مالك النشاط التجاري.</div>
                     </div>
                   </label>
                 </div>

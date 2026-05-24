@@ -99,8 +99,13 @@ export default function UsersPage() {
                       <div dir="ltr" className="text-right text-xs">{user.phone || user.email}</div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.role === "ADMIN" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600"}`}>
-                        {user.role === "ADMIN" ? "مدير النظام" : "مستخدم"}
+                      <span className={`px-2 py-0.5 rounded text-xs font-medium ${user.role === "ADMIN" || user.role === "OWNER" ? "bg-slate-700 text-white" : "bg-slate-100 text-slate-600"}`}>
+                        {user.role === "ADMIN" ? "مدير النظام" : 
+                         user.role === "OWNER" ? "مالك النظام" :
+                         user.role === "MANAGER" ? "مدير فرع/قسم" :
+                         user.role === "WAREHOUSE_MANAGER" ? "مدير مخازن" :
+                         user.role === "ACCOUNTANT" ? "محاسب" :
+                         user.role === "SALESMAN" ? "مندوب مبيعات" : "مستخدم"}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-400 text-xs">

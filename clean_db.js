@@ -2,16 +2,14 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("Dropping constraints on ProductTax...");
-  await prisma.$executeRawUnsafe('ALTER TABLE "ProductTax" DROP CONSTRAINT IF EXISTS "producttax_saletax_fkey";');
-  await prisma.$executeRawUnsafe('ALTER TABLE "ProductTax" DROP CONSTRAINT IF EXISTS "producttax_purchtax_fkey";');
-  await prisma.$executeRawUnsafe('ALTER TABLE "ProductTax" DROP CONSTRAINT IF EXISTS "ProductTax_taxId_fkey";');
-  console.log("Constraints dropped successfully!");
+  console.log("Dropping table ProductTax...");
+  await prisma.$executeRawUnsafe('DROP TABLE IF EXISTS "ProductTax" CASCADE;');
+  console.log("Table ProductTax dropped successfully!");
 }
 
 main()
   .catch((e) => {
-    console.error("Error dropping constraints:", e);
+    console.error("Error dropping table:", e);
   })
   .finally(async () => {
     await prisma.$disconnect();

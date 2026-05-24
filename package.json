@@ -11,6 +11,7 @@
     "db:push": "npx prisma db push",
     "db:generate": "npx prisma generate",
     "db:seed": "npx prisma db seed",
+    "db:live:init": "ts-node -r tsconfig-paths/register --project tsconfig.script.json scripts/zero_out_live_db.ts",
     "deploy:prepare": "npm run check && npm run db:generate && npm run build",
     "verify:master": "ts-node -r tsconfig-paths/register --project tsconfig.script.json scripts/verify_master_cycle.ts",
     "test": "npx playwright test",
