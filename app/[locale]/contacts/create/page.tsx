@@ -10,11 +10,9 @@ export default async function CreateContactPage(props: {
   const {
     locale
   } = await props.params;
-  const searchParams = await props.searchParams; /* Support pre-filling name and */
-  returnUrl;
-  from;
-  query;
-  params; /* (used when navigating from Sales/Purchases/Invoices "إنشاء وتحرير") */
+  const searchParams = await props.searchParams;
+  /* Support pre-filling name, returnUrl, from, query params
+     (used when navigating from Sales/Purchases/Invoices "إنشاء وتحرير") */
   const initialData: any = {};
   if (searchParams.name) {
     initialData.name = searchParams.name;

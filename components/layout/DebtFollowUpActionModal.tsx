@@ -12,13 +12,13 @@ interface DebtFollowUpActionModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   followUp: any;
-  id;
+  id: string;
   partner: {
-    id;
-    name;
+    id: string;
+    name: string;
   };
-  notes;
-  nextFollowUpDate;
+  notes: string;
+  nextFollowUpDate: string;
 }
 export function DebtFollowUpActionModal({
   open,

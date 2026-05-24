@@ -131,5 +131,5 @@ export function NotificationBell() {
             </div> </div>)} </>} </div> </div> </>} {} {!open && <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-2.5 py-1.5 bg-slate-800 text-white text-xs font-bold rounded shadow-sm opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50"> الإشعارات {unreadCount > 0 && `(${unreadCount})`} <div className="absolute top-1/2 -right-1 -translate-y-1/2 border-4 border-transparent border-l-slate-800" /> </div>} </div> {selectedFollowUp && <DebtFollowUpActionModal open={!!selectedFollowUp} onOpenChange={open => {
     if (!open) setSelectedFollowUp(null);
     fetchNotifications();
-  }} followUp={selectedFollowUp} />} </>);
+  }} followUp={selectedFollowUp} id={selectedFollowUp.id} partner={selectedFollowUp.partner} notes={selectedFollowUp.notes || ''} nextFollowUpDate={selectedFollowUp.nextFollowUpDate || ''} />} </>);
 }

@@ -1,4 +1,4 @@
-import React from "react";
+'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Search, Filter, Download, ArrowUpDown } from 'lucide-react';
 interface Column {
