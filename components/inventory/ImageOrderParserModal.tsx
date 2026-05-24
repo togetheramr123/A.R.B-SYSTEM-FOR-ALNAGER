@@ -1,5 +1,4 @@
 'use client';
-import React from "react";
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Camera, X, Upload, CheckCircle2, Loader2, AlertCircle, Trash2, Image as ImageIcon, ZoomIn } from 'lucide-react';
