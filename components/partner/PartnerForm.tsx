@@ -37,6 +37,7 @@ export default function PartnerForm({
   returnUrl
 }: PartnerFormProps) {
   const isEdit = !!initialData?.id;
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const defaultValues = {
     type: initialData?.type && ["person", "company"].includes(initialData.type) ? initialData.type : "person",
     name: "",
@@ -448,7 +449,7 @@ export default function PartnerForm({
           {/* Image Upload — Odoo style */}{" "}
           <div 
             className="w-[110px] h-[110px] bg-white border border-slate-200 shadow-sm flex items-center justify-center relative group cursor-pointer hover:bg-slate-50 shrink-0 overflow-hidden rounded-sm"
-            onClick={() => document.getElementById('partner-image-upload')?.click()}
+            onClick={() => fileInputRef.current?.click()}
           >
             {watch("image") ? (
               <img src={watch("image")} alt="صورة العميل" className="w-full h-full object-cover" />
@@ -468,7 +469,7 @@ export default function PartnerForm({
               )}
             </div>
             <input
-              id="partner-image-upload"
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               className="hidden"
