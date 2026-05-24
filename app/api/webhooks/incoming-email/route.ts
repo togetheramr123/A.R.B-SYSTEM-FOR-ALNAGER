@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
+  const authHeader = req.headers.get('x-webhook-secret');
+  if (authHeader !== process.env.WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const contentType = req.headers.get('content-type') || '';
     let senderEmail = '';

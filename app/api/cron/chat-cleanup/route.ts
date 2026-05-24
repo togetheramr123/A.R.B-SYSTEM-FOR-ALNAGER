@@ -7,11 +7,12 @@ import path from "path";
 const MAX_AGE_DAYS = 40;
 
 export async function GET(req: NextRequest) {
-  try {
-    // In a real production scenario, you would secure this endpoint
-    // by checking an Authorization header (e.g. Bearer CRON_SECRET)
-    // For now, we will allow it to run if hit via local cron service.
+  const authHeader = req.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
+  try {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - MAX_AGE_DAYS);
 

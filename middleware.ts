@@ -8,11 +8,11 @@ const intlMiddleware = createMiddleware({
 });
 
 // ERP secret — MUST match lib/auth.ts
-const secretKey = process.env.JWT_SECRET || 'secret-key-change-me-in-production';
+const secretKey = process.env.JWT_SECRET!;
 const key = new TextEncoder().encode(secretKey);
 
 // Portal secret (separate!)
-const portalSecretKey = process.env.PORTAL_JWT_SECRET || 'portal-secret-key-change-me';
+const portalSecretKey = process.env.PORTAL_JWT_SECRET!;
 const portalKey = new TextEncoder().encode(portalSecretKey);
 
 // ===== Role-Based Access Control (RBAC) =====

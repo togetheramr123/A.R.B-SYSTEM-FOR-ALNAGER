@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 /**
  * تصفير بيانات المنتجات والمخزون والفئات من قاعدة البيانات
@@ -9,6 +10,14 @@ import prisma from '@/lib/prisma';
  * الترتيب مهم جداً بسبب العلاقات بين الجداول (Foreign Keys)
  */
 export async function resetProductData(confirmCode: string) {
+  const session = await getSession();
+  if (!session) {
+    throw new Error('غير مصرح');
+  }
+  if (session.role !== 'OWNER') {
+    throw new Error('هذا الإجراء متاح فقط لمالك النظام');
+  }
+
   if (confirmCode !== 'RESET-PRODUCTS-CONFIRM') {
     return { success: false, error: 'رمز التأكيد غير صحيح' };
   }

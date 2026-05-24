@@ -25,9 +25,9 @@ function validateDoubleEntry(items: { debit?: number | any | string; credit?: nu
   return totalDebit.minus(totalCredit).abs().lessThan(0.01);
 }
 export async function getChartOfAccounts() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const cprisma = await getCompanyPrisma();
   try {
     const accounts = await cprisma.account.findMany({
@@ -48,9 +48,9 @@ export async function getChartOfAccounts() {
   }
 }
 export async function saveAccount(data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     let account;
     const payload: any = {
@@ -105,23 +105,23 @@ async function getFirstCompany() {
   return company;
 }
 export async function createAccount(data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "write");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "write");
 
   return saveAccount(data);
 }
 export async function generateStockMoveEntry(opts: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   return generateStockMoveEntryV2(opts);
 }
 export async function generateStockMoveEntryV2(opts: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   try {
     const moveId = opts.moveId || opts;
@@ -234,9 +234,9 @@ export async function updateInvoiceLine(lineId: string, updates: {
   discount2?: number;
   secondaryQuantity?: number;
 }) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     const line = await prisma.invoiceLine.findUnique({
       where: {
@@ -325,9 +325,9 @@ export async function updateInvoiceLine(lineId: string, updates: {
   }
 }
 export async function getJournals(type?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const cprisma = await getCompanyPrisma();
   try {
     const whereClause = type ? {
@@ -362,9 +362,9 @@ export async function getJournals(type?: string) {
   }
 }
 export async function saveJournal(data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     let journal;
     if (data.id && data.id !== 'new') {
@@ -408,7 +408,7 @@ export async function saveJournal(data: any) {
   }
 }
 async function getJournalEntries() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
   if (!session) return [];
   const cprisma = await getCompanyPrisma();
   try {
@@ -460,9 +460,9 @@ async function getJournalEntries() {
   }
 }
 export async function saveJournalEntry(data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     if (data.date) {
       await checkPeriodLock(new Date(data.date), session.userId);
@@ -571,7 +571,7 @@ export async function saveJournalEntry(data: any) {
   }
 }
 async function getJournalItems(productId?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
   if (!session) return [];
   try {
     const where: any = {};
@@ -622,9 +622,9 @@ async function getJournalItems(productId?: string) {
   }
 }
 export async function getPartnerLedgerSimple(partnerId?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   try {
     if (!partnerId) return {
       items: [],
@@ -701,9 +701,9 @@ export async function getPartnerLedgerSimple(partnerId?: string) {
   }
 }
 export async function confirmInvoice(id: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     const result = await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -1010,9 +1010,9 @@ return { entryId: entry.id };
 }
 /** * Get all accounts (real implementation) */
 export async function getAccounts() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   try {
     return await prisma.account.findMany({
       orderBy: {
@@ -1031,9 +1031,9 @@ export async function getAccounts() {
   }
 } /** * Create an empty Draft Invoice / Bill instantly */
 export async function createDraftInvoice(type: 'out_invoice' | 'in_invoice' | 'out_refund' | 'in_refund' = 'out_invoice') {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'create');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'create');
   try {
     const company = await getFirstCompany();
     const prefix = type === 'out_invoice' ? 'INV' : type === 'in_invoice' ? 'BILL' : type === 'out_refund' ? 'RINV' : 'RBILL';
@@ -1081,9 +1081,9 @@ export async function createDraftInvoice(type: 'out_invoice' | 'in_invoice' | 'o
   }
 } /** * Create Invoice (real implementation) */
 export async function createInvoice(data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'create');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'create');
   const parsed = CreateInvoiceSchema.safeParse(data);
   if (!parsed.success) {
     return fail(parsed.error.issues[0]?.message || 'بيانات غير صالحة');
@@ -1180,9 +1180,9 @@ export async function createInvoice(data: any) {
   }
 }
 export async function cancelInvoice(id: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     const result = await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -1291,9 +1291,9 @@ export async function cancelInvoice(id: string) {
   }
 }
 export async function resetToDraftInvoice(id: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     const result = await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -1448,9 +1448,9 @@ export async function resetToDraftInvoice(id: string) {
   }
 }
 export async function updateInvoice(id: string, data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   const parsed = CreateInvoiceSchema.safeParse(data); // Ignore schema validation failure for partial updates of lines, we trust the UI mapping in this
   try {
     const txResult = await prisma.$transaction(async tx => {
@@ -1617,9 +1617,9 @@ export async function updateInvoice(id: string, data: any) {
 }
 /** * Create Refund / Credit Note (إشعار دائن) */
 export async function createRefund(invoiceId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'create');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'create');
   try {
     const original = await prisma.invoice.findUnique({
       where: {
@@ -1681,9 +1681,9 @@ export async function createRefund(invoiceId: string) {
   }
 } /** * Reset Invoice to Draft */
 export async function resetToDraft(id: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -1742,9 +1742,9 @@ export async function resetToDraft(id: string) {
 import { RegisterPaymentSchema, validateOrThrow } from '@/lib/validations';
 
 export async function registerPayment(invoiceId: string, amount?: number, journalId?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   
   validateOrThrow(RegisterPaymentSchema, { invoiceId, amount, journalId });
   try {
@@ -1994,9 +1994,9 @@ export async function registerPayment(invoiceId: string, amount?: number, journa
   }
 } /** * Get Outstanding Payments for a Partner (Odoo Outstanding Payments Widget) * Returns unallocated/partially-allocated posted payments for a given partner * that can be applied to an invoice. */
 export async function getOutstandingPayments(partnerId: string, invoiceType: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   try {
     if (!partnerId) return []; 
@@ -2059,9 +2059,9 @@ export async function getOutstandingPayments(partnerId: string, invoiceType: str
   }
 } /** * Apply an Outstanding Payment to an Invoice (Reconciliation) * Links a payment to an invoice by reducing the invoice's residual amount. */
 export async function applyOutstandingPayment(invoiceId: string, paymentId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   try {
     const result = await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -2169,12 +2169,12 @@ export async function applyOutstandingPayment(invoiceId: string, paymentId: stri
   }
 }
 export async function getPartnerLedgerWidgetData(partnerId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   try {
-    let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
+    let session = await getSession(); if (!session) throw new Error("غير مصرح");
     if (!session) return {
       error: 'غير مصرح'
     };
@@ -2387,9 +2387,9 @@ async function recalculateRetroactiveCOGS(tx: any, productId: string, correctCos
   }
 } /** * طلب الموافقة لأسعار الفوترة الصفرية */
 export async function requestZeroPriceInvoiceApproval(invoiceId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   try {
     const result = await prisma.$transaction(async tx => {
       const invoice = await tx.invoice.findUnique({
@@ -2450,9 +2450,9 @@ export async function requestZeroPriceInvoiceApproval(invoiceId: string) {
 // نظام المرتجعات الذكي — Smart Returns
 // ============================================= /** * جلب تاريخ مبيعات عميل محدد * يرجع كل الأصناف التي تم بيعها لهذا العميل مع آخر سعر صافي وإجمالي الكميات */
 export async function getCustomerSalesHistory(partnerId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read"); // جلب كل بنود فواتير البيع المؤكدة لهذا العميل
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read"); // جلب كل بنود فواتير البيع المؤكدة لهذا العميل
   const invoiceLines = await prisma.invoiceLine.findMany({
     where: {
       invoice: {
@@ -2516,9 +2516,9 @@ export async function getCustomerSalesHistory(partnerId: string) {
   return Array.from(productMap.values());
 } /** * جلب تاريخ مشتريات من مورد محدد * يرجع كل الأصناف التي تم شراؤها من هذا المورد مع آخر سعر صافي وإجمالي الكميات */
 export async function getVendorPurchaseHistory(partnerId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const invoiceLines = await prisma.invoiceLine.findMany({
     where: {
       invoice: {
@@ -2585,9 +2585,9 @@ export async function getVendorPurchaseHistory(partnerId: string) {
   return Array.from(productMap.values());
 } // --- Advanced Account Management ---
 export async function getAccountDetails(accountId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const account = await prisma.account.findUnique({
     where: {
       id: accountId
@@ -2625,9 +2625,9 @@ export async function getAccountDetails(accountId: string) {
   };
 }
 export async function saveAccountDetails(accountId: string, data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "write");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "write");
   const tagConnections = data.tags ? data.tags.map((tagId: string) => ({
     id: tagId
   })) : [];
@@ -2660,9 +2660,9 @@ export async function saveAccountDetails(accountId: string, data: any) {
   return updated;
 }
 export async function getAccountTags() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   return await prisma.accountTag.findMany({
     orderBy: {
       name: 'asc'
@@ -2670,9 +2670,9 @@ export async function getAccountTags() {
   });
 }
 export async function createAccountTag(name: string, color?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "write");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "write");
   return await prisma.accountTag.create({
     data: {
       name,
@@ -2681,9 +2681,9 @@ export async function createAccountTag(name: string, color?: string) {
   });
 }
 export async function getTaxesSimple() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   return await prisma.tax.findMany({
     where: {
       active: true
@@ -2694,9 +2694,9 @@ export async function getTaxesSimple() {
   });
 }
 export async function getJournalsSimple() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   return await prisma.journal.findMany({
     orderBy: {
       name: 'asc'
@@ -2704,9 +2704,9 @@ export async function getJournalsSimple() {
   });
 }
 export async function getJournalDetails(id: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   if (id === 'new') return null;
   return await prisma.journal.findUnique({
     where: {
@@ -2728,9 +2728,9 @@ export async function getJournalDetails(id: string) {
   });
 }
 export async function saveJournalDetails(id: string, data: any) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     const inboundConnections = data.inboundPaymentMethods ? data.inboundPaymentMethods.map((mId: string) => ({
       id: mId
@@ -2815,9 +2815,9 @@ export async function saveJournalDetails(id: string, data: any) {
   }
 }
 export async function getPaymentMethods() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   return await prisma.paymentMethod.findMany({
     where: {
       active: true
@@ -2856,9 +2856,9 @@ async function _resolveDueDate(data: any): Promise<Date | undefined> {
   return undefined;
 }
 export async function checkDueInvoices() {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   const companyId = await getCompanyId();
   const now = new Date();
@@ -2934,9 +2934,9 @@ export async function checkDueInvoices() {
   };
 }
 export async function notifyManagerInvoiceComplete(invoiceId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const invoice = await prisma.invoice.findUnique({
     where: {
       id: invoiceId
@@ -2986,9 +2986,9 @@ export async function requestPartnerChange(data: {
   oldPartnerId: string;
   newPartnerId: string;
 }) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const companyId = await getCompanyId();
   const oldPartner = await prisma.partner.findUnique({
     where: {
@@ -3082,9 +3082,9 @@ export async function requestPartnerChange(data: {
   };
 }
 export async function approvePartnerChange(approvalId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const user = await prisma.user.findUnique({
     where: {
       id: session.userId
@@ -3244,9 +3244,9 @@ export async function approvePartnerChange(approvalId: string) {
   };
 }
 export async function rejectPartnerChange(approvalId: string, reason?: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const user = await prisma.user.findUnique({
     where: {
       id: session.userId
@@ -3284,9 +3284,9 @@ export async function rejectPartnerChange(approvalId: string, reason?: string) {
   };
 }
 export async function getPartnerOutstandingCredits(partnerId: string, currentInvoiceId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //("account_move", "read");
 
   try {
     if (!partnerId) return {
@@ -3340,9 +3340,9 @@ export async function getPartnerOutstandingCredits(partnerId: string, currentInv
   }
 }
 export async function offsetContraInvoices(invoiceId: string, contraInvoiceId: string) {
-  let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //('account_move', 'write');
+  let session = await getSession(); if (!session) throw new Error("غير مصرح");
+
+  await ensureAccess("accounting", "write"); //('account_move', 'write');
   try {
     return await prisma.$transaction(async (tx: any) => {
       const inv1 = await tx.invoice.findUnique({
@@ -3450,7 +3450,7 @@ export async function offsetContraInvoices(invoiceId: string, contraInvoiceId: s
 export async function getJournalEntry(id: string) {
   let session = await getSession(); if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
   if (!session) { session = { userId: "fc75f1ed-28fc-4173-bfe6-01b701d962b9", role: "ADMIN", companyId: "c3ba5918-3793-47fe-bda3-4f1703548b4b" } as any; }
-  console.log("ensureAccess bypassed"); //("account_move", "read");
+  await ensureAccess("accounting", "write"); //("account_move", "read");
   const entry = await prisma.journalEntry.findUnique({
     where: {
       id

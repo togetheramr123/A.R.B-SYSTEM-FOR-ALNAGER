@@ -67,3 +67,14 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Development artifacts
+*.bak
+*.bak2
+dev.db*
+backups/
+cookies.txt
+tsc_output.txt
+failed-list.txt
+test_*.py
+test-*.ts
