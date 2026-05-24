@@ -134,7 +134,10 @@ export function AccountForm({
         const newAcc = await createAccount(data);
         clearDraft();
         toast.success('تم إنشاء الحساب بنجاح');
-        if (newAcc) router.push(`/${locale}/accounting/chart-of-accounts/${newAcc.id}`);
+        if (newAcc) {
+          router.push(`/${locale}/accounting/chart-of-accounts/${newAcc.id}`);
+          return;
+        }
       }
       router.refresh();
     } catch (e: any) {
@@ -204,7 +207,7 @@ export function AccountForm({
       toast.success('تم إنشاء نسخة مطابقة بنجاح');
       if (newAcc) {
         router.push(`/${locale}/accounting/chart-of-accounts/${newAcc.id}`);
-        router.refresh();
+        return;
       }
     } catch (e: any) {
       console.error('Duplicate error:', e);

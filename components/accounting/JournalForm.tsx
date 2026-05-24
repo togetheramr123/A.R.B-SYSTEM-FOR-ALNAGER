@@ -63,10 +63,11 @@ export function JournalForm({
     try {
       const result = await saveJournalDetails(initialData?.id || "new", data);
       if (!initialData?.id && result && !silent) {
+        // Redirect to the new record's page and return immediately
         router.push(`/${locale}/accounting/configuration/journals/${result.id}`);
+        return;
       }
       if (!silent) {
-        //
         toast.success("تم الحفظ بنجاح");
         router.refresh();
       }

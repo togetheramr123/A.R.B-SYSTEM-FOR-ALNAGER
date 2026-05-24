@@ -415,7 +415,7 @@ const onSubmit = async (data: any) => {
         }
         pendingActionRef.current = null;
         router.push(`/${locale}/purchases/${currentId}`);
-        router.refresh();
+        return;
       }
     } else {
       const newOrder = await createPurchaseOrder({

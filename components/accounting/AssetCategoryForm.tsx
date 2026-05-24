@@ -60,7 +60,6 @@ export function AssetCategoryForm({
         await createAssetCategory(data);
       }
       router.push("/accounting/configuration/asset_categories");
-      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("حدث خطأ. يرجى المحاولة مرة أخرى.");
@@ -74,7 +73,6 @@ export function AssetCategoryForm({
     try {
       await deleteAssetCategory(initialData.id);
       router.push("/accounting/configuration/asset_categories");
-      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("فشل في الحذف.");

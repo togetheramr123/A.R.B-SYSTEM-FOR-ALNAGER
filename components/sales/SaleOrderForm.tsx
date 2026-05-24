@@ -812,7 +812,7 @@ export function SaleOrderForm({
           }
           pendingActionRef.current = null;
           router.push(`/${locale}/sales/${currentId}`);
-          router.refresh();
+          return;
         }
       } else {
         const newOrder = await createSaleOrder({

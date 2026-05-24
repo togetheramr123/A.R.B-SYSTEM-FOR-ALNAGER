@@ -40,7 +40,10 @@ export function AssetForm({
     try {
       if (!initialData?.id) {
         const newAsset = await createAsset(data);
-        if (newAsset) router.push(`/${locale}/accounting/assets/${newAsset.id}`);
+        if (newAsset) {
+          router.push(`/${locale}/accounting/assets/${newAsset.id}`);
+          return;
+        }
       } else {
         await updateAsset(initialData.id, data);
         reset(data);

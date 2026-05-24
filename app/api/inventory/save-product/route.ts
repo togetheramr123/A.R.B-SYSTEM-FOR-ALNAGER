@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         descriptionPickingout: data.descriptionPickingout || null,
         availableInPos: data.availableInPos ?? false,
         websitePublished: data.websitePublished ?? false,
-        controlPolicy: data.controlPolicy || "ordered",
+        controlPolicy: data.controlPolicy || "received",
         descriptionPurchase: data.descriptionPurchase || null,
         propertyAccountIncomeId: data.propertyAccountIncomeId || null,
         propertyAccountExpenseId: data.propertyAccountExpenseId || null,

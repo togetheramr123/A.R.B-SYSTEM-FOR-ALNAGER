@@ -916,7 +916,7 @@ model Product {
   websitePublished Boolean @default(false)
 
   // Purchase Tab
-  controlPolicy       String  @default("ordered")
+  controlPolicy       String  @default("received")
   descriptionPurchase String?
 
   // Accounting

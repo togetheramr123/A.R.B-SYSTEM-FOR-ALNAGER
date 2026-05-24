@@ -63,9 +63,15 @@ export function PaymentForm({
       } else {
         const newPay = await createPayment(data);
         if (newPay && 'success' in newPay && newPay.success && newPay.data?.id) {
-          if (!silent) router.push(`/${locale}/accounting/payments/${newPay.data.id}`);
+          if (!silent) {
+            router.push(`/${locale}/accounting/payments/${newPay.data.id}`);
+            return;
+          }
         } else if (newPay && 'id' in newPay) {
-          if (!silent) router.push(`/${locale}/accounting/payments/${(newPay as any).id}`);
+          if (!silent) {
+            router.push(`/${locale}/accounting/payments/${(newPay as any).id}`);
+            return;
+          }
         }
       }
       if (!silent) router.refresh();
