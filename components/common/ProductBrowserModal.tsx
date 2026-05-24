@@ -35,6 +35,7 @@ interface ProductBrowserModalProps {
   products: ProductOption[];
   categories: Category[];
   existingProductIds?: string[];
+  onConfirm: (products: SelectedProduct[]) => void;
 }
 export function ProductBrowserModal({
   isOpen,

@@ -11,7 +11,12 @@ interface ReceiptLine {
 interface WarehouseReceiptProps {
   type: "incoming" | "outgoing";
   /* استلام أو صرف */
-  documentName: string; /* WH/IN/P00012 partnerName: string; // اسم المورد أو العميل date: string; // تاريخ العملية lines: ReceiptLine[]; warehouseName?: string; notes?: string; */
+  documentName: string;
+  partnerName: string;
+  date: string;
+  lines: ReceiptLine[];
+  warehouseName?: string;
+  notes?: string;
 } /** * إيصال استلام / صرف المخزن — A4 Print Template * لا يحتوي على أي أسعار (لأمين المخزن فقط). */
 export const WarehouseReceiptPrint = forwardRef<HTMLDivElement, WarehouseReceiptProps>(({
   type,

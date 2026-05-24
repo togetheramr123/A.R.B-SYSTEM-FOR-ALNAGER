@@ -6,7 +6,6 @@ const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
     devIndicators: {
-        buildActivity: false,
         buildActivityPosition: 'bottom-right',
     },
     output: 'standalone',

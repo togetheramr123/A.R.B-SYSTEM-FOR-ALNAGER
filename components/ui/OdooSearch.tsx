@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { ChevronDown, X, Search, Filter, Layers } from 'lucide-react';
 import { Badge } from "@/components/ui/badge";
 export type FilterOption = {
+  key: string;
   label: string;
-  domain: any;
-  type: 'service';
+  domain?: any;
+  type?: string;
 };
 ;
 export type GroupByOption = {

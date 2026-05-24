@@ -73,16 +73,10 @@ const saleOrderLineSchema = z.object({
   }
 });
 const saleOrderSchema = z.object({
-  customer: z.string({
-    required_error: "العميل مطلوب",
-    invalid_type_error: "العميل مطلوب"
-  }).min(1, {
+  customer: z.string().min(1, {
     message: "العميل مطلوب"
   }),
-  date: z.string({
-    required_error: "تاريخ الطلب مطلوب",
-    invalid_type_error: "تاريخ الطلب مطلوب"
-  }).min(1, {
+  date: z.string().min(1, {
     message: "تاريخ الطلب مطلوب"
   }),
   priceListId: z.union([z.string(), z.null(), z.literal('')]).optional(),
@@ -1803,7 +1797,8 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
               <div className="p-4">
                 <p className="text-sm text-slate-500 mb-4">أضف منتجات اختيارية لزيادة قيمة البيع (Cross-selling).</p>
                 {/* Simplified view for options */}
-                <EditableDynamicTable columns={columns.filter(c => ['product', 'qty', 'price'].includes(c.id))} fieldArrayName="options" />
+                {/* <EditableDynamicTable columns={columns.filter(c => ['product', 'qty', 'price'].includes(c.id))} fieldArrayName="options" /> */}
+                <p className="text-sm italic text-slate-400">قريباً: إضافة الخيارات البديلة.</p>
               </div>
             )}
 
