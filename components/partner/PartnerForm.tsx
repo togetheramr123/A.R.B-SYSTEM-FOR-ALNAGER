@@ -190,7 +190,8 @@ export default function PartnerForm({
         if (onSuccess) {
           onSuccess(res.id);
         } else if (!isModal) {
-          router.push(effectiveReturnUrl || "/");
+          // Navigate to the newly created partner page, or returnUrl if specified
+          router.push(effectiveReturnUrl || `/${locale}/contacts/${res.id}`);
         }
       }
     } catch (err: any) {
@@ -279,13 +280,20 @@ export default function PartnerForm({
           </button>{" "}
           {printOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-48 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
               {" "}
-              {(permissions.canSeeSales || permissions.canSeePurchases) && <button type="button" onClick={() => {
-            setPrintOpen(false);
-            router.push(`/${locale}/accounting/reporting/partner_ledger?partnerId=${initialData?.id}`);
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-                  {" "}
-                  كشف حساب{" "}
-                </button>}{" "}
+              {(permissions.canSeeSales || permissions.canSeePurchases) && <>
+                <button type="button" onClick={() => {
+                  setPrintOpen(false);
+                  router.push(`/${locale}/accounting/reporting/partner_ledger?partnerId=${initialData?.id}`);
+                }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                  كشف حساب
+                </button>
+                <button type="button" onClick={() => {
+                  setPrintOpen(false);
+                  router.push(`/${locale}/accounting/partner-statement/${initialData?.id}`);
+                }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
+                  كشف حساب تفصيلي
+                </button>
+              </>}{" "}
             </div>}{" "}
         </div>{" "}
         {/* Action Menu */}{" "}
