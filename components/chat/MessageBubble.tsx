@@ -1,3 +1,4 @@
+'use client';
 import React, { useState } from "react";
 import { Check, CheckCheck, Video, Smile, FileText, Download } from "lucide-react";
 import { addReaction } from "@/app/actions/chat";

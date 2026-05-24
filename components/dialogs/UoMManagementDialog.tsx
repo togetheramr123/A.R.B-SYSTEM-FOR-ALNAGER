@@ -1,3 +1,4 @@
+'use client';
 import React, { useState, useEffect } from "react";
 import { X, Save, HelpCircle, ExternalLink, Plus, Trash2, ChevronRight } from "lucide-react";
 import { createUom, updateUom, deleteUom } from "@/app/actions/inventory";

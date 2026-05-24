@@ -53,9 +53,12 @@ export default async function StockAnalysisPage(props: {
           category: true
         }
       },
-      location: true // @ts-ignore lot: true
+      location: true,
+      // @ts-ignore
+      lot: true,
     }
-  }); // 3. Fetch available lots for filter dropdown // @ts-ignore
+  });
+  // 3. Fetch available lots for filter dropdown
   const allLots = await prisma.stockLot.findMany({
     select: {
       id: true,
