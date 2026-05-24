@@ -445,14 +445,57 @@ export default function PartnerForm({
               {/* Removed unused inputs (Company Name / Job Position) for Individuals as requested */}{" "}
             </div>{" "}
           </div>{" "}
-          {/* Image Placeholder — Odoo style */}{" "}
-          <div className="w-[110px] h-[110px] bg-white border border-slate-200 shadow-sm flex items-center justify-center relative group cursor-pointer hover:bg-slate-50 shrink-0 overflow-hidden rounded-sm">
-            {" "}
-            {isCompany ? <Building className="w-12 h-12 text-slate-200" /> : <User className="w-12 h-12 text-slate-200" />}{" "}
+          {/* Image Upload — Odoo style */}{" "}
+          <div 
+            className="w-[110px] h-[110px] bg-white border border-slate-200 shadow-sm flex items-center justify-center relative group cursor-pointer hover:bg-slate-50 shrink-0 overflow-hidden rounded-sm"
+            onClick={() => document.getElementById('partner-image-upload')?.click()}
+          >
+            {watch("image") ? (
+              <img src={watch("image")} alt="صورة العميل" className="w-full h-full object-cover" />
+            ) : (
+              isCompany ? <Building className="w-12 h-12 text-slate-200" /> : <User className="w-12 h-12 text-slate-200" />
+            )}
             <div className="absolute inset-0 bg-black/50 hidden group-hover:flex items-center justify-center transition-all">
-              {" "}
-              <Plus className="w-6 h-6 text-white" />{" "}
-            </div>{" "}
+              {watch("image") ? (
+                <div className="flex gap-2">
+                  <CloudUpload className="w-5 h-5 text-white" />
+                  <button type="button" onClick={(e) => { e.stopPropagation(); setValue("image", "", { shouldDirty: true }); }} className="text-white hover:text-red-300">
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <Plus className="w-6 h-6 text-white" />
+              )}
+            </div>
+            <input
+              id="partner-image-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                if (file.size > 5 * 1024 * 1024) {
+                  toast.error("حجم الصورة يجب أن يكون أقل من 5 ميجا");
+                  return;
+                }
+                try {
+                  const formData = new FormData();
+                  formData.append("file", file);
+                  const res = await fetch("/api/upload", { method: "POST", body: formData });
+                  const data = await res.json();
+                  if (data.success && data.attachment?.fileUrl) {
+                    setValue("image", data.attachment.fileUrl, { shouldDirty: true });
+                    toast.success("تم رفع الصورة بنجاح");
+                  } else {
+                    toast.error(data.error || "فشل في رفع الصورة");
+                  }
+                } catch (err) {
+                  toast.error("خطأ أثناء رفع الصورة");
+                }
+                e.target.value = "";
+              }}
+            />
           </div>{" "}
         </div>{" "}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-2 mb-4">
