@@ -2149,7 +2149,7 @@ model ProductTax {
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   taxId     String
-  tax       Tax     @relation(fields: [taxId], references: [id], map: "producttax_tax_fkey")
+  tax       Tax     @relation(fields: [taxId], references: [id])
   type      String  @default("sale") // sale or purchase
 
   @@unique([productId, taxId, type])
