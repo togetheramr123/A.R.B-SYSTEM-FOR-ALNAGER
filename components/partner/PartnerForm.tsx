@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, User, Building, Banknote, CloudUpload, RotateCcw, Trash2, ShoppingCart, Receipt, CreditCard, Plus, ExternalLink, ChevronLeft, ChevronRight, Printer, Settings, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { updatePartner, createPartner, getAccountingOptions } from "@/app/actions/partner";
+import { updatePartner, createPartner, getAccountingOptions, deletePartner, duplicatePartner, archivePartner } from "@/app/actions/partner";
 import OdooFormShell from "@/components/common/OdooFormShell";
 import { useBreadcrumbStore } from "@/hooks/useBreadcrumbStore";
 import { useStatusStore } from "@/store/statusStore";
@@ -307,44 +307,32 @@ export default function PartnerForm({
             <Settings className="w-4 h-4 text-slate-500" /> إجراء{" "}
             <ChevronDown className="w-3 h-3 text-slate-400" />{" "}
           </button>{" "}
-          {actionOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-56 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
+        {actionOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-56 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
               {" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.info("الأرشيف غير مفعل حالياً");
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            const res = await archivePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success(res.active ? "تم إلغاء الأرشفة" : "تمت الأرشفة بنجاح"); router.refresh(); }
           }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                 الأرشيف
               </button>{" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.info("جاري إنشاء نسخة...");
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            const res = await duplicatePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success("تم إنشاء نسخة مطابقة بنجاح"); router.push(`/${locale}/contacts/${res.id}`); }
           }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                 إنشاء نسخة مطابقة
               </button>{" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.error("غير مصرح بالحذف");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            if (!confirm(`هل أنت متأكد من حذف "${initialData?.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) return;
+            const res = await deletePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success("تم الحذف بنجاح"); router.push(`/${locale}/contacts`); }
+          }} className="w-full text-start px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                 حذف
-              </button>{" "}
-              <div className="h-px w-full bg-slate-200 my-1" />{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                إرسال رسالة نصية قصيرة
-              </button>{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                بحث الخصوصية
-              </button>{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                منح صلاحية الوصول إلى البوابة
               </button>{" "}
             </div>}{" "}
         </div>{" "}
