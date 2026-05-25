@@ -51,6 +51,23 @@ export function CategoryForm({
     "category_new",
     isNewRecord,
   );
+  const getAccountByCode = (code: string) => {
+    if (category) return "";
+    return accounts.find((a) => a.code === code)?.id || "";
+  };
+
+  const getJournalByNameOrCode = () => {
+    if (category) return "";
+    const j = journals.find(
+      (j) =>
+        j.name.includes("المخزون") ||
+        j.name.includes("مخازن") ||
+        j.code === "INV" ||
+        j.code === "STK"
+    ) || journals[0];
+    return j?.id || "";
+  };
+
   const {
     register,
     handleSubmit,
@@ -66,16 +83,16 @@ export function CategoryForm({
       removalStrategy: category?.removalStrategy || "",
       costingMethod: category?.costingMethod || "avco",
       valuation: category?.valuation || "real_time",
-      propertyAccountIncomeId: category?.propertyAccountIncomeId || "",
-      propertyAccountExpenseId: category?.propertyAccountExpenseId || "",
+      propertyAccountIncomeId: category?.propertyAccountIncomeId || getAccountByCode("500001"),
+      propertyAccountExpenseId: category?.propertyAccountExpenseId || getAccountByCode("400002"),
       propertyAccountPriceDifferenceId:
         category?.propertyAccountPriceDifferenceId || "",
       propertyStockValuationAccountId:
-        category?.propertyStockAccountId || "",
-      propertyStockJournalId: category?.propertyStockJournalId || "",
-      propertyStockInputAccountId: category?.propertyStockAccountInputId || "",
+        category?.propertyStockAccountId || getAccountByCode("103029"),
+      propertyStockJournalId: category?.propertyStockJournalId || getJournalByNameOrCode(),
+      propertyStockInputAccountId: category?.propertyStockAccountInputId || getAccountByCode("103039"),
       propertyStockOutputAccountId:
-        category?.propertyStockAccountOutputId || "",
+        category?.propertyStockAccountOutputId || getAccountByCode("103049"),
     },
   });
   const valuationMethod = watch("valuation");
