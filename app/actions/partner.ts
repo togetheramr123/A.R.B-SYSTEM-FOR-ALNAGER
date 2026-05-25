@@ -534,24 +534,22 @@ export async function deletePartner(id: string) {
           invoices: true,
         }
       }
-    } as any
+    }
   });
 
   if (!partner) return { error: "جهة الاتصال غير موجودة" };
 
-  const counts = (partner as any)._count;
-  if (counts?.saleOrders > 0 || counts?.purchaseOrders > 0 || counts?.invoices > 0) {
+  if (partner._count.saleOrders > 0 || partner._count.purchaseOrders > 0 || partner._count.invoices > 0) {
     return {
-      error: `لا يمكن حذف جهة الاتصال "${partner.name}" لأنها مرتبطة بـ ${counts.saleOrders || 0} أمر بيع و ${counts.purchaseOrders || 0} أمر شراء و ${counts.invoices || 0} فاتورة. يمكنك أرشفتها بدلاً من ذلك.`
+      error: `لا يمكن حذف جهة الاتصال "${partner.name}" لأنها مرتبطة بـ ${partner._count.saleOrders} أمر بيع و ${partner._count.purchaseOrders} أمر شراء و ${partner._count.invoices} فاتورة. يمكنك أرشفتها بدلاً من ذلك.`
     };
   }
 
   try {
-    // Delete related records first
     await prisma.$transaction(async (tx) => {
-      await tx.partnerBankAccount.deleteMany({ where: { partnerId: id } });
-      await tx.partnerPurchaseAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
-      await tx.partnerSaleAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
+      await tx.resPartnerBank.deleteMany({ where: { partnerId: id } });
+      await tx.purchaseAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
+      await tx.saleAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
       await tx.partner.delete({ where: { id } });
     });
 
@@ -570,9 +568,6 @@ export async function duplicatePartner(id: string) {
 
   const partner = await prisma.partner.findUnique({
     where: { id },
-    include: {
-      bankAccounts: true,
-    }
   });
 
   if (!partner) return { error: "جهة الاتصال غير موجودة" };
@@ -585,7 +580,7 @@ export async function duplicatePartner(id: string) {
         name: `${partner.name} (نسخة)`,
         type: partner.type,
         email: partner.email,
-        phone: partner.phone,
+        phone: partner.phone ? partner.phone + '_copy' : null,
         mobile: partner.mobile,
         website: partner.website,
         vat: partner.vat,
@@ -602,7 +597,7 @@ export async function duplicatePartner(id: string) {
         companyId: partner.companyId || company?.id,
         createdById: session.userId,
         updatedById: session.userId,
-      } as any
+      }
     });
 
     revalidatePath('/[locale]/contacts');
@@ -622,10 +617,10 @@ export async function archivePartner(id: string) {
   if (!partner) return { error: "جهة الاتصال غير موجودة" };
 
   try {
-    const newActive = !(partner as any).active;
+    const newActive = !partner.active;
     await prisma.partner.update({
       where: { id },
-      data: { active: newActive } as any
+      data: { active: newActive }
     });
 
     revalidatePath('/[locale]/contacts');

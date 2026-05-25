@@ -378,8 +378,9 @@ model Catalog {
 // --- Partners ---
 
 model Partner {
-  id   String @id @default(uuid())
-  name String
+  id     String  @id @default(uuid())
+  name   String
+  active Boolean @default(true)
 
   // Identity & Contact
   type          String         @default("person") // company, person, private, invoice, delivery, other
