@@ -64,6 +64,7 @@ export function CategoryListClient({ categories, locale }: CategoryListClientPro
         currentPage={1}
         pageSize={100}
         totalCount={categories.length}
+        hideFilters={true}
         actions={
           <Link
             href={`/${locale}/inventory/products/categories/new`}

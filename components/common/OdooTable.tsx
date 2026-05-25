@@ -36,6 +36,7 @@ interface OdooTableProps<T = any> {
   tableHeaderAction?: React.ReactNode;
   filters?: OdooFilterGroup[];
   renderBulkActions?: (selectedIds: string[]) => React.ReactNode;
+  hideFilters?: boolean;
 }
 export function OdooTable<T extends {
   id: string | number;
@@ -57,7 +58,8 @@ export function OdooTable<T extends {
   calendarView,
   tableHeaderAction,
   filters,
-  renderBulkActions
+  renderBulkActions,
+  hideFilters = false
 }: OdooTableProps<T>) {
   const [selected, setSelected] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState(searchQuery);
@@ -271,141 +273,143 @@ export function OdooTable<T extends {
           </div>
 
           {/* Bottom Left in RTL (End): Filters, Pagination, Views */}
-          <div className="flex flex-wrap items-center gap-4 order-1 md:order-2 mr-auto">
-            
-            {/* Filters Group */}
-            <div className="flex items-center gap-2 text-gray-700">
+          {!hideFilters && (
+            <div className="flex flex-wrap items-center gap-4 order-1 md:order-2 mr-auto">
               
-              {/* Filter */}
-              <div className="relative">
-                <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "filter" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "filter" ? null : "filter"); }}>
-                  <Filter className="w-4 h-4" /> <span>عوامل التصفية</span> <ChevronDown className="w-3 h-3" />
-                </div>
-                {activeDropdown === "filter" && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
-                    {filters && filters.length > 0 ? (
-                      <div className="flex flex-col text-sm text-gray-700">
-                        {filters.map((fGroup, i) => (
-                          <React.Fragment key={fGroup.group}>
-                            {i > 0 && <div className="h-px bg-gray-200 my-1 w-full" />}
-                            {fGroup.label && <div className="px-4 py-1 text-xs text-gray-400 font-bold">{fGroup.label}</div>}
-                            {fGroup.items.map(item => (
-                              <label key={item.value} className="flex items-center gap-2 px-4 py-1.5 hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />
-                                <span>{item.label}</span>
-                              </label>
-                            ))}
-                          </React.Fragment>
-                        ))}
-                        <div className="h-px bg-gray-200 my-1 w-full" />
-                        <button className="text-right px-4 py-1.5 hover:bg-gray-50 w-full flex items-center gap-2 text-gray-700">
-                          <span className="text-[10px]">◀</span> إضافة عامل تصفية مخصص
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="px-4 py-2 text-sm text-gray-500 text-center">
-                        <p>لا توجد عوامل تصفية مخصصة</p>
-                      </div>
-                    )}
+              {/* Filters Group */}
+              <div className="flex items-center gap-2 text-gray-700">
+                
+                {/* Filter */}
+                <div className="relative">
+                  <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "filter" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "filter" ? null : "filter"); }}>
+                    <Filter className="w-4 h-4" /> <span>عوامل التصفية</span> <ChevronDown className="w-3 h-3" />
                   </div>
-                )}
-              </div>
-
-              {/* Group By */}
-              <div className="relative">
-                <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "group" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "group" ? null : "group"); }}>
-                  <Grid3X3 className="w-4 h-4" /> <span>التجميع حسب</span> <ChevronDown className="w-3 h-3" />
-                </div>
-                {activeDropdown === "group" && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
-                    <div className="flex flex-col text-sm text-gray-700">
-                      {columns.filter(c => c.id !== "id").map(opt => (
-                        <button key={opt.id} onClick={() => { setGroupByKey(opt.id); setActiveDropdown(null); }} className={`text-right px-4 py-1.5 hover:bg-gray-100 w-full flex items-center justify-between ${groupByKey === opt.id ? "bg-gray-50 font-bold text-[#017E84]" : ""}`}>
-                          <span>{opt.label}</span>
-                          {groupByKey === opt.id && <Check className="w-4 h-4 text-[#017E84]" />}
-                        </button>
-                      ))}
-                      <div className="h-px bg-gray-200 my-1 w-full"></div>
-                      {groupByKey && (
-                        <button onClick={() => { setGroupByKey(null); setActiveDropdown(null); }} className="text-right px-4 py-1.5 hover:bg-gray-100 w-full text-red-600 flex items-center gap-2">
-                          <span className="text-[10px]">✖</span> إزالة التجميع
-                        </button>
+                  {activeDropdown === "filter" && (
+                    <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
+                      {filters && filters.length > 0 ? (
+                        <div className="flex flex-col text-sm text-gray-700">
+                          {filters.map((fGroup, i) => (
+                            <React.Fragment key={fGroup.group}>
+                              {i > 0 && <div className="h-px bg-gray-200 my-1 w-full" />}
+                              {fGroup.label && <div className="px-4 py-1 text-xs text-gray-400 font-bold">{fGroup.label}</div>}
+                              {fGroup.items.map(item => (
+                                <label key={item.value} className="flex items-center gap-2 px-4 py-1.5 hover:bg-gray-50 cursor-pointer">
+                                  <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />
+                                  <span>{item.label}</span>
+                                </label>
+                              ))}
+                            </React.Fragment>
+                          ))}
+                          <div className="h-px bg-gray-200 my-1 w-full" />
+                          <button className="text-right px-4 py-1.5 hover:bg-gray-50 w-full flex items-center gap-2 text-gray-700">
+                            <span className="text-[10px]">◀</span> إضافة عامل تصفية مخصص
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="px-4 py-2 text-sm text-gray-500 text-center">
+                          <p>لا توجد عوامل تصفية مخصصة</p>
+                        </div>
                       )}
                     </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Favorites */}
-              <div className="relative">
-                <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "favorite" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "favorite" ? null : "favorite"); }}>
-                  <Star className="w-4 h-4" /> <span>المفضلات</span> <ChevronDown className="w-3 h-3" />
+                  )}
                 </div>
-                {activeDropdown === "favorite" && (
-                  <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
-                    <div className="px-4 py-2 text-sm text-gray-500">
-                      <div className="font-bold text-gray-700 mb-2 border-b pb-1">
-                        عمليات البحث المفضلة
+
+                {/* Group By */}
+                <div className="relative">
+                  <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "group" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "group" ? null : "group"); }}>
+                    <Grid3X3 className="w-4 h-4" /> <span>التجميع حسب</span> <ChevronDown className="w-3 h-3" />
+                  </div>
+                  {activeDropdown === "group" && (
+                    <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
+                      <div className="flex flex-col text-sm text-gray-700">
+                        {columns.filter(c => c.id !== "id").map(opt => (
+                          <button key={opt.id} onClick={() => { setGroupByKey(opt.id); setActiveDropdown(null); }} className={`text-right px-4 py-1.5 hover:bg-gray-100 w-full flex items-center justify-between ${groupByKey === opt.id ? "bg-gray-50 font-bold text-[#017E84]" : ""}`}>
+                            <span>{opt.label}</span>
+                            {groupByKey === opt.id && <Check className="w-4 h-4 text-[#017E84]" />}
+                          </button>
+                        ))}
+                        <div className="h-px bg-gray-200 my-1 w-full"></div>
+                        {groupByKey && (
+                          <button onClick={() => { setGroupByKey(null); setActiveDropdown(null); }} className="text-right px-4 py-1.5 hover:bg-gray-100 w-full text-red-600 flex items-center gap-2">
+                            <span className="text-[10px]">✖</span> إزالة التجميع
+                          </button>
+                        )}
                       </div>
-                      <button className="text-right text-[#017E84] hover:bg-gray-50 p-1 rounded w-full">
-                        حفظ البحث الحالي
-                      </button>
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Pagination & Views Group */}
-            <div className="flex items-center gap-3">
-              {/* Pagination */}
-              <div className="flex items-center gap-3 text-gray-600">
-                <div className="text-[13px]">
-                  <span className="font-bold text-gray-800">{totalCount === 0 ? "0" : startIdx}-{endIdx}</span>
-                  <span className="mx-1">/</span>
-                  <span className="font-bold text-gray-800">{totalCount || filteredData.length}</span>
+                  )}
                 </div>
-                {baseUrl && (
-                  <div className="flex items-center text-gray-400">
-                    <button className="p-1 hover:text-black hover:bg-gray-100 rounded disabled:opacity-30" disabled={currentPage >= totalPages} onClick={() => {
-                       const url = new URL(window.location.href); url.searchParams.set("page", String(currentPage + 1)); window.location.href = url.pathname + url.search;
-                    }}> <ChevronRight className="w-4 h-4" /> </button>
-                    <button className="p-1 hover:text-black hover:bg-gray-100 rounded disabled:opacity-30" disabled={currentPage <= 1} onClick={() => {
-                       const url = new URL(window.location.href); url.searchParams.set("page", String(currentPage - 1)); window.location.href = url.pathname + url.search;
-                    }}> <ChevronLeft className="w-4 h-4" /> </button>
+
+                {/* Favorites */}
+                <div className="relative">
+                  <div className={`flex items-center gap-1 cursor-pointer px-1.5 py-1 rounded transition-colors ${activeDropdown === "favorite" ? "bg-gray-200 text-black" : "hover:bg-gray-100"}`} onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "favorite" ? null : "favorite"); }}>
+                    <Star className="w-4 h-4" /> <span>المفضلات</span> <ChevronDown className="w-3 h-3" />
                   </div>
-                )}
+                  {activeDropdown === "favorite" && (
+                    <div className="absolute top-full right-0 mt-1 w-56 bg-white rounded shadow-md border border-gray-200 py-2 z-50" onClick={e => e.stopPropagation()}>
+                      <div className="px-4 py-2 text-sm text-gray-500">
+                        <div className="font-bold text-gray-700 mb-2 border-b pb-1">
+                          عمليات البحث المفضلة
+                        </div>
+                        <button className="text-right text-[#017E84] hover:bg-gray-50 p-1 rounded w-full">
+                          حفظ البحث الحالي
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* View Switcher */}
-              <div className="flex items-center gap-0.5">
-                <button onClick={() => setActiveView("list")} className={`p-1.5 rounded ${activeView === "list" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="قائمة">
-                  <List className="w-4 h-4" />
-                </button>
-                {kanbanView && (
-                  <button onClick={() => setActiveView("kanban")} className={`p-1.5 rounded ${activeView === "kanban" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="كانبان">
-                    <LayoutGrid className="w-4 h-4" />
+              {/* Pagination & Views Group */}
+              <div className="flex items-center gap-3">
+                {/* Pagination */}
+                <div className="flex items-center gap-3 text-gray-600">
+                  <div className="text-[13px]">
+                    <span className="font-bold text-gray-800">{totalCount === 0 ? "0" : startIdx}-{endIdx}</span>
+                    <span className="mx-1">/</span>
+                    <span className="font-bold text-gray-800">{totalCount || filteredData.length}</span>
+                  </div>
+                  {baseUrl && (
+                    <div className="flex items-center text-gray-400">
+                      <button className="p-1 hover:text-black hover:bg-gray-100 rounded disabled:opacity-30" disabled={currentPage >= totalPages} onClick={() => {
+                         const url = new URL(window.location.href); url.searchParams.set("page", String(currentPage + 1)); window.location.href = url.pathname + url.search;
+                      }}> <ChevronRight className="w-4 h-4" /> </button>
+                      <button className="p-1 hover:text-black hover:bg-gray-100 rounded disabled:opacity-30" disabled={currentPage <= 1} onClick={() => {
+                         const url = new URL(window.location.href); url.searchParams.set("page", String(currentPage - 1)); window.location.href = url.pathname + url.search;
+                      }}> <ChevronLeft className="w-4 h-4" /> </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* View Switcher */}
+                <div className="flex items-center gap-0.5">
+                  <button onClick={() => setActiveView("list")} className={`p-1.5 rounded ${activeView === "list" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="قائمة">
+                    <List className="w-4 h-4" />
                   </button>
-                )}
-                {pivotView && (
-                  <button onClick={() => setActiveView("pivot")} className={`p-1.5 rounded ${activeView === "pivot" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="محوري">
-                    <Table2 className="w-4 h-4" />
-                  </button>
-                )}
-                {graphView && (
-                  <button onClick={() => setActiveView("graph")} className={`p-1.5 rounded ${activeView === "graph" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="رسم بياني">
-                    <BarChart3 className="w-4 h-4" />
-                  </button>
-                )}
-                {calendarView && (
-                  <button onClick={() => setActiveView("calendar")} className={`p-1.5 rounded ${activeView === "calendar" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="تقويم">
-                    <Calendar className="w-4 h-4" />
-                  </button>
-                )}
+                  {kanbanView && (
+                    <button onClick={() => setActiveView("kanban")} className={`p-1.5 rounded ${activeView === "kanban" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="كانبان">
+                      <LayoutGrid className="w-4 h-4" />
+                    </button>
+                  )}
+                  {pivotView && (
+                    <button onClick={() => setActiveView("pivot")} className={`p-1.5 rounded ${activeView === "pivot" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="محوري">
+                      <Table2 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {graphView && (
+                    <button onClick={() => setActiveView("graph")} className={`p-1.5 rounded ${activeView === "graph" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="رسم بياني">
+                      <BarChart3 className="w-4 h-4" />
+                    </button>
+                  )}
+                  {calendarView && (
+                    <button onClick={() => setActiveView("calendar")} className={`p-1.5 rounded ${activeView === "calendar" ? "bg-gray-200 text-gray-800" : "hover:bg-gray-100 text-gray-500"}`} title="تقويم">
+                      <Calendar className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
+
             </div>
-
-        </div>
+          )}
       </div>
       </div>
       {/* Data Table */}
