@@ -144,6 +144,38 @@ async function checkDependencies(modelName: string, id: string): Promise<{ hasDe
     }
   }
 
+  if (normalizedModel === "productcategory" || normalizedModel === "product_category") {
+    const category = await prisma.productCategory.findUnique({
+      where: { id },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            products: true,
+            children: true,
+            pricelistItems: true,
+            priceLists: true,
+            StockPutawayRule: true,
+          }
+        }
+      }
+    });
+    if (!category) return { hasDeps: false };
+    const counts = category._count;
+    if (counts.products > 0 || counts.children > 0 || counts.pricelistItems > 0 || counts.priceLists > 0 || counts.StockPutawayRule > 0) {
+      const details = [];
+      if (counts.products > 0) details.push(`منتجات (${counts.products})`);
+      if (counts.children > 0) details.push(`فئات فرعية (${counts.children})`);
+      if (counts.pricelistItems > 0) details.push(`عناصر قائمة أسعار (${counts.pricelistItems})`);
+      if (counts.priceLists > 0) details.push(`قوائم أسعار (${counts.priceLists})`);
+      if (counts.StockPutawayRule > 0) details.push(`قواعد تخزين مخزنية (${counts.StockPutawayRule})`);
+      return {
+        hasDeps: true,
+        reason: `الفئة "${category.name}" مرتبطة بـ: ${details.join("، ")}`
+      };
+    }
+  }
+
   return { hasDeps: false };
 }
 
@@ -154,6 +186,7 @@ export async function bulkDeleteRecords(modelName: string, ids: string[]) {
   let accessModel = modelName.toLowerCase();
   if (accessModel === "saleorder") accessModel = "sale";
   if (accessModel === "purchaseorder") accessModel = "purchase";
+  if (accessModel === "productcategory" || accessModel === "product_category") accessModel = "base";
   await ensureAccess(accessModel, "unlink");
 
   // 1. Dependency checks
@@ -220,6 +253,9 @@ export async function bulkDeleteRecords(modelName: string, ids: string[]) {
           await tx.message.deleteMany({ where: { invoiceId: id } });
           await tx.attachment.deleteMany({ where: { invoiceId: id } });
           await tx.invoice.delete({ where: { id } });
+        } else if (normalizedModel === "productcategory" || normalizedModel === "product_category") {
+          await tx.stockPutawayRule.deleteMany({ where: { categoryId: id } });
+          await tx.productCategory.delete({ where: { id } });
         } else {
           const m = (tx as any)[modelName];
           if (m) {
@@ -246,6 +282,7 @@ export async function bulkArchiveRecords(modelName: string, ids: string[], activ
   let accessModel = modelName.toLowerCase();
   if (accessModel === "saleorder") accessModel = "sale";
   if (accessModel === "purchaseorder") accessModel = "purchase";
+  if (accessModel === "productcategory" || accessModel === "product_category") accessModel = "base";
   await ensureAccess(accessModel, "write");
 
   // 1. If we are archiving (active === false), check dependencies
