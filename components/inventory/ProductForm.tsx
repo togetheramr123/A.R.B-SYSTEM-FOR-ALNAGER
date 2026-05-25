@@ -976,9 +976,9 @@ export function ProductForm({
                   }
                   router.refresh();
                   if (returnUrl) {
-                    router.push(returnUrl);
+                    router.replace(returnUrl);
                   } else {
-                    router.push(
+                    router.replace(
                       `/${locale}/inventory/products/${newProduct.id}`,
                     );
                   }

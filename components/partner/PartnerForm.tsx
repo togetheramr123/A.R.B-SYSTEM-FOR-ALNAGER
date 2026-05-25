@@ -191,7 +191,7 @@ export default function PartnerForm({
           onSuccess(res.id);
         } else if (!isModal) {
           // Navigate to the newly created partner page, or returnUrl if specified
-          router.push(effectiveReturnUrl || `/${locale}/contacts/${res.id}`);
+          router.replace(effectiveReturnUrl || `/${locale}/contacts/${res.id}`);
         }
       }
     } catch (err: any) {

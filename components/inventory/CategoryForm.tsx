@@ -118,9 +118,9 @@ export function CategoryForm({
         const newCat = await createCategory(cleanData);
         clearDraft();
         if (returnUrl) {
-          router.push(returnUrl);
+          router.replace(returnUrl);
         } else {
-          router.push(`/${locale}/inventory/config/categories/${newCat.id}`);
+          router.replace(`/${locale}/inventory/config/categories/${newCat.id}`);
         }
       }
     } catch (error) {

@@ -638,7 +638,7 @@ export function InvoiceForm({
         const locale = currentPath.split('/')[1] || 'ar';
         const newId = result.data?.id || result.id;
         const targetPath = isRefund ? 'invoices' : isSale ? 'invoices' : 'bills';
-        router.push(`/${locale}/accounting/${targetPath}/${newId}`);
+        router.replace(`/${locale}/accounting/${targetPath}/${newId}`);
       } else {
         const msg = parsePrismaError(result?.error) || "حدث خطأ غير معروف أثناء الحفظ";
         toast.error(msg);

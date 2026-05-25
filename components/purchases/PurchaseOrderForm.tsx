@@ -443,7 +443,7 @@ const onSubmit = async (data: any) => {
           toast.success("تم الحفظ بنجاح");
         }
         pendingActionRef.current = null;
-        router.push(`/${locale}/purchases/${(newOrder as any).id}`);
+        router.replace(`/${locale}/purchases/${(newOrder as any).id}`);
       } else if ((newOrder as any)?.error) {
         const msg = parsePrismaError((newOrder as any).error);
         toast.error(msg);
