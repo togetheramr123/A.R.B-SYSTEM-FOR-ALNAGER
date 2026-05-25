@@ -25,42 +25,38 @@ export default async function SaleOrderDetailPage(props: {
   } = await import("@/lib/auth");
   const session = await getSession();
   const userRole = session?.role || "USER";
-  const permissions = await getUserGroupPermissions();
+
+  // Fetch permissions and order in parallel
+  const [permissions, order] = await Promise.all([
+    getUserGroupPermissions(),
+    id === "create" ? Promise.resolve(null) : prisma.saleOrder.findUnique({
+      where: { id },
+      include: {
+        partner: true,
+        lines: {
+          include: { product: true },
+          orderBy: { sequence: "asc" }
+        },
+        user: true,
+        salesTeam: true,
+        warehouse: true,
+        entreprise: true,
+        fiscalPosition: true,
+        paymentTerm: true,
+        priceList: true,
+        messages: {
+          include: { author: true },
+          orderBy: { createdAt: "desc" }
+        }
+      }
+    })
+  ]);
+
   const canViewCustomerDetails = userRole === "ADMIN" || permissions._isAdmin || permissions.cust_view_details || false;
   if (id === "create") {
     return <SaleOrderForm userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} />;
   }
-  const order = await prisma.saleOrder.findUnique({
-    where: {
-      id
-    },
-    include: {
-      partner: true,
-      lines: {
-        include: {
-          product: true
-        },
-        orderBy: {
-          sequence: "asc"
-        }
-      },
-      user: true,
-      salesTeam: true,
-      warehouse: true,
-      entreprise: true,
-      fiscalPosition: true,
-      paymentTerm: true,
-      priceList: true,
-      messages: {
-        include: {
-          author: true
-        },
-        orderBy: {
-          createdAt: "desc"
-        }
-      }
-    }
-  });
+
   if (!order) {
     notFound();
   }
