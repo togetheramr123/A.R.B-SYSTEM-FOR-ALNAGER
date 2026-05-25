@@ -99,6 +99,7 @@ function LayoutContent({
   userRole: string;
 }) {
   const tCommon = useTranslations('Common');
+  const isDemoMode = process.env.NEXT_PUBLIC_IS_DEMO === 'true';
   return (
     <div className="min-h-screen flex bg-[#f0f2f5] pb-[56px] md:pb-0">
       <NextTopLoader color="#4f46e5" showSpinner={false} height={3} shadow="0 0 10px #4f46e5,0 0 5px #4f46e5" />
@@ -106,7 +107,19 @@ function LayoutContent({
       <CommandPalette />
       <NarrowSidebar locale={locale} userProfile={userProfile} userRole={userRole} />
       <div className="flex-1 flex flex-col min-h-screen min-w-0 transition-all duration-300 ease-in-out relative">
-        <header className="bg-white border-b border-gray-200 h-[48px] sticky top-0 z-30 px-4 flex items-center justify-between shadow-sm shrink-0">
+        {isDemoMode && (
+          <div className="bg-red-600 text-white text-center py-1.5 text-xs font-bold font-arabic z-50 sticky top-0 flex items-center justify-center gap-2 shadow-md shrink-0 h-8">
+            <span>⚠️ تنبيه: أنت تعمل الآن على النسخة التجريبية (Demo) - للتدريب والتجربة فقط.</span>
+            <span className="hidden sm:inline">|</span>
+            <a href="https://a-r-b-system-for-alnager.onrender.com" className="underline hover:text-red-100 flex items-center gap-1 font-bold">
+              العودة للنسخة الأصلية الحقيقية (Live) ↩
+            </a>
+          </div>
+        )}
+        <header className={cn(
+          "bg-white border-b border-gray-200 h-[48px] sticky z-30 px-4 flex items-center justify-between shadow-sm shrink-0",
+          isDemoMode ? "top-8" : "top-0"
+        )}>
           <div className="flex items-center h-full">
             <div className="w-8 h-8 mx-2 rounded shrink-0 bg-slate-100 flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors">
               <svg className="w-5 h-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
@@ -124,7 +137,10 @@ function LayoutContent({
             {userProfile?.id && <FloatingChatWidget currentUserId={userProfile.id} />}
           </div>
         </header>
-        <div className="bg-white border-b border-slate-300 min-h-[56px] sticky top-[48px] z-20 flex items-center justify-between px-4 sm:px-6 w-full shrink-0">
+        <div className={cn(
+          "bg-white border-b border-slate-300 min-h-[56px] sticky z-20 flex items-center justify-between px-4 sm:px-6 w-full shrink-0",
+          isDemoMode ? "top-[80px]" : "top-[48px]"
+        )}>
           <div className="flex items-center flex-1 gap-4">
             <Breadcrumbs locale={locale} />
             <div id="breadcrumb-actions-portal" className="flex items-center mr-4 gap-2 empty:hidden"></div>
