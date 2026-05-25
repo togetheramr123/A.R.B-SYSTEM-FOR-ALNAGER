@@ -1,9 +1,10 @@
 "use client";
 
-import { Search, Filter, ChevronDown, Star, ChevronLeft, ChevronRight, List, Calendar, Clock, MoreHorizontal, Check, LayoutGrid, Table2, BarChart3, Grid3X3 } from "lucide-react";
+import { Search, Filter, ChevronDown, Star, ChevronLeft, ChevronRight, List, Calendar, Clock, MoreHorizontal, Check, LayoutGrid, Table2, BarChart3, Grid3X3, Trash2, Archive, ArchiveRestore } from "lucide-react";
 import React, { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import { fetchGroupHeaders, fetchGroupRows } from "@/app/actions/genericGrouping";
+import { bulkDeleteRecords, bulkArchiveRecords } from "@/app/actions/bulk-actions";
 export interface OdooColumn<T = any> {
   id: string;
   label: string;
@@ -64,6 +65,41 @@ export function OdooTable<T extends {
   const [groupByKey, setGroupByKey] = useState<string | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({});
   const [activeView, setActiveView] = useState<"list" | "kanban" | "calendar" | "pivot" | "graph">("list");
+  
+  /* Bulk Action States */
+  const [isBulkMenuOpen, setIsBulkMenuOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState<'delete' | 'archive' | 'unarchive' | null>(null);
+  const [isActionPending, setIsActionPending] = useState(false);
+
+  const handleBulkAction = async (actionType: 'delete' | 'archive' | 'unarchive') => {
+    setIsActionPending(true);
+    try {
+      let result;
+      if (actionType === 'delete') {
+        result = await bulkDeleteRecords(modelName || '', selected);
+      } else if (actionType === 'archive') {
+        result = await bulkArchiveRecords(modelName || '', selected, false);
+      } else if (actionType === 'unarchive') {
+        result = await bulkArchiveRecords(modelName || '', selected, true);
+      }
+
+      if (result?.error) {
+        toast.error(result.error, {
+          style: { direction: 'rtl', textAlign: 'right' }
+        });
+      } else if (result?.success) {
+        toast.success("تم تنفيذ العملية بنجاح");
+        setSelected([]);
+      }
+    } catch (err: any) {
+      toast.error("حدث خطأ أثناء تنفيذ العملية: " + (err.message || ''));
+    } finally {
+      setIsActionPending(false);
+      setIsConfirmOpen(null);
+      setIsBulkMenuOpen(false);
+    }
+  };
+
   /* Server-side Grouping States */
   const [serverGroupHeaders, setServerGroupHeaders] = useState<any[]>([]);
   const [serverGroupData, setServerGroupData] = useState<Record<string, any[]>>({});
@@ -71,12 +107,15 @@ export function OdooTable<T extends {
 
   // Close dropdowns when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setActiveDropdown(null);
-    if (activeDropdown) {
+    const handleClickOutside = () => {
+      setActiveDropdown(null);
+      setIsBulkMenuOpen(false);
+    };
+    if (activeDropdown || isBulkMenuOpen) {
       document.addEventListener("click", handleClickOutside);
     }
     return () => document.removeEventListener("click", handleClickOutside);
-  }, [activeDropdown]);
+  }, [activeDropdown, isBulkMenuOpen]);
 
   /* Fetch Server Group Headers */
   useEffect(() => {
@@ -182,11 +221,51 @@ export function OdooTable<T extends {
           <div className="flex items-center gap-2 order-2 md:order-1">
              {actions}
              {selected.length > 0 && (
-               <div className="flex items-center gap-2 mr-4 pr-4">
-                  <div className="bg-[#017E84] text-white text-[13px] px-2 py-0.5 rounded flex items-center gap-1 shadow-sm font-medium">
+               <div className="flex items-center gap-2 mr-4 pr-4 border-r border-gray-200">
+                  <div className="bg-[#714B67]/10 text-[#714B67] text-[13px] px-2 py-0.5 rounded flex items-center gap-1 font-bold">
                     <span>{selected.length} محدد</span>
                   </div>
-                  {renderBulkActions && renderBulkActions(selected)}
+                  {renderBulkActions ? (
+                    renderBulkActions(selected)
+                  ) : modelName ? (
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsBulkMenuOpen(!isBulkMenuOpen);
+                        }}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-xs font-bold transition-colors flex items-center gap-1 font-arabic"
+                      >
+                        إجراءات <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                      {isBulkMenuOpen && (
+                        <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded shadow-lg py-1 z-[100] text-right font-arabic">
+                          <button
+                            onClick={() => setIsConfirmOpen('delete')}
+                            className="w-full text-right px-4 py-2 hover:bg-red-50 text-red-600 font-medium flex items-center gap-2 text-xs"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> حذف المحدّد
+                          </button>
+                          {(modelName.toLowerCase() === 'partner' || modelName.toLowerCase() === 'product') && (
+                            <>
+                              <button
+                                onClick={() => setIsConfirmOpen('archive')}
+                                className="w-full text-right px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-2 text-xs"
+                              >
+                                <Archive className="w-3.5 h-3.5" /> أرشفة المحدّد
+                              </button>
+                              <button
+                                onClick={() => setIsConfirmOpen('unarchive')}
+                                className="w-full text-right px-4 py-2 hover:bg-slate-50 text-slate-700 font-medium flex items-center gap-2 text-xs"
+                              >
+                                <ArchiveRestore className="w-3.5 h-3.5" /> إلغاء الأرشفة
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
                </div>
              )}
           </div>
@@ -446,6 +525,37 @@ export function OdooTable<T extends {
         {activeView === "graph" && graphView}
         {activeView === "calendar" && calendarView}
       </div>
+
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 font-arabic">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-2xl border border-gray-200" dir="rtl">
+            <h3 className="text-base font-bold text-gray-900 mb-2">تأكيد الإجراء</h3>
+            <p className="text-xs text-gray-500 mb-6">
+              {isConfirmOpen === 'delete' && `هل أنت متأكد من رغبتك في حذف ${selected.length} عنصر؟ لا يمكن التراجع عن هذا الإجراء.`}
+              {isConfirmOpen === 'archive' && `هل أنت متأكد من رغبتك في أرشفة ${selected.length} عنصر؟`}
+              {isConfirmOpen === 'unarchive' && `هل أنت متأكد من رغبتك في إلغاء أرشفة ${selected.length} عنصر؟`}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                disabled={isActionPending}
+                onClick={() => setIsConfirmOpen(null)}
+                className="px-4 py-2 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50"
+              >
+                إلغاء
+              </button>
+              <button
+                disabled={isActionPending}
+                onClick={() => handleBulkAction(isConfirmOpen)}
+                className={`px-4 py-2 rounded text-xs font-bold text-white disabled:opacity-50 ${
+                  isConfirmOpen === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#017E84] hover:bg-[#015e63]'
+                }`}
+              >
+                {isActionPending ? 'جاري التنفيذ...' : 'تأكيد'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
