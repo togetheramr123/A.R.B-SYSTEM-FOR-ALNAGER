@@ -135,7 +135,8 @@ export function SaleOrderForm({
   defaultEditing = false,
   userRole = 'USER',
   userId = '',
-  allowedCustomerType = 'ALL'
+  allowedCustomerType = 'ALL',
+  canViewCustomerDetails = false
 }: {
   initialData?: any;
   showMargins?: boolean;
@@ -143,6 +144,7 @@ export function SaleOrderForm({
   userRole?: string;
   userId?: string;
   allowedCustomerType?: string;
+  canViewCustomerDetails?: boolean;
 }) {
   const t = useTranslations('Sales');
   const router = useRouter();
@@ -157,6 +159,7 @@ export function SaleOrderForm({
   const isQtyLocked = isFormLocked || status === 'sale';
   const [pageError, setPageError] = useState<string | null>(null);
   const isNewRecord = !initialData?.id;
+  const isQuotationStage = status === 'draft' || status === 'sent';
   const [variantModalOpen, setVariantModalOpen] = useState(false);
   const [variantProductId, setVariantProductId] = useState<string | null>(null);
   
@@ -1607,20 +1610,68 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <Controller name="customer" control={control} render={({
-                        field: {
-                          onChange,
-                          value
-                        }
-                      }) => (
-                        <div className="relative w-full">
-                          <OdooAutocomplete options={customers} value={value} onChange={val => handleCustomerChange(val as string, onChange)} onCreateEdit={query => {
-                            const currentPath = `/${locale}/sales${initialData?.id ? `/${initialData.id}` : '/new'}`;
-                            router.push(`/${locale}/contacts/create?name=${encodeURIComponent(query)}&isCustomer=true&returnUrl=${encodeURIComponent(currentPath)}`);
-                          }} onLinkClick={(e, id) => safeNavigate(`/${locale}/contacts/${id}`)} showWhatsApp={true} error={!!errors.customer} placeholder="ابدأ الكتابة للبحث أو الإنشاء..." />
-                          {errors.customer && <p className="text-xs text-red-500 mt-1">{errors.customer.message as string}</p>}
-                        </div>
-                      )} />
+                      {isQuotationStage ? (
+                        /* --- حالة عرض السعر (مسودة/مرسل): تعديل مباشر + سهم للانتقال --- */
+                        <Controller name="customer" control={control} render={({
+                          field: {
+                            onChange,
+                            value
+                          }
+                        }) => (
+                          <div className="relative w-full flex items-center gap-1">
+                            <div className="flex-1">
+                              <OdooAutocomplete options={customers} value={value} onChange={val => handleCustomerChange(val as string, onChange)} onCreateEdit={query => {
+                                const currentPath = `/${locale}/sales${initialData?.id ? `/${initialData.id}` : '/new'}`;
+                                router.push(`/${locale}/contacts/create?name=${encodeURIComponent(query)}&isCustomer=true&returnUrl=${encodeURIComponent(currentPath)}`);
+                              }} onLinkClick={canViewCustomerDetails ? ((e, id) => safeNavigate(`/${locale}/contacts/${id}`)) : undefined} showWhatsApp={true} error={!!errors.customer} placeholder="ابدأ الكتابة للبحث أو الإنشاء..." />
+                            </div>
+                            {value && canViewCustomerDetails && (
+                              <button
+                                type="button"
+                                onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                className="flex items-center justify-center w-7 h-7 rounded hover:bg-slate-100 text-[#714B67] hover:text-[#5B3C53] transition-colors shrink-0"
+                                title="الدخول على بيانات العميل"
+                              >
+                                <ChevronLeft className="w-5 h-5" />
+                              </button>
+                            )}
+                            {errors.customer && <p className="text-xs text-red-500 mt-1">{errors.customer.message as string}</p>}
+                          </div>
+                        )} />
+                      ) : (
+                        /* --- حالة بعد التأكيد (sale/done/cancel): رابط مباشر لصفحة العميل --- */
+                        <Controller name="customer" control={control} render={({
+                          field: { value }
+                        }) => {
+                          const selectedCustomer = customers.find(c => c.id === value);
+                          const customerName = selectedCustomer?.label || initialData?.partner?.name || '—';
+                          return (
+                            <div className="flex items-center gap-1 py-1.5">
+                              {canViewCustomerDetails && value ? (
+                                <button
+                                  type="button"
+                                  onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                  className="text-[15px] font-bold text-[#714B67] hover:underline cursor-pointer bg-transparent border-none outline-none transition-colors"
+                                >
+                                  {customerName}
+                                </button>
+                              ) : (
+                                <span className="text-[15px] font-bold text-slate-800">{customerName}</span>
+                              )}
+                              {canViewCustomerDetails && value && (
+                                <button
+                                  type="button"
+                                  onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                  className="flex items-center justify-center w-7 h-7 rounded hover:bg-slate-100 text-[#714B67] hover:text-[#5B3C53] transition-colors shrink-0"
+                                  title="الدخول على بيانات العميل"
+                                >
+                                  <ChevronLeft className="w-5 h-5" />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        }} />
+                      )}
                     </div>
                     {watch('customer') && (
                       <div className="flex gap-1 shrink-0">

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { SaleOrderForm } from "@/components/sales/SaleOrderForm";
 import { serializeDecimal } from "@/lib/serialize";
+import { getUserGroupPermissions } from "@/app/actions/settings";
 export const dynamic = "force-dynamic";
 export default async function SaleOrderDetailPage(props: {
   params: Promise<{
@@ -24,8 +25,10 @@ export default async function SaleOrderDetailPage(props: {
   } = await import("@/lib/auth");
   const session = await getSession();
   const userRole = session?.role || "USER";
+  const permissions = await getUserGroupPermissions();
+  const canViewCustomerDetails = userRole === "ADMIN" || permissions._isAdmin || permissions.cust_view_details || false;
   if (id === "create") {
-    return <SaleOrderForm userRole={userRole} />;
+    return <SaleOrderForm userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} />;
   }
   const order = await prisma.saleOrder.findUnique({
     where: {
@@ -86,5 +89,5 @@ export default async function SaleOrderDetailPage(props: {
       name: updatedBy.name || updatedBy.email
     } : null
   });
-  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} />;
+  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} />;
 }
