@@ -46,6 +46,80 @@ export async function checkAccess(model: string, operation: AccessOperation): Pr
             }
         }
 
+        // 4. Fallback: check UI permissions JSON configured on each group
+        for (const group of userWithGroups.groups) {
+            if (!group.permissions) continue;
+            let perms: Record<string, boolean> = {};
+            try {
+                perms = JSON.parse(group.permissions);
+            } catch {
+                continue;
+            }
+
+            const modelClean = model.toLowerCase().replace(/_/g, '.');
+
+            // Check base permission (some modules check base)
+            if (modelClean === 'base') {
+                return true; // base is allowed if user has a valid group
+            }
+
+            // Check pricelist permissions
+            if (modelClean === 'pricelist' || modelClean === 'product.pricelist') {
+                if (operation === 'read' && perms.pricelist_view) return true;
+                if (operation === 'create' && perms.pricelist_create) return true;
+                if (operation === 'write' && perms.pricelist_edit) return true;
+                if (operation === 'unlink' && perms.pricelist_delete) return true;
+            }
+
+            // Check sale order permissions
+            if (modelClean === 'sale.order' || modelClean === 'sale' || modelClean === 'saleorder') {
+                if (operation === 'read' && perms.sales_view) return true;
+                if (operation === 'create' && perms.sales_create) return true;
+                if (operation === 'write' && perms.sales_edit) return true;
+                if (operation === 'unlink' && perms.sales_delete) return true;
+            }
+
+            // Check purchase order permissions
+            if (modelClean === 'purchase.order' || modelClean === 'purchase' || modelClean === 'purchaseorder') {
+                if (operation === 'read' && perms.purch_view) return true;
+                if (operation === 'create' && perms.purch_create) return true;
+                if (operation === 'write' && perms.purch_edit) return true;
+                if (operation === 'unlink' && perms.purch_delete) return true;
+            }
+
+            // Check partner permissions
+            if (modelClean === 'partner' || modelClean === 'res.partner') {
+                if (operation === 'read' && perms.cust_view) return true;
+                if (operation === 'create' && perms.cust_create) return true;
+                if (operation === 'write' && perms.cust_edit) return true;
+                if (operation === 'unlink' && perms.cust_edit) return true;
+            }
+
+            // Check product permissions
+            if (modelClean === 'product' || modelClean === 'product.product' || modelClean === 'product.template') {
+                if (operation === 'read' && perms.inv_view) return true;
+                if (operation === 'create' && perms.inv_create_product) return true;
+                if (operation === 'write' && perms.inv_edit_product) return true;
+                if (operation === 'unlink' && perms.inv_edit_product) return true;
+            }
+
+            // Check stock picking permissions
+            if (modelClean === 'stock.picking' || modelClean === 'stock_picking') {
+                if (operation === 'read' && (perms.inv_view || perms.inv_view_picking)) return true;
+                if (operation === 'create' && perms.inv_view_picking) return true;
+                if (operation === 'write' && perms.inv_validate_picking) return true;
+                if (operation === 'unlink' && perms.inv_validate_picking) return true;
+            }
+
+            // Check accounting move / invoice permissions
+            if (modelClean === 'account.move' || modelClean === 'account_move' || modelClean === 'invoice') {
+                if (operation === 'read' && perms.acc_view_invoices) return true;
+                if (operation === 'create' && perms.acc_create_invoice) return true;
+                if (operation === 'write' && perms.acc_create_invoice) return true;
+                if (operation === 'unlink' && perms.acc_cancel_invoice) return true;
+            }
+        }
+
         // If explicitly no matching rule found, Odoo usually defaults to Deny.
         return false;
 
