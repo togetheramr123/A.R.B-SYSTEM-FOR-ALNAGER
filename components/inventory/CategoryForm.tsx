@@ -382,6 +382,7 @@ export function CategoryForm({
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="bg-white px-4 sm:px-8 pt-4 pb-12 w-full relative"
+          autoComplete="off"
         >
           {" "}
           {}{" "}
@@ -396,7 +397,7 @@ export function CategoryForm({
                 {...register("name", {
                   required: true,
                 })}
-                autoComplete="new-password"
+                autoComplete="off"
                 className="text-3xl font-bold bg-transparent outline-none w-full text-slate-900 placeholder-slate-200 border-b border-transparent hover:border-slate-300 focus:border-slate-800 transition-all pb-1"
                 placeholder="e.g. All"
               />{" "}
