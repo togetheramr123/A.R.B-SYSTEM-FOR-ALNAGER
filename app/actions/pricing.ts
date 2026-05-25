@@ -157,6 +157,133 @@ export async function getProductPrice(params: {
     price: finalPrice,
     discount: finalDiscount,
     appliedPriceListName: bestMatchList.name,
-    warnings
+    warnings,
+    // نسب الخصم على مستوى القائمة
+    priceListDiscount1: Number(bestMatchList.discount1) || 0,
+    priceListDiscount2: Number(bestMatchList.discount2) || 0,
+    priceListDiscount3: Number(bestMatchList.discount3) || 0,
+    priceListAddition: Number(bestMatchList.addition) || 0,
+  };
+}
+
+// === جلب خيارات التسعير للعميل (اتفاقية vs قائمة أسعار) ===
+export type PricingOption = {
+  source: 'agreement' | 'pricelist';
+  name: string;
+  discount1: number;
+  discount2: number;
+  discount3: number;
+  addition: number;
+  id: string;
+  startDate?: string | null;
+  endDate?: string | null;
+};
+
+export type PartnerPricingOptions = {
+  hasConflict: boolean;
+  agreement: PricingOption | null;
+  pricelist: PricingOption | null;
+};
+
+export async function getPartnerPricingOptions(partnerId: string, type: 'sale' | 'purchase'): Promise<PartnerPricingOptions> {
+  const companyId = await getCompanyId();
+  const now = new Date();
+
+  // 1. جلب اتفاقية العميل
+  let agreement: PricingOption | null = null;
+  if (type === 'sale') {
+    const saleAgreement = await prisma.saleAgreement.findFirst({
+      where: {
+        partnerId,
+        OR: [
+          { startDate: null },
+          { startDate: { lte: now } }
+        ],
+      },
+      orderBy: { startDate: 'desc' }
+    });
+    if (saleAgreement && (Number(saleAgreement.discount1) > 0 || Number(saleAgreement.discount2) > 0 || Number(saleAgreement.discount3) > 0)) {
+      agreement = {
+        source: 'agreement',
+        name: `اتفاقية بيع - ${saleAgreement.group || 'عامة'}`,
+        discount1: Number(saleAgreement.discount1),
+        discount2: Number(saleAgreement.discount2),
+        discount3: Number(saleAgreement.discount3),
+        addition: Number(saleAgreement.addition),
+        id: saleAgreement.id,
+        startDate: saleAgreement.startDate?.toISOString() || null,
+        endDate: saleAgreement.endDate?.toISOString() || null,
+      };
+    }
+  } else {
+    const purchaseAgreement = await prisma.purchaseAgreement.findFirst({
+      where: {
+        partnerId,
+        OR: [
+          { startDate: null },
+          { startDate: { lte: now } }
+        ],
+      },
+      orderBy: { startDate: 'desc' }
+    });
+    if (purchaseAgreement && (Number(purchaseAgreement.discount1) > 0 || Number(purchaseAgreement.discount2) > 0 || Number(purchaseAgreement.discount3) > 0)) {
+      agreement = {
+        source: 'agreement',
+        name: `اتفاقية شراء - ${purchaseAgreement.group || 'عامة'}`,
+        discount1: Number(purchaseAgreement.discount1),
+        discount2: Number(purchaseAgreement.discount2),
+        discount3: Number(purchaseAgreement.discount3),
+        addition: Number(purchaseAgreement.addition),
+        id: purchaseAgreement.id,
+        startDate: purchaseAgreement.startDate?.toISOString() || null,
+        endDate: purchaseAgreement.endDate?.toISOString() || null,
+      };
+    }
+  }
+
+  // 2. جلب قائمة الأسعار المطبقة على العميل
+  let pricelist: PricingOption | null = null;
+  const matchingPricelist = await prisma.priceList.findFirst({
+    where: {
+      companyId,
+      active: true,
+      type,
+      OR: [
+        { discount1: { gt: 0 } },
+        { discount2: { gt: 0 } },
+        { discount3: { gt: 0 } },
+      ],
+      AND: [
+        { OR: [{ startDate: null }, { startDate: { lte: now } }] },
+        { OR: [{ endDate: null }, { endDate: { gte: now } }] },
+        {
+          OR: [
+            { partnerId: partnerId },
+            { partners: { some: { id: partnerId } } },
+          ]
+        }
+      ]
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+
+  if (matchingPricelist) {
+    pricelist = {
+      source: 'pricelist',
+      name: matchingPricelist.name,
+      discount1: Number(matchingPricelist.discount1),
+      discount2: Number(matchingPricelist.discount2),
+      discount3: Number(matchingPricelist.discount3),
+      addition: Number(matchingPricelist.addition),
+      id: matchingPricelist.id,
+      startDate: matchingPricelist.startDate?.toISOString() || null,
+      endDate: matchingPricelist.endDate?.toISOString() || null,
+    };
+  }
+
+  return {
+    hasConflict: !!agreement && !!pricelist,
+    agreement,
+    pricelist,
   };
 }

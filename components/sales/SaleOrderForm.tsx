@@ -34,7 +34,9 @@ import ImageOrderParserModal from '../inventory/ImageOrderParserModal';
 import { DebtFollowUpModal } from './DebtFollowUpModal';
 import { createSaleOrder, updateSaleOrder, confirmSaleOrder, cancelSaleOrder, createInvoiceFromOrder, setToDraftSaleOrder, restoreSaleOrderAndInventory, fetchPurchaseInvoiceForSales, requestReservation, approveReservation, requestNegativeStockApproval, approveNegativeStock, rejectNegativeStock } from '@/app/actions/sales';
 import { getUsers } from '@/app/actions/settings';
-import { getProductPrice } from '@/app/actions/pricing';
+import { getProductPrice, getPartnerPricingOptions } from '@/app/actions/pricing';
+import type { PartnerPricingOptions, PricingOption } from '@/app/actions/pricing';
+import { PriceAgreementChooser } from './PriceAgreementChooser';
 import { getAllPriceLists } from '@/app/actions/pricelists';
 import { getAllPartners } from '@/app/actions/partner';
 import { getAllProducts, getProductCategories } from '@/app/actions/products';
@@ -150,6 +152,7 @@ export function SaleOrderForm({
   const router = useRouter();
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState('lines');
+  const [pricingOptions, setPricingOptions] = useState<PartnerPricingOptions | null>(null);
   const [status, setStatus] = useState(initialData?.status || 'draft');
   const [isSaving, setIsSaving] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(initialData?.id || null);
@@ -401,6 +404,17 @@ export function SaleOrderForm({
       toast.info("تم تحديث الأسعار طبقاً لقائمة أسعار العميل المحددة.", {
         duration: 5000
       });
+    }
+    // === فحص تعارض الخصومات (اتفاقية العميل vs قائمة الأسعار) ===
+    try {
+      const options = await getPartnerPricingOptions(val, 'sale');
+      if (options.hasConflict) {
+        setPricingOptions(options);
+      } else {
+        setPricingOptions(null);
+      }
+    } catch {
+      setPricingOptions(null);
     }
   };
   const handleProductChange = async (index: number, productId: string | null) => {
@@ -1736,6 +1750,31 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
 
             </div>
           </div>
+
+          {/* === شعار اختيار مصدر الخصم (اتفاقية vs قائمة أسعار) === */}
+          {pricingOptions && pricingOptions.hasConflict && (
+            <div className="px-4 sm:px-6">
+              <PriceAgreementChooser
+                options={pricingOptions}
+                onSelect={(source, option) => {
+                  // تطبيق الخصم المختار على جميع بنود الطلب
+                  const currentLines = getValues('lines');
+                  if (currentLines && Array.isArray(currentLines)) {
+                    for (let i = 0; i < currentLines.length; i++) {
+                      if (currentLines[i].lineType === 'line') {
+                        setValue(`lines.${i}.discount`, option.discount1 || 0);
+                        setValue(`lines.${i}.discount2`, option.discount2 || 0);
+                        setValue(`lines.${i}.appliedPriceListName`, option.name);
+                      }
+                    }
+                  }
+                  setPricingOptions(null);
+                  toast.success(`تم تطبيق خصومات ${source === 'agreement' ? 'اتفاقية العميل' : 'قائمة الأسعار'}: ${option.name}`);
+                }}
+                onDismiss={() => setPricingOptions(null)}
+              />
+            </div>
+          )}
 
           <div className="border-b border-slate-200 mb-4 px-4 sm:px-6">
             <div className="flex gap-8">
