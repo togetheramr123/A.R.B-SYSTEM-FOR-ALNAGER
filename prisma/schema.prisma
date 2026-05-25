@@ -259,6 +259,12 @@ model PriceList {
   partner   Partner?  @relation("PricelistPartner", fields: [partnerId], references: [id])
   partners  Partner[] @relation("PriceListPartners") // Multi-partner support
 
+  // === نسب الخصم على مستوى القائمة ===
+  discount1 Decimal @default(0) // خصم 1 %
+  discount2 Decimal @default(0) // خصم 2 %
+  discount3 Decimal @default(0) // خصم 3 %
+  addition  Decimal @default(0) // إضافة (علاوة) %
+
   company Company         @relation(fields: [companyId], references: [id])
   items   PriceListItem[]
 

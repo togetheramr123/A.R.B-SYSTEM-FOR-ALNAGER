@@ -132,6 +132,19 @@ const MODULE_SECTIONS = [
     ]
   },
   {
+    id: "pricelists",
+    title: "قوائم الأسعار والاتفاقيات",
+    icon: BarChart3,
+    color: "cyan",
+    permissions: [
+      { key: "pricelist_view", label: "رؤية قوائم الأسعار", desc: "الاطلاع على اتفاقيات وقوائم الأسعار" },
+      { key: "pricelist_create", label: "إنشاء قائمة أسعار جديدة", desc: "إضافة اتفاقيات أسعار جديدة" },
+      { key: "pricelist_edit", label: "تعديل قوائم الأسعار", desc: "تعديل الأسعار والخصومات والنطاق" },
+      { key: "pricelist_delete", label: "حذف قوائم الأسعار", desc: "حذف اتفاقيات الأسعار" },
+      { key: "pricelist_apply_discount", label: "تطبيق خصومات القائمة", desc: "استخدام خصومات القائمة في أوامر البيع والشراء" },
+    ]
+  },
+  {
     id: "system",
     title: "النظام والإعدادات",
     icon: Shield,

@@ -162,6 +162,10 @@ export async function createPriceList(data: any) {
         producingCompany: data.producingCompany || null,
         arCode: data.arCode || null,
         categoryId: data.categoryId || null,
+        discount1: parseFloat(data.discount1) || 0,
+        discount2: parseFloat(data.discount2) || 0,
+        discount3: parseFloat(data.discount3) || 0,
+        addition: parseFloat(data.addition) || 0,
         partners: data.partnerIds?.length ? {
           connect: data.partnerIds.map((pid: string) => ({
             id: pid
@@ -217,6 +221,10 @@ export async function updatePriceList(id: string, data: any) {
         producingCompany: data.producingCompany || null,
         arCode: data.arCode || null,
         categoryId: data.categoryId || null,
+        discount1: parseFloat(data.discount1) || 0,
+        discount2: parseFloat(data.discount2) || 0,
+        discount3: parseFloat(data.discount3) || 0,
+        addition: parseFloat(data.addition) || 0,
         partners: {
           set: (data.partnerIds || []).map((pid: string) => ({
             id: pid
@@ -285,12 +293,12 @@ export async function deletePriceListItem(id: string) {
 }
 export async function deletePriceList(id: string) {
   await ensureAccess('pricelist', 'write');
-  prisma.priceListItem.deleteMany({
+  await prisma.priceListItem.deleteMany({
     where: {
       priceListId: id
     }
   });
-  prisma.priceList.update({
+  await prisma.priceList.update({
     where: {
       id
     },
