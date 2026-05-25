@@ -183,7 +183,7 @@ export function OdooCombobox({
               router.push(`${detailUrl}/${value}`);
             }
           }
-        }} onKeyDown={handleKeyDown} readOnly={false} disabled={disabled} autoComplete="off" autoCorrect="off" spellCheck="false" /> <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 px-1 py-1"> {value && showWhatsApp && <button type="button" onClick={e => {
+        }} onKeyDown={handleKeyDown} readOnly={false} disabled={disabled} autoComplete="new-password" autoCorrect="off" spellCheck="false" /> <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 px-1 py-1"> {value && showWhatsApp && <button type="button" onClick={e => {
             e.stopPropagation();
             e.preventDefault();
             window.open('https://web.whatsapp.com', '_blank');

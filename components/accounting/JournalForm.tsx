@@ -202,7 +202,7 @@ export function JournalForm({
             </label>{" "}
             <input {...register("name", {
             required: true
-          })} autoComplete="off" className="text-3xl font-bold text-slate-900 border-b border-slate-300 focus:border-[#017E84] outline-none w-full bg-transparent placeholder-slate-300 pb-1" placeholder="مثال: فودافون كاش" />{" "}
+          })} autoComplete="new-password" className="text-3xl font-bold text-slate-900 border-b border-slate-300 focus:border-[#017E84] outline-none w-full bg-transparent placeholder-slate-300 pb-1" placeholder="مثال: فودافون كاش" />{" "}
           </div>{" "}
         </div>{" "}
         <div className="grid grid-cols-2 gap-12 mb-8">
@@ -338,7 +338,7 @@ export function JournalForm({
                     </label>{" "}
                     <input {...register("code", {
                       required: true
-                    })} autoComplete="off" className="w-2/3 text-sm bg-transparent outline-none uppercase font-mono" placeholder="مثال: INV" />{" "}
+                    })} autoComplete="new-password" className="w-2/3 text-sm bg-transparent outline-none uppercase font-mono" placeholder="مثال: INV" />{" "}
                   </div>{" "}
               </div>{" "}
               <div className="space-y-4 mt-8">

@@ -379,6 +379,7 @@ export function CategoryForm({
                 {...register("name", {
                   required: true,
                 })}
+                autoComplete="new-password"
                 className="text-3xl font-bold bg-transparent outline-none w-full text-slate-900 placeholder-slate-200 border-b border-transparent hover:border-slate-300 focus:border-slate-800 transition-all pb-1"
                 placeholder="e.g. All"
               />{" "}

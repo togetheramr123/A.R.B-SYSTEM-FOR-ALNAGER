@@ -310,7 +310,7 @@ export function PriceListForm({
                   </label>
                   <input
                     {...register('name', { required: true })}
-                    autoComplete="off"
+                    autoComplete="new-password"
                     className="w-full text-[32px] font-bold text-gray-900 bg-transparent outline-none placeholder:text-gray-200 transition-all border-b-2 border-transparent focus:border-[#017E84] hover:border-slate-300 pb-1"
                     placeholder="مثلاً: اتفاقية تسعير جملة مورّدين"
                   />
@@ -386,7 +386,7 @@ export function PriceListForm({
                           }}
                           onFocus={() => setPartnerSearchOpen(true)}
                           placeholder="ابحث وأضف شخص..."
-                          autoComplete="off"
+                          autoComplete="new-password"
                           className="flex-1 bg-transparent border-b border-gray-200 focus:border-[#017E84] hover:border-slate-300 outline-none py-1 text-[13px] placeholder:text-gray-300 transition-colors"
                         />
                         <UserPlus className="w-4 h-4 text-gray-300" />

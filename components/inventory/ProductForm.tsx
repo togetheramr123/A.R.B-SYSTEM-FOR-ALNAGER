@@ -1870,7 +1870,7 @@ export function ProductForm({
                   {" "}
                   <input
                     {...register("name", { required: true })}
-                    autoComplete="off"
+                    autoComplete="new-password"
                     aria-autocomplete="none"
                     spellCheck="false"
                     className="text-[28px] font-bold bg-transparent outline-none w-full text-slate-900 placeholder-slate-300"
