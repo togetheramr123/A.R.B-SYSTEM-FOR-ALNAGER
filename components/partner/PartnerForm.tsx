@@ -20,7 +20,6 @@ import { Chatter } from "@/components/chatter/Chatter";
 import Image from "next/image";
 import { toast } from "sonner";
 import { getPartnerFormPermissions } from "@/app/actions/contacts";
-import { MacStatusBar } from "@/components/common/MacStatusBar";
 import { TopPortal } from "@/components/common/TopPortal";
 interface PartnerFormProps {
   initialData?: any;
@@ -1245,7 +1244,6 @@ export default function PartnerForm({
   }
   return <>
       {" "}
-      <MacStatusBar />{" "}
       {!isModal && <TopPortal>
           <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
             {isDirty && (
