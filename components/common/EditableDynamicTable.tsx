@@ -223,22 +223,31 @@ export function EditableDynamicTable({
     borderRadius: "3px"
   }}>
       {" "}
-      {showSettings && <div ref={settingsRef} className="absolute right-0 top-10 z-[100] bg-white border border-slate-200 shadow-sm rounded-sm py-2 min-w-[220px]">
-          {" "}
+      {showSettings && <div ref={settingsRef} className="absolute right-0 top-10 z-[100] bg-white border border-slate-200 shadow-lg rounded-md py-2 min-w-[220px]" onMouseDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()}>
           <div className="px-3 py-1 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-            {" "}
-            إظهار/إخفاء الأعمدة{" "}
-          </div>{" "}
+            إظهار/إخفاء الأعمدة
+          </div>
           <div className="max-h-60 overflow-y-auto">
-            {" "}
-            {columns.filter(c => !c.required && c.label?.trim()).map(col => <label key={col.id} className="flex flex-row-reverse justify-between items-center px-4 py-2 hover:bg-slate-50 cursor-pointer" onMouseDown={e => e.stopPropagation()}>
-                  {" "}
-                  <span className="text-sm text-slate-700 font-medium">
-                    {col.label}
-                  </span>{" "}
-                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={!!visibleColumns[col.id]} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[#017E84] focus:ring-indigo-500 w-4 h-4 cursor-pointer" />{" "}
-                </label>)}{" "}
-          </div>{" "}
+            {columns.filter(c => !c.required && c.label?.trim()).map(col => {
+              const isVisible = !!visibleColumns[col.id];
+              return <div
+                key={col.id}
+                role="button"
+                tabIndex={0}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleColumn(col.id);
+                }}
+                className="flex flex-row-reverse justify-between items-center px-4 py-2.5 hover:bg-slate-50 cursor-pointer select-none transition-colors"
+              >
+                <span className="text-sm text-slate-700 font-medium">{col.label}</span>
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${isVisible ? 'bg-[#017E84] border-[#017E84]' : 'bg-white border-slate-300'}`}>
+                  {isVisible && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                </div>
+              </div>;
+            })}
+          </div>
         </div>}{" "}
       <div className="w-full overflow-x-auto custom-scrollbar relative pb-10">
         {" "}
