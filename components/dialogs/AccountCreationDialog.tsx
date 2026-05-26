@@ -134,7 +134,7 @@ export function AccountCreationDialog({
           </div>{" "}
           <div className="flex items-center gap-2 mt-2 cursor-pointer" onClick={() => setAllowReconciliation(!allowReconciliation)}>
             {" "}
-            <input type="checkbox" checked={allowReconciliation} onChange={e => setAllowReconciliation(e.target.checked)} className="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500 cursor-pointer" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={allowReconciliation} onChange={e => setAllowReconciliation(e.target.checked)} className="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500 cursor-pointer" />{" "}
             <Label className="cursor-pointer mb-0">السماح بالمطابقة</Label>{" "}
           </div>{" "}
           <p className="text-xs text-slate-500 ml-6 -mt-1">

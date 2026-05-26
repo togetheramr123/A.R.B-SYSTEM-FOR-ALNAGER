@@ -138,7 +138,7 @@ export default function NotifyButton({
                 {" "}
                 <label className="flex items-start gap-2 cursor-pointer">
                   {" "}
-                  <input type="checkbox" checked={grantViewOnly} onChange={e => setGrantViewOnly(e.target.checked)} className="mt-0.5 rounded border-slate-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={grantViewOnly} onChange={e => setGrantViewOnly(e.target.checked)} className="mt-0.5 rounded border-slate-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
                   <div>
                     {" "}
                     <span className="font-semibold text-slate-800 flex items-center gap-1">

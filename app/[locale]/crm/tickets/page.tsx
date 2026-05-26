@@ -70,7 +70,7 @@ export default function TicketsPage() {
           <div className="relative w-full max-w-md border-b border-slate-300 focus-within:border-sky-600 transition-colors">
             {" "}
             <Search className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-            <input type="text" placeholder="البحث في التذاكر..." className="w-full pl-10 pr-6 py-1.5 text-sm outline-none bg-transparent" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="البحث في التذاكر..." className="w-full pl-10 pr-6 py-1.5 text-sm outline-none bg-transparent" />{" "}
           </div>{" "}
           <button className="flex items-center gap-2 text-sm text-slate-600 hover:text-sky-600 font-medium">
             {" "}

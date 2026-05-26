@@ -29,14 +29,14 @@ export default function DateRangeFilter() {
   return (
     <div className="flex items-center gap-2 mb-4 bg-white p-2 border border-slate-200 rounded-lg max-w-fit shadow-sm">
       <div className="flex items-center gap-2" dir="ltr">
-        <input 
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} 
           type="date" 
           value={from} 
           onChange={(e) => setFrom(e.target.value)} 
           className="border border-slate-300 rounded px-2 py-1 text-sm focus:ring-1 focus:ring-[#017E84] w-32 outline-none text-slate-700"
         />
         <span className="text-slate-500 font-bold">-</span>
-        <input 
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} 
           type="date" 
           value={to} 
           onChange={(e) => setTo(e.target.value)} 

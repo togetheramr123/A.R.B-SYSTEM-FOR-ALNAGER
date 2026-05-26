@@ -227,7 +227,7 @@ export default function OdooListView({
             {" "}
             <div className="relative group">
               {" "}
-              <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={placeholderSearch} className="w-full bg-slate-50 border border-slate-300 text-slate-700 rounded-md px-4 py-1.5 pr-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-shadow" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={placeholderSearch} className="w-full bg-slate-50 border border-slate-300 text-slate-700 rounded-md px-4 py-1.5 pr-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-shadow" />{" "}
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
             </div>{" "}
           </div>{" "}
@@ -313,7 +313,7 @@ export default function OdooListView({
               {" "}
               <th className="p-3 w-10 border-b border-slate-200">
                 {" "}
-                <input type="checkbox" className="rounded border-slate-300" checked={filteredData.length > 0 && selectedRows.length === filteredData.length} onChange={toggleAll} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300" checked={filteredData.length > 0 && selectedRows.length === filteredData.length} onChange={toggleAll} />{" "}
               </th>{" "}
               {columns.map((col, idx) => <th key={idx} className={`p-3 border-b border-slate-200 ${col.width || ""}`}>
                   {col.label}
@@ -354,7 +354,7 @@ export default function OdooListView({
                             {" "}
                             <td className="p-3 w-10 pl-8" onClick={e => e.stopPropagation()}>
                               {" "}
-                              <input type="checkbox" className="rounded border-slate-300 ml-4" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 ml-4" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
                             </td>{" "}
                             {columns.map((col, cIdx) => <td key={cIdx} className={`p-3 ${col.width || ""}`}>
                                 {" "}
@@ -389,7 +389,7 @@ export default function OdooListView({
                           {" "}
                           <td className="p-3 pl-8">
                             {" "}
-                            <input type="checkbox" className="rounded border-slate-300 ml-4" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 ml-4" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
                           </td>{" "}
                           {columns.map((col, cIdx) => <td key={cIdx} className="p-3 text-slate-700">
                               {" "}
@@ -410,7 +410,7 @@ export default function OdooListView({
                   {" "}
                   <td className="p-3">
                     {" "}
-                    <input type="checkbox" className="rounded border-slate-300" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300" checked={selectedRows.includes(row.id)} onChange={() => toggleRow(row.id)} />{" "}
                   </td>{" "}
                   {columns.map((col, cIdx) => <td key={cIdx} className="p-3 text-slate-700">
                       {" "}

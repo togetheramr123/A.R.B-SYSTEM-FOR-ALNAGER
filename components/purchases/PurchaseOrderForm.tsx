@@ -944,7 +944,7 @@ const columns: any[] = [{
   label: 'الوصف',
   defaultVisible: false,
   minWidth: '200px',
-  renderCell: (field: any, index: number, register: any, control: any) => <input {...register(`lines.${index}.description`)} disabled={isLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
+  renderCell: (field: any, index: number, register: any, control: any) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.description`)} disabled={isLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
 }, {
   id: 'availability',
   label: ' ',
@@ -963,12 +963,12 @@ const columns: any[] = [{
   label: 'الكمية',
   required: true,
   width: '100px',
-  renderCell: (field: any, index: number, register: any, control: any) => <> <input type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
+  renderCell: (field: any, index: number, register: any, control: any) => <> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
       field: {
         value,
         onChange
       }
-    }) => <input id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={value ?? ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={value ?? ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       setStoreUnsaved(true);
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val === '' ? null : val);
@@ -1031,7 +1031,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input type="text" inputMode="decimal" disabled={isQtyLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="decimal" disabled={isQtyLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
       const secondaryVal = val ? parseFloat(val) : 0;
@@ -1062,7 +1062,7 @@ const columns: any[] = [{
       value,
       onChange
     }
-  }) => <input id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isFormLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+  }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isFormLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
     const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
     onChange(val);
   }} onFocus={e => e.target.select()} onKeyDown={e => handleKeyDown(e, index, 'price')} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-800 font-medium m-0" />} />
@@ -1075,7 +1075,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
     }} onFocus={e => e.target.select()} onKeyDown={e => handleKeyDown(e, index, 'discount')} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-600 font-medium m-0" placeholder="0" />} /> </div>
@@ -1089,7 +1089,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
     }} onFocus={e => e.target.select()} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-600 font-medium m-0" placeholder="0" />} /> </div>
@@ -1271,14 +1271,14 @@ const columns: any[] = [{
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">الموعد النهائي للطلب</label>
-                <input type="date" lang="en" dir="ltr" {...register('date', {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('date', {
                   onChange: () => setTimeout(fetchPricesForAllLines, 0)
                 })} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('date') ? 'text-transparent focus:text-inherit' : ''}`} />
               </div>
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">الوصول المتوقع</label>
-                <input type="date" lang="en" dir="ltr" {...register('receiptDate')} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('receiptDate') ? 'text-transparent focus:text-inherit' : ''}`} />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('receiptDate')} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('receiptDate') ? 'text-transparent focus:text-inherit' : ''}`} />
               </div>
             </div>
 
@@ -1286,7 +1286,7 @@ const columns: any[] = [{
             <div className="space-y-3">
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">مرجع المورّد</label>
-                <input {...register('ref')} disabled={isLocked} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register('ref')} disabled={isLocked} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />
               </div>
 
               <div className="grid grid-cols-[140px_1fr] items-center">
@@ -1465,11 +1465,11 @@ const columns: any[] = [{
                   <label className="text-sm font-bold text-slate-800 pt-1">سياسة استلام الفواتير</label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="ordered" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="ordered" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
                       <span className="text-sm text-slate-700">على الكميات المطلوبة</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="received" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="received" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
                       <span className="text-sm text-slate-700">على الكميات المستلمة</span>
                     </label>
                   </div>

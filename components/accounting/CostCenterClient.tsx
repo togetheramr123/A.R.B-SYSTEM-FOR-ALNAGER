@@ -62,14 +62,14 @@ export function CostCenterClient({
           <div className="flex-1">
             {" "}
             <label className="text-xs text-slate-500 mb-1 block">من</label>{" "}
-            <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={from} onChange={e => setFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
           </div>{" "}
           <div className="flex-1">
             {" "}
             <label className="text-xs text-slate-500 mb-1 block">
               إلى
             </label>{" "}
-            <input type="date" value={to} onChange={e => setTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={to} onChange={e => setTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
           </div>{" "}
           <button onClick={handleGenerate} disabled={loading} className="bg-violet-600 text-white px-8 py-2.5 rounded-sm text-sm font-bold hover:bg-violet-700 transition disabled:opacity-50 flex items-center gap-2">
             {" "}

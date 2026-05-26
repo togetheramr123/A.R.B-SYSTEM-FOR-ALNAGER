@@ -38,7 +38,7 @@ export default function PartnerLedgerFilter() {
         <label className="block text-sm font-medium text-slate-700 mb-1">
           {t("from")}
         </label>{" "}
-        <input
+        <input autoComplete="off" autoCorrect="off" spellCheck={false}
           type="date"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
@@ -50,7 +50,7 @@ export default function PartnerLedgerFilter() {
         <label className="block text-sm font-medium text-slate-700 mb-1">
           {t("to")}
         </label>{" "}
-        <input
+        <input autoComplete="off" autoCorrect="off" spellCheck={false}
           type="date"
           value={to}
           onChange={(e) => setTo(e.target.value)}
@@ -75,7 +75,7 @@ export default function PartnerLedgerFilter() {
       </div>{" "}
       <div className="flex items-center gap-2 pb-2">
         {" "}
-        <input
+        <input autoComplete="off" autoCorrect="off" spellCheck={false}
           type="checkbox"
           id="includeReconciled"
           checked={includeReconciled}

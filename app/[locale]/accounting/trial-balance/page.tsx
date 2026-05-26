@@ -41,9 +41,9 @@ export default async function TrialBalancePage(props: {
         <form method="GET" className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-sm text-sm">
           {" "}
           <label className="text-slate-600 text-xs font-bold">من:</label>{" "}
-          <input type="date" name="from" defaultValue={from || ""} className="bg-transparent border-none text-xs outline-none" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" name="from" defaultValue={from || ""} className="bg-transparent border-none text-xs outline-none" />{" "}
           <label className="text-slate-600 text-xs font-bold mr-2">إلى:</label>{" "}
-          <input type="date" name="to" defaultValue={to || ""} className="bg-transparent border-none text-xs outline-none" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" name="to" defaultValue={to || ""} className="bg-transparent border-none text-xs outline-none" />{" "}
           <button type="submit" className="text-indigo-600 font-bold hover:text-indigo-800 mr-2 border-r border-slate-300 pr-2 text-xs">
             تحديث
           </button>{" "}

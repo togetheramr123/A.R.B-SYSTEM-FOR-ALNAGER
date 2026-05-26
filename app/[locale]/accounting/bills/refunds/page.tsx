@@ -75,7 +75,7 @@ export default async function RefundsPage(props: {
           <div className="relative flex-1 max-w-2xl w-full">
             {" "}
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />{" "}
-            <input type="text" placeholder="بحث..." className="w-full pr-10 pl-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow" defaultValue={q} />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث..." className="w-full pr-10 pl-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow" defaultValue={q} />{" "}
           </div>{" "}
           <div className="flex gap-2 text-sm">
             {" "}
@@ -104,7 +104,7 @@ export default async function RefundsPage(props: {
                 {" "}
                 <th className="px-4 py-3 w-10">
                   {" "}
-                  <input type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />{" "}
                 </th>{" "}
                 <th className="px-4 py-3">العدد</th>{" "}
                 <th className="px-4 py-3">المورد</th>{" "}
@@ -124,7 +124,7 @@ export default async function RefundsPage(props: {
                   {" "}
                   <td className="px-4 py-3">
                     {" "}
-                    <input type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />{" "}
                   </td>{" "}
                   <td className="px-4 py-3 font-semibold text-slate-800">
                     {" "}

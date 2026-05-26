@@ -153,7 +153,7 @@ export default function OpeningBalancesPage() {
                   </span>{" "}
                   <div className="flex items-center gap-2">
                     {" "}
-                    <input type="number" placeholder="0.00" className="w-32 px-3 py-1.5 text-left border border-slate-300 rounded-md text-sm font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none" onChange={e => handleRegisterChange(reg.id, e.target.value)} />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" placeholder="0.00" className="w-32 px-3 py-1.5 text-left border border-slate-300 rounded-md text-sm font-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none" onChange={e => handleRegisterChange(reg.id, e.target.value)} />{" "}
                     <span className="text-xs font-bold text-slate-400">
                       ريال
                     </span>{" "}
@@ -198,7 +198,7 @@ export default function OpeningBalancesPage() {
                   </div>{" "}
                   <div className="flex items-center gap-2">
                     {" "}
-                    <input type="number" placeholder="0.00" className={`w-32 px-3 py-1.5 text-left border rounded-md text-sm font-mono outline-none ${(partnerBalances[p.id] || 0) < 0 ? "border-rose-300 text-red-700 focus:border-rose-500 focus:ring-1 focus:ring-rose-500" : "border-slate-300 text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"}`} onChange={e => handlePartnerChange(p.id, e.target.value)} />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" placeholder="0.00" className={`w-32 px-3 py-1.5 text-left border rounded-md text-sm font-mono outline-none ${(partnerBalances[p.id] || 0) < 0 ? "border-rose-300 text-red-700 focus:border-rose-500 focus:ring-1 focus:ring-rose-500" : "border-slate-300 text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"}`} onChange={e => handlePartnerChange(p.id, e.target.value)} />{" "}
                     <span className="text-xs font-bold text-slate-400">
                       ريال
                     </span>{" "}

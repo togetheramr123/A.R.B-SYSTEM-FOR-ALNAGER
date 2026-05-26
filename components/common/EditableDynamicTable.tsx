@@ -236,7 +236,7 @@ export function EditableDynamicTable({
                   <span className="text-sm text-slate-700 font-medium">
                     {col.label}
                   </span>{" "}
-                  <input type="checkbox" checked={visibleColumns[col.id]} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[#017E84] focus:ring-indigo-500 w-4 h-4" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleColumns[col.id]} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[#017E84] focus:ring-indigo-500 w-4 h-4" />{" "}
                 </label>)}{" "}
           </div>{" "}
         </div>}{" "}
@@ -295,8 +295,8 @@ export function EditableDynamicTable({
                       {" "}
                       <div className="flex items-center gap-2">
                         {" "}
-                        <input {...register(`lines.${index}.description`)} className="w-full bg-transparent font-bold text-slate-800 outline-none placeholder-slate-500" placeholder="عنوان القسم..." />{" "}
-                        <input type="hidden" {...register(`lines.${index}.type`)} value="section" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.description`)} className="w-full bg-transparent font-bold text-slate-800 outline-none placeholder-slate-500" placeholder="عنوان القسم..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.type`)} value="section" />{" "}
                         {!readOnly && <button type="button" onClick={() => onRemove(index)} className="text-slate-400 hover:text-red-500 p-1">
                             {" "}
                             <Trash2 className="w-4 h-4" />{" "}
@@ -319,8 +319,8 @@ export function EditableDynamicTable({
                       {" "}
                       <div className="flex items-center gap-2">
                         {" "}
-                        <input {...register(`lines.${index}.description`)} className="w-full bg-transparent italic text-slate-600 outline-none placeholder-slate-400" placeholder="ملاحظة..." />{" "}
-                        <input type="hidden" {...register(`lines.${index}.type`)} value="note" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.description`)} className="w-full bg-transparent italic text-slate-600 outline-none placeholder-slate-400" placeholder="ملاحظة..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.type`)} value="note" />{" "}
                         {!readOnly && <button type="button" onClick={() => onRemove(index)} className="text-slate-400 hover:text-red-500 p-1">
                             {" "}
                             <Trash2 className="w-4 h-4" />{" "}

@@ -113,7 +113,7 @@ export default function PortalSettingsClient({
                     <span className="text-xs text-gray-600 font-bold">
                       {banner.active ? "مفعل" : "معطل"}
                     </span>{" "}
-                    <input type="checkbox" checked={banner.active} onChange={() => toggleActive(banner)} className="w-4 h-4 text-[#714B67] rounded focus:ring-[#714B67]" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={banner.active} onChange={() => toggleActive(banner)} className="w-4 h-4 text-[#714B67] rounded focus:ring-[#714B67]" />{" "}
                   </label>{" "}
                   <div className="w-px h-6 bg-gray-300 mx-2"></div>{" "}
                   <button onClick={() => openModal(banner)} className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="تعديل">
@@ -152,14 +152,14 @@ export default function PortalSettingsClient({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   عنوان البنر (اختياري)
                 </label>{" "}
-                <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={title} onChange={e => setTitle(e.target.value)} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={title} onChange={e => setTitle(e.target.value)} />{" "}
               </div>{" "}
               <div>
                 {" "}
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   رابط الصورة (URL) <span className="text-red-500">*</span>
                 </label>{" "}
-                <input type="text" required placeholder="https://example.com/banner.jpg" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={imageUrl} onChange={e => setImageUrl(e.target.value)} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" required placeholder="https://example.com/banner.jpg" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={imageUrl} onChange={e => setImageUrl(e.target.value)} />{" "}
                 {imageUrl && <div className="mt-2 w-full h-32 rounded-lg border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center">
                     {" "}
                     <img src={imageUrl} alt="Preview" className="max-w-full max-h-full object-contain" onError={e => e.currentTarget.style.display = "none"} />{" "}
@@ -170,14 +170,14 @@ export default function PortalSettingsClient({
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   رابط توجيه عند الضغط (اختياري)
                 </label>{" "}
-                <input type="text" placeholder="/portal/products?categoryId=123" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="/portal/products?categoryId=123" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={linkUrl} onChange={e => setLinkUrl(e.target.value)} />{" "}
               </div>{" "}
               <div>
                 {" "}
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   الترتيب
                 </label>{" "}
-                <input type="number" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={sortOrder} onChange={e => setSortOrder(Number(e.target.value))} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-[#714B67] outline-none" value={sortOrder} onChange={e => setSortOrder(Number(e.target.value))} />{" "}
               </div>{" "}
               <div className="pt-4 flex gap-3">
                 {" "}

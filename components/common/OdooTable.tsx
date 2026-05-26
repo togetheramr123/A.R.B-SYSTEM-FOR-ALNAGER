@@ -211,7 +211,7 @@ export function OdooTable<T extends {
           <div className="flex-1 max-w-2xl w-full order-1 md:order-2">
             <form onSubmit={handleSearch} className="flex items-center border-b border-gray-300 bg-white focus-within:border-[#017E84] pb-1 transition-colors">
               <Search className="w-4 h-4 text-gray-500 ml-2" />
-              <input type="text" placeholder="بحث..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full bg-transparent outline-none text-sm placeholder-gray-400" />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full bg-transparent outline-none text-sm placeholder-gray-400" />
             </form>
           </div>
         </div>
@@ -294,7 +294,7 @@ export function OdooTable<T extends {
                               {fGroup.label && <div className="px-4 py-1 text-xs text-gray-400 font-bold">{fGroup.label}</div>}
                               {fGroup.items.map(item => (
                                 <label key={item.value} className="flex items-center gap-2 px-4 py-1.5 hover:bg-gray-50 cursor-pointer">
-                                  <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />
+                                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />
                                   <span>{item.label}</span>
                                 </label>
                               ))}
@@ -419,7 +419,7 @@ export function OdooTable<T extends {
             <thead className="bg-white sticky top-0 z-10 shadow-sm">
               <tr className="border-b border-gray-200">
                 <th className="w-10 px-4 py-3 text-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" checked={selected.length === filteredData.length && filteredData.length > 0} onChange={toggleSelectAll} />
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" checked={selected.length === filteredData.length && filteredData.length > 0} onChange={toggleSelectAll} />
                 </th>
                 {columns.map(col => <th key={col.id} className={`px-4 py-2 font-bold text-gray-700 cursor-pointer hover:bg-gray-50 group hover:text-black ${col.align === "center" ? "text-center" : col.align === "left" ? "text-left" : "text-right"}`} style={{
                 width: col.width
@@ -459,7 +459,7 @@ export function OdooTable<T extends {
                 if (onRowClick) onRowClick(row);else if (baseUrl) window.location.href = `${baseUrl}/${row.id}`;
               }}>
                             <td className="px-4 py-2 text-center pl-8" onClick={e => e.stopPropagation()}>
-                              <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-4" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-4" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
                             </td>
                             {columns.map(col => <td key={col.id} className={`px-4 py-2.5 text-gray-700 font-medium ${col.align === "center" ? "text-center" : col.align === "left" ? "text-left" : "text-right"}`}>
                                 {col.render ? col.render(row) : (row as any)[col.id]}
@@ -486,7 +486,7 @@ export function OdooTable<T extends {
                 if (onRowClick) onRowClick(row);else if (baseUrl) window.location.href = `${baseUrl}/${row.id}`;
               }}>
                             <td className="px-4 py-2 text-center pl-8" onClick={e => e.stopPropagation()}>
-                              <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-4" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-4" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
                             </td>
                             {columns.map(col => <td key={col.id} className={`px-4 py-2.5 text-gray-700 font-medium ${col.align === "center" ? "text-center" : col.align === "left" ? "text-left" : "text-right"}`}>
                                 {col.render ? col.render(row) : (row as any)[col.id]}
@@ -502,7 +502,7 @@ export function OdooTable<T extends {
               if (onRowClick) onRowClick(row);else if (baseUrl) window.location.href = `${baseUrl}/${row.id}`;
             }}>
                     <td className="px-4 py-2 text-center" onClick={e => e.stopPropagation()}>
-                      <input type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" checked={selected.includes(String(row.id))} onChange={e => toggleSelect(String(row.id), e as any)} onClick={e => e.stopPropagation()} />
                     </td>
                     {columns.map(col => <td key={col.id} className={`px-4 py-2.5 text-gray-700 font-medium ${col.align === "center" ? "text-center" : col.align === "left" ? "text-left" : "text-right"}`}>
                         {col.render ? col.render(row) : (row as any)[col.id]}

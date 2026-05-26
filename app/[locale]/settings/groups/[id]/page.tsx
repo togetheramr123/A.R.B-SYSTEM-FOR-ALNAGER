@@ -330,7 +330,7 @@ export default function GroupDetailsPage() {
                   <label className="text-sm font-bold text-slate-700">
                     اسم الدور
                   </label>{" "}
-                  <input type="text" value={group?.name} onChange={e => { setGroup({
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={group?.name} onChange={e => { setGroup({
                   ...group,
                   name: e.target.value
                 }); setIsDirty(true); }} className="w-full border-b border-slate-300 focus:border-sky-600 outline-none py-1.5 text-slate-900 font-medium bg-transparent transition-colors" placeholder="مثال: مندوب مبيعات" />{" "}
@@ -402,7 +402,7 @@ export default function GroupDetailsPage() {
                           key={perm.key}
                           className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors"
                         >
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="checkbox"
                             checked={permissions[perm.key] || false}
                             onChange={() => togglePermission(perm.key)}

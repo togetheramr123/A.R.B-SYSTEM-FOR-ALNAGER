@@ -177,7 +177,7 @@ export function PortalProductsPage({
         <div className="relative mb-4">
           {" "}
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث بالاسم أو الباركود..." className="w-full pr-10 pl-4 py-3 bg-white border border-slate-200 rounded-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 transition-all placeholder:text-slate-400" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث بالاسم أو الباركود..." className="w-full pr-10 pl-4 py-3 bg-white border border-slate-200 rounded-sm text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-300 transition-all placeholder:text-slate-400" />{" "}
           {search && <button onClick={() => setSearch("")} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
               {" "}
               <X className="w-4 h-4" />{" "}

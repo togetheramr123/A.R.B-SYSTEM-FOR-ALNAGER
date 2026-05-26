@@ -195,7 +195,7 @@ export function UoMManagementDialog({
           </div>{" "}
           <div className="relative w-64">
             {" "}
-            <input type="text" placeholder="بحث..." className="w-full border-b border-slate-300 bg-transparent py-1 text-sm outline-none focus:border-[#2563EB]" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث..." className="w-full border-b border-slate-300 bg-transparent py-1 text-sm outline-none focus:border-[#2563EB]" />{" "}
           </div>{" "}
         </div>{" "}
         {/* Body - LIST VIEW WITH INLINE EDIT */}{" "}
@@ -255,7 +255,7 @@ export function UoMManagementDialog({
                       </td>{" "}
                       <td className="px-3 py-1.5">
                         {" "}
-                        <input className="w-full border-b border-transparent focus:border-sky-500 bg-transparent outline-none font-semibold text-slate-800 focus:bg-white px-1 py-1" value={u.name} onChange={e => handleUpdateDraft(u.id, "name", e.target.value)} placeholder="اسم الوحدة" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} className="w-full border-b border-transparent focus:border-sky-500 bg-transparent outline-none font-semibold text-slate-800 focus:bg-white px-1 py-1" value={u.name} onChange={e => handleUpdateDraft(u.id, "name", e.target.value)} placeholder="اسم الوحدة" />{" "}
                       </td>{" "}
                       <td className="px-3 py-1.5">
                         {" "}
@@ -270,18 +270,18 @@ export function UoMManagementDialog({
                       </td>{" "}
                       <td className="px-3 py-1.5 text-center">
                         {" "}
-                        <input type="number" step="1" className="w-24 border-b border-transparent focus:border-sky-500 bg-transparent outline-none text-center focus:bg-white px-1 py-1 font-mono dir-ltr [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-700" value={u.ratio} onChange={e => {
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="1" className="w-24 border-b border-transparent focus:border-sky-500 bg-transparent outline-none text-center focus:bg-white px-1 py-1 font-mono dir-ltr [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none text-slate-700" value={u.ratio} onChange={e => {
                       const val = convertArabicToEnglishNumbers(e.target.value);
                       handleUpdateDraft(u.id, "ratio", val || "");
                     }} dir="ltr" />{" "}
                       </td>{" "}
                       <td className="px-3 py-1.5 text-center">
                         {" "}
-                        <input type="checkbox" checked={u.active} onChange={e => handleUpdateDraft(u.id, "active", e.target.checked)} className="w-4 h-4 rounded-sm border-slate-300 text-[#017e84] focus:ring-[#017e84] cursor-pointer" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={u.active} onChange={e => handleUpdateDraft(u.id, "active", e.target.checked)} className="w-4 h-4 rounded-sm border-slate-300 text-[#017e84] focus:ring-[#017e84] cursor-pointer" />{" "}
                       </td>{" "}
                       <td className="px-3 py-1.5">
                         {" "}
-                        <input type="number" step="0.00001" className="w-24 border-b border-transparent focus:border-sky-500 bg-transparent outline-none focus:bg-white px-1 py-1 text-center font-mono dir-ltr text-slate-700" value={u.rounding} onChange={e => {
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.00001" className="w-24 border-b border-transparent focus:border-sky-500 bg-transparent outline-none focus:bg-white px-1 py-1 text-center font-mono dir-ltr text-slate-700" value={u.rounding} onChange={e => {
                       const val = convertArabicToEnglishNumbers(e.target.value);
                       handleUpdateDraft(u.id, "rounding", val || "");
                     }} dir="ltr" />{" "}

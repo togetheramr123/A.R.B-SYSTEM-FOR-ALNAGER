@@ -69,7 +69,7 @@ export default function ScrapOrderForm({
 
       <div>
         <label className="block text-sm font-medium text-slate-700 mb-1">Quantity</label>
-        <input type="number" name="quantity" step="0.01" min="0" onChange={e => {
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" name="quantity" step="0.01" min="0" onChange={e => {
           const val = convertArabicToEnglishNumbers(e.target.value);
           if (val !== undefined) {
             e.target.value = val;

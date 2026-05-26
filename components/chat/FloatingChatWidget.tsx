@@ -403,7 +403,7 @@ export default function FloatingChatWidget({ currentUserId }: { currentUserId: s
                       {isCreatingGroup ? (
                         <div className="bg-white p-3 border border-slate-200 rounded-sm shadow-sm">
                           <h4 className="font-bold text-sm mb-3">إنشاء مجموعة جديدة</h4>
-                          <input 
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                             type="text" 
                             placeholder="اسم المجموعة..." 
                             value={newGroupName} 
@@ -414,7 +414,7 @@ export default function FloatingChatWidget({ currentUserId }: { currentUserId: s
                           <div className="max-h-32 overflow-y-auto border border-slate-100 p-2 rounded-sm mb-3">
                             {contacts.map(c => (
                               <label key={c.id} className="flex items-center gap-2 p-1 hover:bg-slate-50 cursor-pointer">
-                                <input 
+                                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                                   type="checkbox" 
                                   checked={selectedUsers.includes(c.id)}
                                   onChange={(e) => {
@@ -487,7 +487,7 @@ export default function FloatingChatWidget({ currentUserId }: { currentUserId: s
               <div className="p-3 bg-white border-t border-slate-100 flex flex-col gap-2">
                 <form onSubmit={(e) => handleSendMessage(e)} className="flex items-end gap-2">
                   <div className="flex-1 relative bg-slate-50 border border-slate-200 rounded-2xl flex items-center pr-2 pl-2 shadow-inner focus-within:border-blue-400 transition-colors">
-                    <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
                     <button type="button" onClick={() => fileInputRef.current?.click()} className="p-2 text-slate-400 hover:text-blue-600 transition-colors rounded-full" title="إرفاق ملف">
                       <Paperclip className="w-4 h-4" />
                     </button>

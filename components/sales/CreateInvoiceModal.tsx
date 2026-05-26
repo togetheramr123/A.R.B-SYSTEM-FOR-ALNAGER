@@ -76,14 +76,14 @@ export function CreateInvoiceModal({
             </label>{" "}
             <label className="flex items-center gap-3 cursor-pointer group">
               {" "}
-              <input type="radio" name="invoiceType" checked={invoiceType === "regular"} onChange={() => setInvoiceType("regular")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="invoiceType" checked={invoiceType === "regular"} onChange={() => setInvoiceType("regular")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
               <span className="text-sm text-slate-700 group-hover:text-slate-900">
                 فاتورة دورية
               </span>{" "}
             </label>{" "}
             <label className="flex items-center gap-3 cursor-pointer group">
               {" "}
-              <input type="radio" name="invoiceType" checked={invoiceType === "down_payment_percentage"} onChange={() => setInvoiceType("down_payment_percentage")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="invoiceType" checked={invoiceType === "down_payment_percentage"} onChange={() => setInvoiceType("down_payment_percentage")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
               <span className="text-sm text-slate-700 group-hover:text-slate-900">
                 دفعة مقدمة (نسبة)
               </span>{" "}
@@ -91,12 +91,12 @@ export function CreateInvoiceModal({
             {invoiceType === "down_payment_percentage" && <div className="mr-7 flex items-center gap-2">
                 {" "}
                 <label className="text-xs text-slate-500">النسبة:</label>{" "}
-                <input type="number" value={percentage} onChange={e => setPercentage(Number(e.target.value))} min={1} max={100} className="border border-slate-300 rounded px-2 py-1 text-sm w-20 text-center" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" value={percentage} onChange={e => setPercentage(Number(e.target.value))} min={1} max={100} className="border border-slate-300 rounded px-2 py-1 text-sm w-20 text-center" />{" "}
                 <span className="text-xs text-slate-500">%</span>{" "}
               </div>}{" "}
             <label className="flex items-center gap-3 cursor-pointer group">
               {" "}
-              <input type="radio" name="invoiceType" checked={invoiceType === "down_payment_fixed"} onChange={() => setInvoiceType("down_payment_fixed")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="invoiceType" checked={invoiceType === "down_payment_fixed"} onChange={() => setInvoiceType("down_payment_fixed")} className="w-4 h-4 text-sky-600 border-slate-300 focus:ring-sky-500" />{" "}
               <span className="text-sm text-slate-700 group-hover:text-slate-900">
                 دفعة مقدمة (مبلغ ثابت)
               </span>{" "}
@@ -104,7 +104,7 @@ export function CreateInvoiceModal({
             {invoiceType === "down_payment_fixed" && <div className="mr-7 flex items-center gap-2">
                 {" "}
                 <label className="text-xs text-slate-500">المبلغ:</label>{" "}
-                <input type="number" value={fixedAmount} onChange={e => setFixedAmount(Number(e.target.value))} min={0} className="border border-slate-300 rounded px-2 py-1 text-sm w-24 text-center" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" value={fixedAmount} onChange={e => setFixedAmount(Number(e.target.value))} min={0} className="border border-slate-300 rounded px-2 py-1 text-sm w-24 text-center" />{" "}
                 <span className="text-xs text-slate-500">ج.م</span>{" "}
               </div>}{" "}
           </div>{" "}

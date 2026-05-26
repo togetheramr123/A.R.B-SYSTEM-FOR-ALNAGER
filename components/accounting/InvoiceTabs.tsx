@@ -167,7 +167,7 @@ function InvoiceLinesTab({
                 </td>{" "}
                 <td className="p-0 m-0 align-middle border-l border-slate-100 focus-within:ring-1 focus-within:ring-[#017E84] focus-within:ring-inset relative bg-white">
                   {" "}
-                  {invoice.state === "draft" ? <input type="number" defaultValue={formatQty(line.quantity)} onBlur={e => {
+                  {invoice.state === "draft" ? <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" defaultValue={formatQty(line.quantity)} onBlur={e => {
                 let val = parseFloat(e.target.value);
                 if (!isNaN(val)) {
                   val = allowHalf ? Math.round(val * 2) / 2 : Math.round(val);
@@ -186,7 +186,7 @@ function InvoiceLinesTab({
                 </td>{" "}
                 <td className="p-0 m-0 align-middle border-l border-slate-100 focus-within:ring-1 focus-within:ring-[#017E84] focus-within:ring-inset relative bg-white">
                   {" "}
-                  {invoice.state === "draft" && Number(line.secondaryQuantity || 0) >= 0 ? <input type="number" defaultValue={Number(line.secondaryQuantity || 0).toFixed(0)} onBlur={e => {
+                  {invoice.state === "draft" && Number(line.secondaryQuantity || 0) >= 0 ? <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" defaultValue={Number(line.secondaryQuantity || 0).toFixed(0)} onBlur={e => {
                 const val = parseFloat(e.target.value);
                 if (!isNaN(val) && val !== Number(line.secondaryQuantity)) handleFieldChange(line.id, {
                   secondaryQuantity: val
@@ -202,7 +202,7 @@ function InvoiceLinesTab({
                 </td>{" "}
                 <td className="p-0 m-0 align-middle border-l border-slate-100 focus-within:ring-1 focus-within:ring-[#017E84] focus-within:ring-inset relative bg-white font-bold">
                   {" "}
-                  {invoice.state === "draft" ? <input type="number" defaultValue={Number(line.priceUnit).toFixed(2)} onBlur={e => {
+                  {invoice.state === "draft" ? <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" defaultValue={Number(line.priceUnit).toFixed(2)} onBlur={e => {
                 const val = parseFloat(e.target.value);
                 if (!isNaN(val) && val !== Number(line.priceUnit)) handleFieldChange(line.id, {
                   priceUnit: val
@@ -214,7 +214,7 @@ function InvoiceLinesTab({
                 </td>{" "}
                 <td className="p-0 m-0 align-middle border-l border-slate-100 focus-within:ring-1 focus-within:ring-[#017E84] focus-within:ring-inset relative bg-white font-bold">
                   {" "}
-                  {invoice.state === "draft" ? <input type="number" defaultValue={Number(line.discount1 || 0).toFixed(2)} onBlur={e => {
+                  {invoice.state === "draft" ? <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" defaultValue={Number(line.discount1 || 0).toFixed(2)} onBlur={e => {
                 const val = parseFloat(e.target.value);
                 if (!isNaN(val) && val !== Number(line.discount1 || 0)) handleFieldChange(line.id, {
                   discount1: val

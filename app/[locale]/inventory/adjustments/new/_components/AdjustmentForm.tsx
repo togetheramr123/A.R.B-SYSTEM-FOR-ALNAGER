@@ -106,7 +106,7 @@ export default function AdjustmentForm({
                   </td>{" "}
                   <td className="px-6 py-4">
                     {" "}
-                    <input type="number" name="realQuantity" step="0.01" className="w-24 border-gray-300 rounded-md shadow-sm p-1 border text-sm font-bold text-blue-600" required />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" name="realQuantity" step="0.01" className="w-24 border-gray-300 rounded-md shadow-sm p-1 border text-sm font-bold text-blue-600" required />{" "}
                   </td>{" "}
                   <td className="px-6 py-4 text-right">
                     {" "}

@@ -105,7 +105,7 @@ export function ProductGeneralTab({ register, control, watch, errors, fetchedCat
                       name="hasSecondaryUnit"
                       control={control}
                       render={({ field }) => (
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="checkbox"
                           checked={!!field.value}
                           onChange={(e) => {
@@ -196,7 +196,7 @@ export function ProductGeneralTab({ register, control, watch, errors, fetchedCat
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             step="0.01"
                             {...register("secondaryUomFactor")}
@@ -232,7 +232,7 @@ export function ProductGeneralTab({ register, control, watch, errors, fetchedCat
                         name="price"
                         control={control}
                         render={({ field }) => (
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="text"
                             inputMode="decimal"
                             value={field.value ?? ""}
@@ -265,7 +265,7 @@ export function ProductGeneralTab({ register, control, watch, errors, fetchedCat
                           name="cost"
                           control={control}
                           render={({ field }) => (
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="text"
                               inputMode="decimal"
                               value={field.value ?? ""}

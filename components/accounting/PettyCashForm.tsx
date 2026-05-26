@@ -97,7 +97,7 @@ export function PettyCashForm({
             <FileText className="w-4 h-4 text-slate-400" /> البيان / الوصف{" "}
             <span className="text-red-500">*</span>{" "}
           </label>{" "}
-          <input type="text" value={form.description} onChange={e => setForm({
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={form.description} onChange={e => setForm({
           ...form,
           description: e.target.value
         })} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="مثال: شراء أدوات مكتبية، وقود سيارة، ضيافة..." />{" "}
@@ -112,7 +112,7 @@ export function PettyCashForm({
               <Wallet className="w-4 h-4 text-slate-400" /> المبلغ (ج.م){" "}
               <span className="text-red-500">*</span>{" "}
             </label>{" "}
-            <input type="number" step="0.01" min="0.01" value={form.amount} onChange={e => setForm({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" min="0.01" value={form.amount} onChange={e => setForm({
             ...form,
             amount: e.target.value
           })} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" placeholder="0.00" />{" "}
@@ -125,7 +125,7 @@ export function PettyCashForm({
               <CalendarDays className="w-4 h-4 text-slate-400" /> التاريخ{" "}
               <span className="text-red-500">*</span>{" "}
             </label>{" "}
-            <input type="date" value={form.date} onChange={e => setForm({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={form.date} onChange={e => setForm({
             ...form,
             date: e.target.value
           })} className="w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />{" "}

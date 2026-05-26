@@ -64,7 +64,7 @@ export default function DepartmentsPageClient({
           </div>{" "}
           <div className="flex gap-3">
             {" "}
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="اسم القسم..." className="flex-1 border border-gray-200 rounded-sm px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" onKeyDown={e => e.key === "Enter" && handleCreate()} autoFocus />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} value={name} onChange={e => setName(e.target.value)} placeholder="اسم القسم..." className="flex-1 border border-gray-200 rounded-sm px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" onKeyDown={e => e.key === "Enter" && handleCreate()} autoFocus />{" "}
             <button onClick={handleCreate} disabled={loading || !name.trim()} className="bg-[#017E84] text-white px-6 py-2.5 rounded-sm text-sm font-bold hover:bg-indigo-700 disabled:opacity-50 transition-all">
               {" "}
               {loading ? "جاري الحفظ..." : "حفظ"}{" "}

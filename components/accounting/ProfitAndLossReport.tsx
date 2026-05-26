@@ -153,14 +153,14 @@ export function ProfitAndLossReport() {
           <div className="flex items-center gap-3">
             {period === "custom" && (
               <div className="flex items-center gap-2">
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="date"
                   className="px-3 py-1.5 border border-slate-300 rounded text-sm outline-none focus:border-[#017E84]"
                   value={customDates.start}
                   onChange={e => setCustomDates(d => ({ ...d, start: e.target.value }))}
                 />
                 <span className="text-slate-400">-</span>
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="date"
                   className="px-3 py-1.5 border border-slate-300 rounded text-sm outline-none focus:border-[#017E84]"
                   value={customDates.end}

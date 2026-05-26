@@ -312,10 +312,10 @@ export function ProductListClient({
       {/* Checkbox (Top Right) */}{" "}
       <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
         {" "}
-        <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
       </div>{" "}
       {isSelected && <div className="absolute top-2 right-2 z-20 opacity-100">
-          <input type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
         </div>}{" "}
       {" "}
       <Link href={`/${locale}/inventory/products/${product.id}`} className="flex p-3 gap-3 h-full items-start">
@@ -386,7 +386,7 @@ export function ProductListClient({
             router.push(`${pathname}?${sp.toString()}`);
           }}>
               {" "}
-              <input type="text" name="q" defaultValue={searchQuery} placeholder="بحث في المنتجات..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" name="q" defaultValue={searchQuery} placeholder="بحث في المنتجات..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
             </form>{" "}
           </div>{" "}
         </div>{" "}
@@ -591,7 +591,7 @@ export function ProductListClient({
                   {" "}
                   <th className="px-3 py-2.5 w-10 font-medium">
                     {" "}
-                    <input type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
                   if (el) el.indeterminate = someSelected && !allPageSelected;
                 }} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] cursor-pointer" />{" "}
                   </th>{" "}
@@ -647,7 +647,7 @@ export function ProductListClient({
                   }} className="w-full px-3 py-1.5 text-[13px] text-gray-700 hover:bg-gray-100 flex items-center gap-2">
                             {" "}
                             <div className="flex items-center gap-2 w-full">
-                              <input type="checkbox" checked={visibleColumns.includes(col.id)} readOnly className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-auto" />
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleColumns.includes(col.id)} readOnly className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-auto" />
                               <span className="flex-1 text-right">{col.label}</span>
                             </div>
                           </button>)}{" "}
@@ -664,7 +664,7 @@ export function ProductListClient({
                       return (
                         <tr key={product.id} className={cn("hover:bg-gray-50 transition-colors group", isSelected && "bg-blue-50/30")}>
                           <td className="px-3 py-2">
-                            <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
                           </td>
                           <td className="px-3 py-2 font-bold text-gray-900 truncate max-w-[250px]">
                             <Link href={`/${locale}/inventory/products/${product.id}`} className="hover:text-[#017E84]">
@@ -754,7 +754,7 @@ export function ProductListClient({
                             return (
                               <tr key={product.id} className={cn("hover:bg-gray-50 transition-colors group", isSelected && "bg-blue-50/30")}>
                                 <td className="px-3 py-2">
-                                  <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
+                                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
                                 </td>
                                 <td className="px-3 py-2 font-bold text-gray-900 truncate max-w-[250px]">
                                   <Link href={`/${locale}/inventory/products/${product.id}`} className="hover:text-[#017E84] pr-4">

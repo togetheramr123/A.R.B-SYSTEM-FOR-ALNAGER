@@ -91,7 +91,7 @@ export default function PartnerChangeApproval({
           </button>{" "}
         </div> : <div className="space-y-2">
           {" "}
-          <input type="text" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="سبب الرفض (اختياري)..." className="w-full border border-red-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-400" autoFocus />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="سبب الرفض (اختياري)..." className="w-full border border-red-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-red-400" autoFocus />{" "}
           <div className="flex gap-2">
             {" "}
             <button onClick={handleReject} disabled={isPending} className="px-4 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 disabled:opacity-50 transition">

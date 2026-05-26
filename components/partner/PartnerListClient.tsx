@@ -163,7 +163,7 @@ export function PartnerListClient({
         </Link>
         <div className="mr-auto">
           <form className="relative">
-            <input type="text" name="q" defaultValue={q} placeholder="بحث بالاسم، البريد أو الهاتف..." className="pr-10 pl-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-gray-50/50 w-72 font-arabic" />
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" name="q" defaultValue={q} placeholder="بحث بالاسم، البريد أو الهاتف..." className="pr-10 pl-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-gray-50/50 w-72 font-arabic" />
           </form>
         </div>
       </div>

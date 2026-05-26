@@ -247,7 +247,7 @@ export default function ImportPartnersClient() {
     <div className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors">
       <h4 className="font-bold text-slate-800 mb-2">{label}</h4>
       <p className="text-slate-500 text-xs mb-4">{desc}</p>
-      <input
+      <input autoComplete="off" autoCorrect="off" spellCheck={false}
         type="file"
         id={`file-${label}`}
         accept={accept}

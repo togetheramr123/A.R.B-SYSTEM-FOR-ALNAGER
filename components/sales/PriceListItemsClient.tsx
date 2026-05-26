@@ -122,7 +122,7 @@ export function PriceListItemsClient({
         </div>{" "}
         <div className="w-[300px] relative">
           {" "}
-          <input type="text" placeholder="بحث..." defaultValue={searchParams.get("q") || ""} onKeyDown={handleSearch} className="w-full pl-8 pr-3 py-1 bg-gray-50 border border-gray-300 rounded text-sm outline-none focus:border-[#017E84] transition-colors" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث..." defaultValue={searchParams.get("q") || ""} onKeyDown={handleSearch} className="w-full pl-8 pr-3 py-1 bg-gray-50 border border-gray-300 rounded text-sm outline-none focus:border-[#017E84] transition-colors" />{" "}
           <Search className="w-4 h-4 text-gray-400 absolute left-2.5 top-1.5" />{" "}
         </div>{" "}
       </div>{" "}
@@ -232,7 +232,7 @@ export function PriceListItemsClient({
               {" "}
               <th className="pl-3 pr-4 py-2 w-10 text-center border-l border-gray-300">
                 {" "}
-                <input type="checkbox" checked={allPageSelected} onChange={toggleAll} className="w-4 h-4 rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] cursor-pointer block m-auto" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={allPageSelected} onChange={toggleAll} className="w-4 h-4 rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] cursor-pointer block m-auto" />{" "}
               </th>{" "}
               {showProduct && <th className="px-3 py-2 font-bold cursor-pointer hover:bg-gray-200 transition-colors group">
                   {" "}
@@ -299,7 +299,7 @@ export function PriceListItemsClient({
                   }} className="w-full text-right px-4 py-1.5 hover:bg-gray-100 flex items-center justify-between group">
                           {" "}
                           <span>{col.label}</span>{" "}
-                          <input type="checkbox" checked={isVis} readOnly className="w-3.5 h-3.5 text-[#017E84] focus:ring-0 rounded-sm pointer-events-none opacity-50 group-hover:opacity-100" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isVis} readOnly className="w-3.5 h-3.5 text-[#017E84] focus:ring-0 rounded-sm pointer-events-none opacity-50 group-hover:opacity-100" />{" "}
                         </button>;
                 })}{" "}
                   </div>}{" "}
@@ -320,7 +320,7 @@ export function PriceListItemsClient({
                     {" "}
                     <td className="pl-3 pr-4 py-2 border-l border-gray-100 text-center" onClick={e => e.stopPropagation()}>
                       {" "}
-                      <input type="checkbox" checked={isSelected} onChange={() => toggleSelection(item.id)} className="w-4 h-4 rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] block m-auto cursor-pointer" />{" "}
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={() => toggleSelection(item.id)} className="w-4 h-4 rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] block m-auto cursor-pointer" />{" "}
                     </td>{" "}
                     {showProduct && <td className="px-3 py-2 text-gray-900 truncate max-w-[200px]">
                         {" "}
@@ -332,7 +332,7 @@ export function PriceListItemsClient({
                       </td>}{" "}
                     {showSaleFixed && <td className="px-3 py-2 text-center text-gray-500">
                         {" "}
-                        <input type="checkbox" checked={item.isSaleFixed} readOnly className="w-3.5 h-3.5 accent-[#017E84] pointer-events-none block m-auto opacity-80" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={item.isSaleFixed} readOnly className="w-3.5 h-3.5 accent-[#017E84] pointer-events-none block m-auto opacity-80" />{" "}
                       </td>}{" "}
                     {showBuyPrice && <td className="px-3 py-2 text-gray-800 text-left">
                         {" "}
@@ -340,7 +340,7 @@ export function PriceListItemsClient({
                       </td>}{" "}
                     {showBuyFixed && <td className="px-3 py-2 text-center text-gray-500">
                         {" "}
-                        <input type="checkbox" checked={item.isBuyFixed} readOnly className="w-3.5 h-3.5 accent-[#017E84] pointer-events-none block m-auto opacity-80" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={item.isBuyFixed} readOnly className="w-3.5 h-3.5 accent-[#017E84] pointer-events-none block m-auto opacity-80" />{" "}
                       </td>}{" "}
                     <td className="w-8"></td>{" "}
                   </tr>;

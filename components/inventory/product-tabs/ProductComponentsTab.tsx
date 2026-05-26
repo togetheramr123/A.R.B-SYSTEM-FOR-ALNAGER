@@ -67,7 +67,7 @@ export function ProductComponentsTab({ bomLines, productOptions, handleAddCompon
                           </td>{" "}
                           <td className="px-4 py-2">
                             {" "}
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="number"
                               step="0.01"
                               min="0.01"

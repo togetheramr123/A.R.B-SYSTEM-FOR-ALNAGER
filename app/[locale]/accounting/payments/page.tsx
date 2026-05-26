@@ -124,7 +124,7 @@ export default async function PaymentsListPage(props: {
           <form className="relative flex-1 max-w-sm">
             {" "}
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />{" "}
-            <input type="text" name="search" defaultValue={search} placeholder="بحث بالاسم أو المرجع..." className="w-full pr-10 pl-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-gray-50/50" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" name="search" defaultValue={search} placeholder="بحث بالاسم أو المرجع..." className="w-full pr-10 pl-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm bg-gray-50/50" />{" "}
           </form>{" "}
           <div className="flex items-center gap-1">
             {" "}
@@ -167,7 +167,7 @@ export default async function PaymentsListPage(props: {
                 {" "}
                 <th className="px-5 py-3 w-8">
                   {" "}
-                  <input type="checkbox" className="rounded border-gray-300" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />{" "}
                 </th>{" "}
                 <th className="px-5 py-3">التاريخ</th>{" "}
                 <th className="px-5 py-3">العدد</th>{" "}
@@ -184,7 +184,7 @@ export default async function PaymentsListPage(props: {
                   {" "}
                   <td className="px-5 py-3.5">
                     {" "}
-                    <input type="checkbox" className="rounded border-gray-300" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />{" "}
                   </td>{" "}
                   <td className="px-5 py-3.5 text-gray-500 text-sm">
                     {" "}

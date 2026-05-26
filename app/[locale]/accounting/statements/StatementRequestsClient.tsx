@@ -80,7 +80,7 @@ export default function StatementRequestsClient({
         <div className="relative w-72">
           {" "}
           <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />{" "}
-          <input type="text" placeholder="بحث باسم التاجر أو الهاتف..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-3 pr-9 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#714B67] focus:border-transparent" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث باسم التاجر أو الهاتف..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-3 pr-9 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#714B67] focus:border-transparent" />{" "}
         </div>{" "}
       </div>{" "}
       <div className="overflow-x-auto">
@@ -192,7 +192,7 @@ export default function StatementRequestsClient({
                         {fileName}
                       </p> : <p className="text-sm text-gray-500">اضغط لرفع ملف PDF</p>}{" "}
                   </div>{" "}
-                  <input type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" accept="application/pdf" className="hidden" onChange={handleFileChange} />{" "}
                 </label>{" "}
               </div>{" "}
               <div>

@@ -406,7 +406,7 @@ export default function ImageOrderParserModal({ isOpen, onClose, onConfirmItems,
               className="border-2 border-dashed border-slate-300 rounded-xl bg-white p-12 flex flex-col items-center justify-center text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors h-64"
               onClick={() => fileInputRef.current?.click()}
             >
-              <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" ref={fileInputRef} onChange={handleFileUpload} accept="image/*" className="hidden" />
               <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-4">
                 <Upload className="w-8 h-8" />
               </div>
@@ -495,7 +495,7 @@ export default function ImageOrderParserModal({ isOpen, onClose, onConfirmItems,
                         </td>
                         <td className="py-3 px-4 font-medium text-slate-700">
                           {row.isManual ? (
-                            <input 
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                               type="text"
                               value={row.originalText}
                               onChange={(e) => {
@@ -547,7 +547,7 @@ export default function ImageOrderParserModal({ isOpen, onClose, onConfirmItems,
                           )}
                         </td>
                         <td className="py-3 px-3">
-                          <input 
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                             type="number" min="1" value={row.quantity}
                             onChange={(e) => handleQuantityChange(index, parseInt(e.target.value) || 1)}
                             className="w-full border-slate-200 rounded text-sm py-1 px-2 text-center"

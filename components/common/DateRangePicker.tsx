@@ -27,9 +27,9 @@ export function DateRangePicker({
       <Calendar className="w-4 h-4 text-slate-500" />{" "}
       <div className="flex items-center gap-2">
         {" "}
-        <input type="date" value={from} onChange={e => setFrom(e.target.value)} className="text-sm bg-transparent border border-slate-200 rounded px-2 py-1 outline-none focus:border-slate-500" />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={from} onChange={e => setFrom(e.target.value)} className="text-sm bg-transparent border border-slate-200 rounded px-2 py-1 outline-none focus:border-slate-500" />{" "}
         <span className="text-slate-400 text-sm">to</span>{" "}
-        <input type="date" value={to} onChange={e => setTo(e.target.value)} className="text-sm bg-transparent border border-slate-200 rounded px-2 py-1 outline-none focus:border-slate-500" />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={to} onChange={e => setTo(e.target.value)} className="text-sm bg-transparent border border-slate-200 rounded px-2 py-1 outline-none focus:border-slate-500" />{" "}
       </div>{" "}
       <button onClick={handleApply} className="bg-slate-700 text-white text-sm font-medium px-3 py-1 rounded hover:bg-slate-700 transition-colors ml-2">
         {" "}

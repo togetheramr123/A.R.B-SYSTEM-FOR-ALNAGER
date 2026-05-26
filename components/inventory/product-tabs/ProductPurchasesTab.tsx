@@ -79,7 +79,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                             </td>{" "}
                             <td className="p-1 border-r">
                               {" "}
-                              <input
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                 type="number"
                                 value={line.minQty}
                                 onChange={(e) => {
@@ -97,7 +97,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                             </td>{" "}
                             <td className="p-1 border-r">
                               {" "}
-                              <input
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                 type="number"
                                 value={line.price}
                                 onChange={(e) => {
@@ -115,7 +115,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                             </td>{" "}
                             <td className="p-1 border-r">
                               {" "}
-                              <input
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                 type="number"
                                 value={line.delay}
                                 onChange={(e) => {
@@ -177,7 +177,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             step="0.01"
                             {...register("tax_vendor", {
@@ -205,7 +205,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                           {" "}
                           <label className="flex items-center gap-2 cursor-pointer">
                             {" "}
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="radio"
                               value="ordered"
                               {...register("controlPolicy")}
@@ -217,7 +217,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                           </label>{" "}
                           <label className="flex items-center gap-2 cursor-pointer">
                             {" "}
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="radio"
                               value="received"
                               {...register("controlPolicy")}

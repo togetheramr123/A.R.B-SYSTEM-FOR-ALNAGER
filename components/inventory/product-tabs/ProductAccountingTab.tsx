@@ -110,7 +110,7 @@ export function ProductAccountingTab({ register, setValue, watch, control, accou
                     </label>{" "}
                     <div className="flex items-center gap-2">
                       {" "}
-                      <input
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false}
                         type="text"
                         {...register("assetType")}
                         className="w-full border-b border-slate-300 focus:border-[#2563EB] outline-none py-1 text-sm bg-transparent"

@@ -65,7 +65,7 @@ export default function UsersPage() {
         <div className="flex items-center bg-white border border-slate-300 rounded-sm">
           <div className="relative w-full max-w-md">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input type="text" placeholder="البحث عن المستخدمين..." className="w-full pr-9 pl-4 py-2 text-sm outline-none bg-transparent" />
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="البحث عن المستخدمين..." className="w-full pr-9 pl-4 py-2 text-sm outline-none bg-transparent" />
           </div>
         </div>
 

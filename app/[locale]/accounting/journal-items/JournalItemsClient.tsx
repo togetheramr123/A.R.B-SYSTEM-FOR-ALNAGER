@@ -57,8 +57,8 @@ export function JournalItemsClient({ locale, items, totalCount, startRecord, end
                   <Link href={`/${locale}/accounting/journal-items`} className="hover:text-red-500">×</Link>
                 </div>
               )}
-              {journalFilter && <input type="hidden" name="journal" value={journalFilter} />}
-              <input 
+              {journalFilter && <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="journal" value={journalFilter} />}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                 type="text" 
                 name="q"
                 defaultValue={q}
@@ -164,23 +164,23 @@ export function JournalItemsClient({ locale, items, totalCount, startRecord, end
                   {columnsOpen && (
                     <div className="absolute top-full right-0 mt-1 w-48 bg-white border border-slate-200 shadow-lg rounded-sm z-50 py-1 text-right text-[12px] font-normal max-h-96 overflow-y-auto">
                       <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={visibleCols.entreprise} onChange={() => toggleCol('entreprise')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols.entreprise} onChange={() => toggleCol('entreprise')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
                         <span>Entreprise</span>
                       </label>
                       <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={visibleCols.partner} onChange={() => toggleCol('partner')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols.partner} onChange={() => toggleCol('partner')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
                         <span>الشريك</span>
                       </label>
                       <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={visibleCols.label} onChange={() => toggleCol('label')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols.label} onChange={() => toggleCol('label')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
                         <span>بطاقة عنوان</span>
                       </label>
                       <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={visibleCols.matching} onChange={() => toggleCol('matching')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols.matching} onChange={() => toggleCol('matching')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
                         <span>رقم المطابقة</span>
                       </label>
                       <label className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer">
-                        <input type="checkbox" checked={visibleCols.balance} onChange={() => toggleCol('balance')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols.balance} onChange={() => toggleCol('balance')} className="rounded-sm border-slate-300 text-[#017E84] focus:ring-0" />
                         <span>الرصيد</span>
                       </label>
                     </div>
@@ -201,7 +201,7 @@ export function JournalItemsClient({ locale, items, totalCount, startRecord, end
               {visibleCols.matching && <th className="py-3 px-2 font-bold w-24">رقم المطابقة</th>}
               
               <th className="w-10 py-3 px-4 text-center">
-                <input type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84]" />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84]" />
               </th>
             </tr>
           </thead>
@@ -254,7 +254,7 @@ export function JournalItemsClient({ locale, items, totalCount, startRecord, end
                   {visibleCols.matching && <td className="py-2.5 px-2 truncate" title={""}>{""}</td>}
 
                   <td className="py-2.5 px-4 text-center">
-                    <input type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity" />
                   </td>
                 </tr>
               );

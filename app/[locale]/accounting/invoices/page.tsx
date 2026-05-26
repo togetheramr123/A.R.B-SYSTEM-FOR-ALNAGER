@@ -307,7 +307,7 @@ export default async function InvoicesPage(props: {
                 {" "}
                 <th className="px-4 py-3 w-8">
                   {" "}
-                  <input type="checkbox" className="rounded border-gray-300" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />{" "}
                 </th>{" "}
                 <th className="px-4 py-3">العدد</th>{" "}
                 <th className="px-4 py-3">العميل</th>{" "}
@@ -330,7 +330,7 @@ export default async function InvoicesPage(props: {
                     {" "}
                     <td className="px-4 py-3">
                       {" "}
-                      <input type="checkbox" className="rounded border-gray-300" />{" "}
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />{" "}
                     </td>{" "}
                     <td className="px-4 py-3 font-bold text-blue-600 text-sm whitespace-nowrap">
                       {" "}

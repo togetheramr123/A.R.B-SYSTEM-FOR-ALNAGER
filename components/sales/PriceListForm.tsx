@@ -378,7 +378,7 @@ export function PriceListForm({
                     {/* Partner search input */}
                     <div className="relative">
                       <div className="flex items-center gap-1">
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="text"
                           value={partnerSearch}
                           onChange={e => {
@@ -421,7 +421,7 @@ export function PriceListForm({
                     <label className="text-[12px] font-bold text-slate-600 group-hover:text-[#017E84] transition-colors mb-2 block">
                       تاريخ البدء
                     </label>
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="date"
                       {...register('startDate')}
                       className="w-full bg-transparent border-b border-gray-200 hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1.5 text-[13px] transition-colors cursor-pointer"
@@ -431,7 +431,7 @@ export function PriceListForm({
                     <label className="text-[12px] font-bold text-slate-600 group-hover:text-[#017E84] transition-colors mb-2 block">
                       تاريخ الانتهاء
                     </label>
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="date"
                       {...register('endDate')}
                       className="w-full bg-transparent border-b border-gray-200 hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1.5 text-[13px] transition-colors cursor-pointer"
@@ -449,7 +449,7 @@ export function PriceListForm({
                     ? "bg-green-50 border-green-200"
                     : "bg-gray-50 border-gray-200"
                 )}>
-                  <input
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false}
                     type="checkbox"
                     id="activeToggle"
                     {...register('active')}
@@ -486,7 +486,7 @@ export function PriceListForm({
                     خصم 1 %
                   </label>
                   <div className="relative">
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="number"
                       step="0.01"
                       {...register('discount1', { valueAsNumber: true })}
@@ -503,7 +503,7 @@ export function PriceListForm({
                     خصم 2 %
                   </label>
                   <div className="relative">
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="number"
                       step="0.01"
                       {...register('discount2', { valueAsNumber: true })}
@@ -520,7 +520,7 @@ export function PriceListForm({
                     خصم 3 %
                   </label>
                   <div className="relative">
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="number"
                       step="0.01"
                       {...register('discount3', { valueAsNumber: true })}
@@ -537,7 +537,7 @@ export function PriceListForm({
                     إضافة (علاوة) %
                   </label>
                   <div className="relative">
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="number"
                       step="0.01"
                       {...register('addition', { valueAsNumber: true })}
@@ -619,7 +619,7 @@ export function PriceListForm({
                     </label>
                     <div className="relative">
                       <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <input
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false}
                         type="text"
                         value={productSearch}
                         onChange={e => setProductSearch(e.target.value)}
@@ -673,7 +673,7 @@ export function PriceListForm({
                             </td>
                             {/* Min Quantity */}
                             <td className="px-3 py-3 text-center border-l border-gray-100">
-                              <input
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                 type="number"
                                 {...register(`items.${index}.minQuantity`, { valueAsNumber: true })}
                                 className="w-16 bg-white border border-gray-200 rounded px-2 py-1.5 outline-none text-center text-[13px] font-bold focus:border-[#017E84] focus:ring-1 focus:ring-teal-200 hover:border-slate-300 transition-colors mx-auto"
@@ -695,7 +695,7 @@ export function PriceListForm({
                               currentType === 'purchase' ? 'bg-red-50/10' : 'bg-green-50/10'
                             )}>
                               <div className="flex items-center justify-center gap-2">
-                                <input
+                                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                   type="number"
                                   step="0.01"
                                   {...register(

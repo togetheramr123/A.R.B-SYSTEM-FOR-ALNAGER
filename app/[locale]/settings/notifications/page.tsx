@@ -74,7 +74,7 @@ export default function NotificationsSettingsPage() {
         {" "}
         <div className="flex-1 flex items-start gap-3">
           {" "}
-          <input type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${rule.isCritical ? "text-red-600 focus:ring-red-500 cursor-not-allowed" : "text-amber-500 focus:ring-amber-500 cursor-pointer"}`} checked={rule.isActive || rule.isCritical} onChange={() => !rule.isCritical && handleToggle(rule.id, rule.isActive)} disabled={rule.isCritical} />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className={`mt-1 w-4 h-4 rounded border-slate-300 ${rule.isCritical ? "text-red-600 focus:ring-red-500 cursor-not-allowed" : "text-amber-500 focus:ring-amber-500 cursor-pointer"}`} checked={rule.isActive || rule.isCritical} onChange={() => !rule.isCritical && handleToggle(rule.id, rule.isActive)} disabled={rule.isCritical} />{" "}
           <div>
             {" "}
             <div className="font-semibold text-slate-800 text-sm flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function NotificationsSettingsPage() {
                   {g.name} ({g.category})
                 </option>)}{" "}
             </select>}{" "}
-          {rule.targetType === "specific_users" && <input type="text" placeholder="أدخل User IDs..." value={rule.targetUsers || ""} onChange={e => setRules(rules.map(r => r.id === rule.id ? {
+          {rule.targetType === "specific_users" && <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="أدخل User IDs..." value={rule.targetUsers || ""} onChange={e => setRules(rules.map(r => r.id === rule.id ? {
           ...r,
           targetUsers: e.target.value
         } : r))} className="w-full text-xs border border-sky-300 bg-sky-50 rounded p-1.5 outline-none focus:border-sky-500" />}{" "}

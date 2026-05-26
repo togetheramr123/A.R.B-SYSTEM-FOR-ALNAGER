@@ -75,7 +75,7 @@ export default function LoginPage({
           </div>
 
           <form action={formAction} className="space-y-5">
-            <input type="hidden" name="locale" value={locale} />
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="locale" value={locale} />
             
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 block text-right">
@@ -85,7 +85,7 @@ export default function LoginPage({
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <User className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="text" 
                   name="username" 
                   required 
@@ -103,7 +103,7 @@ export default function LoginPage({
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="password" 
                   name="password" 
                   required 
@@ -182,7 +182,7 @@ export default function LoginPage({
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="password" 
                   value={demoPin}
                   onChange={(e) => setDemoPin(e.target.value)}

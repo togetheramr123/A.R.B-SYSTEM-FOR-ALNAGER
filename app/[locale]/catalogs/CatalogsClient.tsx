@@ -142,7 +142,7 @@ export default function CatalogsClient({
           <div className="relative flex-1 max-w-md">
             {" "}
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-            <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="ابحث عن كتالوج..." className="w-full pr-10 pl-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="ابحث عن كتالوج..." className="w-full pr-10 pl-4 py-2.5 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" />{" "}
           </div>{" "}
           <div className="flex items-center gap-1.5">
             {" "}
@@ -253,7 +253,7 @@ export default function CatalogsClient({
                 <label className="text-sm font-bold text-slate-700 mb-1 block">
                   عنوان الكتالوج *
                 </label>{" "}
-                <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="مثال: كتالوج منتجات الصيف 2026" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" autoFocus />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="مثال: كتالوج منتجات الصيف 2026" className="w-full px-4 py-3 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" autoFocus />{" "}
               </div>{" "}
               {/* Description */}{" "}
               <div>
@@ -282,7 +282,7 @@ export default function CatalogsClient({
                 <label className="text-sm font-bold text-slate-700 mb-1 block">
                   ملف *
                 </label>{" "}
-                <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.zip,.rar" onChange={e => setSelectedFile(e.target.files?.[0] || null)} className="hidden" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} ref={fileInputRef} type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.zip,.rar" onChange={e => setSelectedFile(e.target.files?.[0] || null)} className="hidden" />{" "}
                 <div onClick={() => fileInputRef.current?.click()} className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center cursor-pointer hover:border-teal-500 hover:bg-teal-50/30 transition-colors">
                   {" "}
                   {selectedFile ? <div className="flex items-center justify-center gap-3">

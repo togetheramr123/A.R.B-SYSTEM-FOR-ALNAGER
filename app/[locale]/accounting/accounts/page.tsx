@@ -111,7 +111,7 @@ export default function ChartOfAccountsPage() {
             {" "}
             <div className="relative flex-1 max-w-md border-b border-slate-300 focus-within:border-sky-600 transition-colors">
               {" "}
-              <input type="text" placeholder="البحث بالكود أو الاسم..." className="w-full pl-4 pr-10 py-1.5 text-sm outline-none bg-transparent" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="البحث بالكود أو الاسم..." className="w-full pl-4 pr-10 py-1.5 text-sm outline-none bg-transparent" />{" "}
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
             </div>{" "}
             <button className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-full hover:bg-slate-100 transition-colors">

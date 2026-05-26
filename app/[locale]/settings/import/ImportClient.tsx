@@ -203,7 +203,7 @@ export default function ImportClient() {
             </p>
 
             <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50/50 hover:bg-gray-50 transition-colors">
-              <input
+              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                 type="file"
                 id="file-upload"
                 accept=".xlsx, .xls, .csv"

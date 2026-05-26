@@ -349,7 +349,7 @@ export function JournalForm({
                     <label className="text-sm font-medium text-slate-700">
                       تسلسل دفع مخصص
                     </label>{" "}
-                    <input type="checkbox" {...register("dedicatedPaymentSequence")} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84]" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" {...register("dedicatedPaymentSequence")} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84]" />{" "}
                   </div>}{" "}
 
               </div>{" "}
@@ -380,7 +380,7 @@ export function JournalForm({
                         {" "}
                         <td className="py-3 px-2">
                           {" "}
-                          <input type="checkbox" checked={inboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, false)} className="rounded border-slate-300 text-[#017E84]" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={inboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, false)} className="rounded border-slate-300 text-[#017E84]" />{" "}
                         </td>{" "}
                         <td className="py-3 font-medium text-slate-700">
                           {method.name}
@@ -423,7 +423,7 @@ export function JournalForm({
                         {" "}
                         <td className="py-3 px-2">
                           {" "}
-                          <input type="checkbox" checked={outboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, true)} className="rounded border-slate-300 text-[#017E84]" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={outboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, true)} className="rounded border-slate-300 text-[#017E84]" />{" "}
                         </td>{" "}
                         <td className="py-3 font-medium text-slate-700">
                           {method.name}

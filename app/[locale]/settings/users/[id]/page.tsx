@@ -149,7 +149,7 @@ export default function UserDetailsPage() {
               )}
               <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 <Camera className="w-5 h-5 text-white" />
-                <input type="file" accept="image/*" className="hidden" onChange={e => {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" accept="image/*" className="hidden" onChange={e => {
                   const file = e.target.files?.[0];
                   if (file) {
                     const reader = new FileReader();
@@ -165,7 +165,7 @@ export default function UserDetailsPage() {
               {/* Name */}
               <div className="grid grid-cols-[100px_1fr] items-center">
                 <label className="text-sm font-semibold text-slate-600 text-right pl-3">الاسم</label>
-                <input type="text" value={user?.name || ""} onChange={e => updateUser("name", e.target.value)}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={user?.name || ""} onChange={e => updateUser("name", e.target.value)}
                   className="w-full border-b border-slate-300 focus:border-slate-600 outline-none py-1 text-base font-medium text-slate-900 bg-transparent transition-colors"
                   placeholder="مثال: أحمد محمود" />
               </div>
@@ -174,7 +174,7 @@ export default function UserDetailsPage() {
                 <label className="text-sm font-semibold text-slate-600 text-right pl-3">
                   كلمة المرور {isNew ? "" : "(اتركه فارغاً)"}
                 </label>
-                <input type="text" inputMode="numeric" value={user?.password || ""} onChange={e => {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="numeric" value={user?.password || ""} onChange={e => {
                   const converted = e.target.value
                     .replace(/[٠-٩]/g, (d: string) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
                     .replace(/[۰-۹]/g, (d: string) => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
@@ -187,7 +187,7 @@ export default function UserDetailsPage() {
               {/* Phone */}
               <div className="grid grid-cols-[100px_1fr] items-center">
                 <label className="text-sm font-semibold text-slate-600 text-right pl-3">رقم الهاتف</label>
-                <input type="text" value={user?.phone || ""} onChange={e => updateUser("phone", e.target.value)}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={user?.phone || ""} onChange={e => updateUser("phone", e.target.value)}
                   className="w-full border-b border-slate-300 focus:border-slate-600 outline-none py-1 text-slate-800 bg-transparent transition-colors text-left"
                   placeholder="05xxxxxxxxx" dir="ltr" />
               </div>
@@ -195,7 +195,7 @@ export default function UserDetailsPage() {
               <div className="grid grid-cols-[100px_1fr] items-center">
                 <label className="text-sm font-semibold text-slate-600 text-right pl-3">رقم الواتساب</label>
                 <div className="flex items-center gap-2 w-full">
-                  <input type="text" value={user?.whatsapp || ""} onChange={e => updateUser("whatsapp", e.target.value)}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={user?.whatsapp || ""} onChange={e => updateUser("whatsapp", e.target.value)}
                     className="w-full border-b border-slate-300 focus:border-slate-600 outline-none py-1 text-slate-800 bg-transparent transition-colors text-left"
                     placeholder="05xxxxxxxxx" dir="ltr" />
                   <button onClick={() => updateUser("whatsapp", user?.phone)}
@@ -218,7 +218,7 @@ export default function UserDetailsPage() {
               {/* Email */}
               <div className="grid grid-cols-[100px_1fr] items-center">
                 <label className="text-sm font-semibold text-slate-600 text-right pl-3">الإيميل</label>
-                <input type="email" value={user?.email || ""} onChange={e => updateUser("email", e.target.value)}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="email" value={user?.email || ""} onChange={e => updateUser("email", e.target.value)}
                   className="w-full border-b border-slate-300 focus:border-slate-600 outline-none py-1 text-slate-800 bg-transparent transition-colors text-left"
                   placeholder="user@company.com" dir="ltr" />
               </div>
@@ -235,7 +235,7 @@ export default function UserDetailsPage() {
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">نوع المستخدم</div>
                 <div className="border border-slate-200 rounded-sm overflow-hidden">
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="USER" checked={user?.role === "USER"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="USER" checked={user?.role === "USER"}
                       onChange={() => updateUser("role", "USER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مستخدم داخلي</div>
@@ -243,7 +243,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="SALESMAN" checked={user?.role === "SALESMAN"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="SALESMAN" checked={user?.role === "SALESMAN"}
                       onChange={() => updateUser("role", "SALESMAN")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مندوب مبيعات</div>
@@ -251,7 +251,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="ACCOUNTANT" checked={user?.role === "ACCOUNTANT"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="ACCOUNTANT" checked={user?.role === "ACCOUNTANT"}
                       onChange={() => updateUser("role", "ACCOUNTANT")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">محاسب</div>
@@ -259,7 +259,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="WAREHOUSE_MANAGER" checked={user?.role === "WAREHOUSE_MANAGER"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="WAREHOUSE_MANAGER" checked={user?.role === "WAREHOUSE_MANAGER"}
                       onChange={() => updateUser("role", "WAREHOUSE_MANAGER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مدير مخازن</div>
@@ -267,7 +267,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="MANAGER" checked={user?.role === "MANAGER"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="MANAGER" checked={user?.role === "MANAGER"}
                       onChange={() => updateUser("role", "MANAGER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مدير فرع / قسم</div>
@@ -275,7 +275,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors border-b border-slate-200">
-                    <input type="radio" name="role" value="ADMIN" checked={user?.role === "ADMIN"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="ADMIN" checked={user?.role === "ADMIN"}
                       onChange={() => updateUser("role", "ADMIN")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مدير النظام</div>
@@ -283,7 +283,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="radio" name="role" value="OWNER" checked={user?.role === "OWNER"}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" name="role" value="OWNER" checked={user?.role === "OWNER"}
                       onChange={() => updateUser("role", "OWNER")} className="w-4 h-4 cursor-pointer accent-slate-800" />
                     <div>
                       <div className="font-medium text-sm text-slate-800">مالك النظام</div>
@@ -296,7 +296,7 @@ export default function UserDetailsPage() {
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-6 mb-2">صلاحيات مخصصة</div>
                 <div className="border border-slate-200 rounded-sm overflow-hidden divide-y divide-slate-200">
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={user?.enforceNotificationBlock ?? true}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={user?.enforceNotificationBlock ?? true}
                       onChange={e => updateUser("enforceNotificationBlock", e.target.checked)}
                       className="w-4 h-4 rounded cursor-pointer accent-slate-800" />
                     <div>
@@ -305,7 +305,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={user?.canSellFractions ?? false}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={user?.canSellFractions ?? false}
                       onChange={e => updateUser("canSellFractions", e.target.checked)}
                       className="w-4 h-4 rounded cursor-pointer accent-slate-800" />
                     <div>
@@ -314,7 +314,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={user?.canViewCost ?? true}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={user?.canViewCost ?? true}
                       onChange={e => updateUser("canViewCost", e.target.checked)}
                       className="w-4 h-4 rounded cursor-pointer accent-slate-800" />
                     <div>
@@ -323,7 +323,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={user?.canCreateFreeVouchers ?? true}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={user?.canCreateFreeVouchers ?? true}
                       onChange={e => updateUser("canCreateFreeVouchers", e.target.checked)}
                       className="w-4 h-4 rounded cursor-pointer accent-slate-800" />
                     <div>
@@ -332,7 +332,7 @@ export default function UserDetailsPage() {
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer px-3 py-2.5 hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={user?.canAccessTreasury ?? true}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={user?.canAccessTreasury ?? true}
                       onChange={e => updateUser("canAccessTreasury", e.target.checked)}
                       className="w-4 h-4 rounded cursor-pointer accent-slate-800" />
                     <div>
@@ -376,7 +376,7 @@ export default function UserDetailsPage() {
                         <div className="divide-y divide-slate-100">
                           {groups.map((group: any) => (
                             <label key={group.id} className="flex items-center gap-3 cursor-pointer px-3 py-2 hover:bg-slate-50 transition-colors">
-                              <input
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                 type="checkbox"
                                 checked={selectedGroupIds.includes(group.id)}
                                 onChange={() => toggleGroup(group.id)}

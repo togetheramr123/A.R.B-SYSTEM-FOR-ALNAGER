@@ -191,8 +191,8 @@ export function OdooAutocomplete({
       {/* Modern input wrapper with glassmorphism and focus effects */}
       <div className={`relative group flex items-center w-full h-full bg-slate-50 hover:bg-slate-100 transition-all duration-200 rounded-md border ${error ? 'border-red-400 focus-within:ring-red-500' : 'border-slate-200 focus-within:border-teal-500 focus-within:ring-teal-500 focus-within:bg-white focus-within:shadow-sm'} focus-within:ring-1 overflow-hidden px-2.5`}>
         {/* Hidden input to completely fool Chrome autocomplete */}
-        <input type="text" style={{display: 'none'}} />
-        <input type="password" style={{display: 'none'}} />
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" style={{display: 'none'}} />
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="password" style={{display: 'none'}} />
         
         <input
           ref={inputRef}

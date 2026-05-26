@@ -77,7 +77,7 @@ export default function ResetClient() {
             <AlertTriangle className="w-5 h-5" />
             <span className="font-bold">للتأكيد، اكتب &quot;تأكيد التصفير&quot; في الحقل أدناه:</span>
           </div>
-          <input
+          <input autoComplete="off" autoCorrect="off" spellCheck={false}
             type="text"
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}

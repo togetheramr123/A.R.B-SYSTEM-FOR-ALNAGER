@@ -156,16 +156,16 @@ export default async function JournalEntriesPage(props: {
                   <Link href={`/${locale}/accounting/journal-entries?filter=${searchParams?.filter || ""}`} className="hover:text-red-500">×</Link>
                 </div>
               )}
-              <input 
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                 type="text" 
                 name="q"
                 defaultValue={q}
                 placeholder="بحث..." 
                 className="flex-1 py-1.5 min-w-[100px] bg-transparent border-none focus:ring-0 outline-none text-[13px] text-slate-800"
               />
-              <input type="hidden" name="filter" value={searchParams?.filter || ""} />
-              <input type="hidden" name="groupBy" value={searchParams?.groupBy || ""} />
-              <input type="hidden" name="view" value={searchParams?.view || "list"} />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="filter" value={searchParams?.filter || ""} />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="groupBy" value={searchParams?.groupBy || ""} />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="view" value={searchParams?.view || "list"} />
               <button type="submit">
                 <Search className="w-4 h-4 text-slate-500 mr-2 cursor-pointer hover:text-slate-800" />
               </button>
@@ -194,7 +194,7 @@ export default async function JournalEntriesPage(props: {
             <thead className="bg-white border-b border-slate-300 text-slate-800 text-[13px]">
               <tr>
                 <th className="w-10 py-3 px-4 text-center">
-                  <input type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84]" />
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84]" />
                 </th>
                 <th className="py-3 px-2 font-bold w-32">التاريخ</th>
                 <th className="py-3 px-2 font-bold w-48">عدد</th>
@@ -217,7 +217,7 @@ export default async function JournalEntriesPage(props: {
                 return (
                   <tr key={entry.id} className="hover:bg-slate-50 transition-colors group cursor-pointer text-slate-700 border-b border-slate-100 last:border-0">
                     <td className="py-2.5 px-4 text-center">
-                      <input type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded-sm border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 checked:opacity-100 transition-opacity" />
                     </td>
                     <td className="py-2.5 px-2 truncate" title={dateStr}>{dateStr}</td>
                     <td className="py-2.5 px-2 font-bold truncate text-slate-800" title={entry.name}>
