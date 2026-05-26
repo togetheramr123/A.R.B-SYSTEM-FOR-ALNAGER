@@ -53,8 +53,9 @@ export default async function SaleOrderDetailPage(props: {
   ]);
 
   const canViewCustomerDetails = userRole === "ADMIN" || permissions._isAdmin || permissions.cust_view_details || false;
+  const canEditUomFactor = userRole === "ADMIN" || permissions._isAdmin || permissions.inv_edit_uom_factor || false;
   if (id === "create") {
-    return <SaleOrderForm userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} />;
+    return <SaleOrderForm userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} canEditUomFactor={canEditUomFactor} />;
   }
 
   if (!order) {
@@ -85,5 +86,5 @@ export default async function SaleOrderDetailPage(props: {
       name: updatedBy.name || updatedBy.email
     } : null
   });
-  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} />;
+  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} canEditUomFactor={canEditUomFactor} />;
 }

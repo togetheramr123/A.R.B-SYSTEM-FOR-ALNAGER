@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { PurchaseOrderForm } from "@/components/purchases/PurchaseOrderForm";
 import { serializeDecimal } from "@/lib/serialize";
+import { getUserGroupPermissions } from "@/app/actions/settings";
+import { getSession } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 export default async function PurchaseOrderDetailPage(props: {
   params: Promise<{
@@ -20,7 +22,10 @@ export default async function PurchaseOrderDetailPage(props: {
   const searchParams = await props.searchParams;
   const isEditing = searchParams?.edit === "true";
   const t = await getTranslations("Purchases");
-  const order = await prisma.purchaseOrder.findUnique({
+  const session = await getSession();
+  const [permissions, order] = await Promise.all([
+    getUserGroupPermissions(),
+    prisma.purchaseOrder.findUnique({
     where: {
       id: id
     },
@@ -47,7 +52,9 @@ export default async function PurchaseOrderDetailPage(props: {
         }
       }
     }
-  });
+  })
+  ]);
+  const canEditUomFactor = session?.role === "ADMIN" || permissions._isAdmin || permissions.inv_edit_uom_factor || false;
   if (!order) notFound();
   const orderAny = order as any;
   const userIds = [orderAny.createdById, orderAny.updatedById].filter(Boolean) as string[];
@@ -74,5 +81,5 @@ export default async function PurchaseOrderDetailPage(props: {
       name: updatedBy.name || updatedBy.email
     } : null
   });
-  return <PurchaseOrderForm initialData={serializedOrder} defaultEditing={isEditing} />;
+  return <PurchaseOrderForm initialData={serializedOrder} defaultEditing={isEditing} canEditUomFactor={canEditUomFactor} />;
 }

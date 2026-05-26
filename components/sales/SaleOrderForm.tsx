@@ -131,6 +131,69 @@ const StockAvailabilityIcon = ({
         window.location.href = `/${locale}/sales/${initialData.id}/availability`;
       }} className="pt-2 text-[#714B67] hover:text-[#5B3C53] transition-colors text-sm font-bold flex items-center justify-start gap-1 cursor-pointer pointer-events-auto"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" /></svg> عرض التنبؤات </div>} </div>, document.body)} </div>;
 };
+
+// Editable Secondary UOM Cell - allows editing UOM name and factor inline
+const EditableUomCellSale = ({ index, uomName, factor, onSave }: { index: number; uomName: string; factor: number; onSave: (name: string, factor: number) => void }) => {
+  const [open, setOpen] = useState(false);
+  const [editName, setEditName] = useState(uomName);
+  const [editFactor, setEditFactor] = useState(String(factor));
+  const cellRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ top: 0, right: 0 });
+
+  const handleOpen = () => {
+    if (cellRef.current) {
+      const rect = cellRef.current.getBoundingClientRect();
+      setCoords({ top: rect.bottom + 4, right: document.documentElement.clientWidth - rect.right });
+    }
+    setEditName(uomName);
+    setEditFactor(String(factor));
+    setOpen(true);
+  };
+
+  const handleSave = () => {
+    const newFactor = parseFloat(convertArabicToEnglishNumbers(editFactor).replace(/[^0-9.]/g, '')) || factor;
+    onSave(editName.trim() || uomName, newFactor);
+    setOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSave(); }
+    if (e.key === 'Escape') { setOpen(false); }
+  };
+
+  const displayLabel = uomName + (factor ? ` (${factor})` : '');
+
+  return <>
+    <div ref={cellRef} onClick={handleOpen} className="text-sm text-center py-2 text-[#017E84] h-full w-full cursor-pointer hover:bg-teal-50/50 transition-colors flex items-center justify-center gap-1 group" title="اضغط لتعديل المتغير">
+      <span>{displayLabel}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 text-teal-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+    </div>
+    {open && typeof document !== 'undefined' && createPortal(
+      <>
+        <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
+        <div className="fixed z-[9999] bg-white border border-slate-300 shadow-lg rounded-lg p-4 min-w-[260px] text-right" style={{ top: `${coords.top}px`, right: `${coords.right}px` }} dir="rtl">
+          <div className="text-sm font-bold text-slate-800 mb-3 pb-2 border-b border-slate-200">تعديل الوحدة الثانوية</div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-slate-500 mb-1 block">اسم الوحدة</label>
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={editName} onChange={e => setEditName(e.target.value)} onKeyDown={handleKeyDown} className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm text-slate-800 outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84]/20 transition-colors" autoFocus />
+            </div>
+            <div>
+              <label className="text-xs text-slate-500 mb-1 block">المتغير (عدد القطع)</label>
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="decimal" value={editFactor} onChange={e => setEditFactor(e.target.value)} onKeyDown={handleKeyDown} className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm text-slate-800 font-bold outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84]/20 transition-colors text-center" />
+            </div>
+            <div className="flex gap-2 pt-1">
+              <button type="button" onClick={handleSave} className="flex-1 bg-[#017E84] hover:bg-[#016468] text-white text-xs font-bold py-1.5 rounded transition-colors">حفظ</button>
+              <button type="button" onClick={() => setOpen(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 rounded transition-colors">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      </>,
+      document.body
+    )}
+  </>;
+};
+
 export function SaleOrderForm({
   initialData,
   showMargins = false,
@@ -138,7 +201,8 @@ export function SaleOrderForm({
   userRole = 'USER',
   userId = '',
   allowedCustomerType = 'ALL',
-  canViewCustomerDetails = false
+  canViewCustomerDetails = false,
+  canEditUomFactor = false
 }: {
   initialData?: any;
   showMargins?: boolean;
@@ -147,6 +211,7 @@ export function SaleOrderForm({
   userId?: string;
   allowedCustomerType?: string;
   canViewCustomerDetails?: boolean;
+  canEditUomFactor?: boolean;
 }) {
   const t = useTranslations('Sales');
   const router = useRouter();
@@ -1081,10 +1146,31 @@ export function SaleOrderForm({
   }, {
     id: 'secondaryUom',
     label: 'الثانوية UOM',
-    renderCell: (field: any, index: number) => {
+    renderCell: (field: any, index: number, register: any, control: any) => {
       const line = lines[index] || {};
-      const label = line.hasSecondaryUnit && line.secondaryUom ? line.secondaryUom : '-';
-      return <div className="text-sm text-center py-2 text-slate-500 h-full w-full">{label}</div>;
+      if (!line.hasSecondaryUnit || !line.secondaryUom) {
+        return <div className="text-sm text-center py-2 text-slate-400 h-full w-full">-</div>;
+      }
+      const currentFactor = Number(line.secondaryUomFactor) || 0;
+      const displayLabel = line.secondaryUom + (currentFactor ? ` (${currentFactor})` : '');
+      if (!canEditUomFactor) {
+        return <div className="text-sm text-center py-2 text-slate-500 h-full w-full" title={`المتغير: ${currentFactor}`}>{displayLabel}</div>;
+      }
+      return <EditableUomCellSale
+        index={index}
+        uomName={line.secondaryUom}
+        factor={currentFactor}
+        onSave={(newName: string, newFactor: number) => {
+          setValue(`lines.${index}.secondaryUom`, newName, { shouldDirty: true });
+          setValue(`lines.${index}.secondaryUomFactor`, newFactor, { shouldDirty: true });
+          const secondaryQty = Number(line.secondaryQty) || 0;
+          if (newFactor > 0 && secondaryQty > 0) {
+            setValue(`lines.${index}.qty`, parseFloat((secondaryQty * newFactor).toFixed(3)), { shouldValidate: true, shouldDirty: true });
+          }
+          setStoreUnsaved(true);
+          setHasUnsavedChangesSync(true);
+        }}
+      />;
     }
   }, {
     id: 'price',
