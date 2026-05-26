@@ -70,66 +70,26 @@ const safeNavigate = (path: string) => {
   window.location.href = path;
 };
 
-// Editable Secondary UOM Cell - allows editing UOM name and factor inline
-const EditableUomCell = ({ index, uomName, factor, onSave }: { index: number; uomName: string; factor: number; onSave: (name: string, factor: number) => void }) => {
-  const [open, setOpen] = useState(false);
-  const [editName, setEditName] = useState(uomName);
-  const [editFactor, setEditFactor] = useState(String(factor));
-  const cellRef = useRef<HTMLDivElement>(null);
-  const [coords, setCoords] = useState({ top: 0, right: 0 });
-
-  const handleOpen = () => {
-    if (cellRef.current) {
-      const rect = cellRef.current.getBoundingClientRect();
-      setCoords({
-        top: rect.bottom + 4,
-        right: document.documentElement.clientWidth - rect.right
-      });
-    }
-    setEditName(uomName);
-    setEditFactor(String(factor));
-    setOpen(true);
-  };
-
-  const handleSave = () => {
-    const newFactor = parseFloat(convertArabicToEnglishNumbers(editFactor).replace(/[^0-9.]/g, '')) || factor;
-    onSave(editName.trim() || uomName, newFactor);
-    setOpen(false);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') { e.preventDefault(); handleSave(); }
-    if (e.key === 'Escape') { setOpen(false); }
-  };
-
-  return <>
-    <div ref={cellRef} onClick={handleOpen} className="text-xs text-center py-1 text-[#017E84] h-full w-full cursor-pointer hover:bg-teal-50/50 transition-colors flex items-center justify-center leading-tight" title="اضغط لتعديل المتغير">
-      <span className="truncate max-w-[100px]">{uomName}</span>
-    </div>
-    {open && typeof document !== 'undefined' && createPortal(
-      <>
-        <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
-        <div className="fixed z-[9999] bg-white border border-slate-300 shadow-lg rounded-lg p-4 min-w-[260px] text-right" style={{ top: `${coords.top}px`, right: `${coords.right}px` }} dir="rtl">
-          <div className="text-sm font-bold text-slate-800 mb-3 pb-2 border-b border-slate-200">تعديل الوحدة الثانوية</div>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-slate-500 mb-1 block">اسم الوحدة</label>
-              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={editName} onChange={e => setEditName(e.target.value)} onKeyDown={handleKeyDown} className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm text-slate-800 outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84]/20 transition-colors" autoFocus />
-            </div>
-            <div>
-              <label className="text-xs text-slate-500 mb-1 block">المتغير (عدد القطع)</label>
-              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="decimal" value={editFactor} onChange={e => setEditFactor(e.target.value)} onKeyDown={handleKeyDown} className="w-full border border-slate-300 rounded px-2 py-1.5 text-sm text-slate-800 font-bold outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84]/20 transition-colors text-center" />
-            </div>
-            <div className="flex gap-2 pt-1">
-              <button type="button" onClick={handleSave} className="flex-1 bg-[#017E84] hover:bg-[#016468] text-white text-xs font-bold py-1.5 rounded transition-colors">حفظ</button>
-              <button type="button" onClick={() => setOpen(false)} className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium py-1.5 rounded transition-colors">إلغاء</button>
-            </div>
-          </div>
-        </div>
-      </>,
-      document.body
-    )}
-  </>;
+// Editable Secondary UOM Cell - simple select from existing UOM options
+const EditableUomCell = ({ uomName, factor, uomOptions, onSave }: { uomName: string; factor: number; uomOptions: { name: string; factor: number }[]; onSave: (name: string, factor: number) => void }) => {
+  const currentKey = `${uomName}|${factor}`;
+  return <select
+    value={currentKey}
+    onChange={e => {
+      const val = e.target.value;
+      if (!val) return;
+      const [name, f] = val.split('|');
+      onSave(name, Number(f));
+    }}
+    className="w-full h-full p-1 min-w-0 bg-transparent outline-none text-xs text-center text-[#017E84] cursor-pointer appearance-none hover:bg-teal-50/50 transition-colors"
+    title="اختر الوحدة الثانوية"
+  >
+    {uomOptions.map(opt => (
+      <option key={`${opt.name}|${opt.factor}`} value={`${opt.name}|${opt.factor}`}>
+        {opt.name}
+      </option>
+    ))}
+  </select>;
 };
 
 export function PurchaseOrderForm({
@@ -1121,16 +1081,25 @@ const columns: any[] = [{
     }
     const currentFactor = Number(line.secondaryUomFactor) || 0;
     if (!canEditUomFactor) {
-      return <div className="text-xs text-center py-1 text-slate-500 h-full w-full flex flex-col items-center justify-center leading-tight" title={`المتغير: ${currentFactor}`}><span className="truncate max-w-[100px]">{line.secondaryUom}</span></div>;
+      return <div className="text-xs text-center py-1 text-slate-500 h-full w-full flex items-center justify-center leading-tight" title={`المتغير: ${currentFactor}`}><span className="truncate max-w-[100px]">{line.secondaryUom}</span></div>;
     }
+    // Build unique UOM options from all products that have secondary units
+    const uomMap = new Map<string, { name: string; factor: number }>();
+    productsList.filter((p: any) => p.hasSecondaryUnit && p.secondaryUom).forEach((p: any) => {
+      const key = `${p.secondaryUom}|${p.secondaryUomFactor}`;
+      if (!uomMap.has(key)) uomMap.set(key, { name: p.secondaryUom, factor: Number(p.secondaryUomFactor) || 1 });
+    });
+    // Ensure current value is in the list
+    const currentKey = `${line.secondaryUom}|${currentFactor}`;
+    if (!uomMap.has(currentKey)) uomMap.set(currentKey, { name: line.secondaryUom, factor: currentFactor });
+    const uomOptions = Array.from(uomMap.values());
     return <EditableUomCell
-      index={index}
       uomName={line.secondaryUom}
       factor={currentFactor}
+      uomOptions={uomOptions}
       onSave={(newName: string, newFactor: number) => {
         setValue(`lines.${index}.secondaryUom`, newName, { shouldDirty: true });
         setValue(`lines.${index}.secondaryUomFactor`, newFactor, { shouldDirty: true });
-        // Recalculate primary qty based on the new factor
         const secondaryQty = Number(line.secondaryQty) || 0;
         if (newFactor > 0 && secondaryQty > 0) {
           setValue(`lines.${index}.qty`, parseFloat((secondaryQty * newFactor).toFixed(3)), { shouldValidate: true, shouldDirty: true });
