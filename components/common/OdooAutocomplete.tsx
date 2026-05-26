@@ -176,7 +176,7 @@ export function OdooAutocomplete({
   const safeQuery = (query || "").toString();
   const trimmedQuery = safeQuery.trim().toLowerCase();
   const showCreateEdit = onCreateEdit && trimmedQuery.length > 0 && !(options || []).some(opt => (opt.label || "").toString().toLowerCase() === trimmedQuery);
-  return <div ref={containerRef} className={`relative w-full h-full ${className}`}> <div className="relative group flex items-center w-full h-full"> <input ref={inputRef} id={id} type="text" value={query} title={query} onChange={e => {
+  return <div ref={containerRef} className={`relative w-full h-full ${className}`}> <div className="relative group flex items-center w-full h-full"> <input ref={inputRef} id={id} type="text" autoComplete="new-password" value={query} title={query} onChange={e => {
         const val = e.target.value;
         setQuery(val);
         updatePosition();
