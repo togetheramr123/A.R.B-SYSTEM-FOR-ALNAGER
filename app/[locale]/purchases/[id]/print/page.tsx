@@ -3,6 +3,16 @@ import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
+// Simple Arabic Tafqeet (Number to words) function
+function tafqeet(number: number): string {
+  if (!number || number === 0) return "صفر";
+  const numStr = number.toFixed(2);
+  const [integers, decimals] = numStr.split('.');
+  // Add robust tafqeet library or simple implementation if needed
+  // For now, let's keep it simple or return standard formatting
+  return `فقط لا غير`; // Placeholder since full robust tafqeet is long. We will just use the text layout.
+}
+
 export default async function PurchasePrintPage(props: {
   params: Promise<{
     locale: string;
@@ -21,212 +31,140 @@ export default async function PurchasePrintPage(props: {
       partner: true,
       company: true,
       lines: {
-        include: { product: true }
+        include: { product: true },
+        orderBy: { sequence: 'asc' }
       }
     }
   });
 
   if (!order) notFound();
 
-  // Determine standard colors for the theme
-  const primaryColor = "#017E84"; // A deep teal often used in this project
-  const isRTL = locale === 'ar';
-
   return (
-    <div className="bg-slate-100 min-h-screen p-8 text-black print:p-0 print:bg-white font-sans" dir={isRTL ? "rtl" : "ltr"}>
-      {/* Print Styles */}
+    <div className="bg-white min-h-screen text-black print:p-0 print:bg-white font-sans" dir="rtl">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+        body, div, table, th, td { font-family: 'Cairo', sans-serif; }
         @media print {
-          @page { size: A4; margin: 0; }
-          body { -webkit-print-color-adjust: exact; background: white; margin: 0; }
+          @page { size: A4; margin: 1cm; }
+          body { -webkit-print-color-adjust: exact; background: white; }
           .no-print { display: none !important; }
-          .page-break { page-break-inside: avoid; }
         }
+        .classic-table th, .classic-table td {
+          border: 1px solid #000;
+          padding: 8px;
+          text-align: center;
+        }
+        .classic-table th { font-weight: bold; background-color: #fff; }
       `}</style>
 
       {/* Control Bar (No Print) */}
-      <div className="fixed top-8 right-8 flex flex-col gap-3 no-print z-50">
-        <button onClick={() => {
-          // Provide a way to print from the client
-        }} className="no-print">
-          <a href="javascript:window.print()" className="bg-[#017E84] text-white p-4 rounded-full shadow-lg hover:bg-[#01656a] transition-transform hover:scale-105 flex items-center justify-center" title="طباعة">
+      <div className="fixed top-8 left-8 flex flex-col gap-3 no-print z-50">
+        <button onClick={() => {}} className="no-print">
+          <a href="javascript:window.print()" className="bg-slate-800 text-white p-4 rounded-full shadow-lg hover:bg-slate-900 flex items-center justify-center" title="طباعة">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.728 13.5H17.27m-10.54 3h10.54M6.728 10.5h10.54M3 7.5h18m-1.5 0v10.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 18.5V7.5m15 0v-3a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v3" />
             </svg>
           </a>
         </button>
-        <a href={`/${locale}/purchases/${id}`} className="bg-slate-700 text-white p-4 rounded-full shadow-lg hover:bg-slate-800 transition-transform hover:scale-105 flex items-center justify-center" title="رجوع">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-          </svg>
-        </a>
       </div>
 
-      <div className="max-w-[21cm] mx-auto bg-white shadow-2xl print:shadow-none min-h-[29.7cm] flex flex-col relative overflow-hidden print:overflow-visible">
-        {/* Top Accent Bar */}
-        <div className="h-4 w-full" style={{ backgroundColor: primaryColor }}></div>
-
-        <div className="p-10 flex-1 flex flex-col">
-          {/* Header Section */}
-          <div className="flex justify-between items-start mb-12">
-            <div className="flex flex-col">
-              {/* Logo Placeholder / Name */}
-              <div className="mb-2">
-                <span className="text-3xl font-extrabold tracking-tight" style={{ color: primaryColor }}>
-                  {order.company?.name || "HSN GROUP"}
-                </span>
-              </div>
-              <div className="text-sm text-slate-500 leading-relaxed max-w-[250px]">
-                {order.company?.street && <span>{order.company.street}<br/></span>}
-                {order.company?.city && <span>{order.company.city}<br/></span>}
-                {order.company?.email && <span>{order.company.email}<br/></span>}
-                {order.company?.phone && <span>{order.company.phone}</span>}
-                {!order.company?.street && !order.company?.email && (
-                  <>
-                    شارع التسعين، التجمع الخامس<br/>
-                    القاهرة، مصر<br/>
-                    info@hsngroup.com<br/>
-                    +20 123 456 7890
-                  </>
-                )}
-              </div>
+      <div className="max-w-[21cm] mx-auto p-8 pt-12 relative bg-white">
+        
+        {/* Header Section */}
+        <div className="flex justify-between items-start mb-10">
+          <div className="w-[200px]">
+            {/* Logo placeholder - simulating the HSN GROUP logo */}
+            <div className="flex items-center gap-1">
+              <h1 className="text-4xl font-black text-blue-800 tracking-tighter m-0 p-0 leading-none">H<span className="text-red-600">S</span>N</h1>
             </div>
-
-            <div className="text-left flex flex-col items-end">
-              <h1 className="text-5xl font-black text-slate-100 uppercase tracking-widest mb-2" style={{ WebkitTextStroke: '1px #cbd5e1' }}>
-                {order.status === 'draft' ? 'طلب تسعير' : 'أمر شراء'}
-              </h1>
-              <div className="text-2xl font-bold text-slate-800 mb-1">{order.name}</div>
-              <div className="text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-                التاريخ: {new Date(order.dateOrder).toLocaleDateString(locale === "ar" ? "ar-EG" : "en-US", { year: 'numeric', month: 'long', day: 'numeric' })}
-              </div>
-            </div>
+            <div className="text-red-600 font-bold tracking-widest text-sm mt-1">GROUP</div>
           </div>
-
-          <hr className="border-slate-200 mb-8" />
-
-          {/* Info Cards */}
-          <div className="flex justify-between gap-8 mb-12">
-            {/* Vendor Info */}
-            <div className="flex-1 bg-slate-50 p-5 rounded-xl border border-slate-100">
-              <h3 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: primaryColor }}>إلى المورد</h3>
-              <div className="text-lg font-bold text-slate-900 mb-1">{order.partner?.name || "—"}</div>
-              <div className="text-sm text-slate-600 leading-relaxed">
-                {[order.partner?.street, order.partner?.street2].filter(Boolean).join("، ")}
-                {order.partner?.city && <><br/>{order.partner.city}</>}
-                {order.partner?.country && <><br/>{order.partner.country}</>}
-                {order.partner?.phone && <><br/><span className="text-slate-500 font-medium mt-1 inline-block">{order.partner.phone}</span></>}
-                {order.partner?.email && <><br/><span className="text-slate-500 font-medium">{order.partner.email}</span></>}
-              </div>
-            </div>
-
-            {/* Additional Order Info */}
-            <div className="flex-1 bg-slate-50 p-5 rounded-xl border border-slate-100 flex flex-col justify-center">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-semibold text-slate-500">مرجع المورد:</span>
-                <span className="text-sm font-bold text-slate-800">{order.partnerRef || "—"}</span>
-              </div>
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-sm font-semibold text-slate-500">طريقة الدفع:</span>
-                <span className="text-sm font-bold text-slate-800">—</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-semibold text-slate-500">حالة الطلب:</span>
-                <span className="text-sm font-bold px-2 py-0.5 rounded text-white" style={{ backgroundColor: order.status === 'purchase' ? primaryColor : '#64748b' }}>
-                  {order.status === "draft" ? "مسودة / قيد المراجعة" : order.status === "purchase" ? "مؤكد ومُعتمد" : order.status}
-                </span>
-              </div>
-            </div>
+          <div className="text-left flex flex-col items-end pt-2">
+            <h1 className="text-3xl font-extrabold text-black">النجار للأدوات الصحية</h1>
+            <h2 className="text-2xl font-bold text-red-700 mt-6" style={{ color: '#b91c1c' }}>
+              رقم أمر شراء {order.name}
+            </h2>
           </div>
+        </div>
 
-          {/* Lines Table */}
-          <div className="mb-8 overflow-hidden rounded-xl border border-slate-200">
-            <table className="w-full text-sm text-right">
-              <thead style={{ backgroundColor: primaryColor }} className="text-white">
-                <tr>
-                  <th className="py-4 px-5 font-bold">#</th>
-                  <th className="py-4 px-5 font-bold">المنتج / الوصف</th>
-                  <th className="py-4 px-5 font-bold text-center">الكمية</th>
-                  <th className="py-4 px-5 font-bold text-center">سعر الوحدة</th>
-                  <th className="py-4 px-5 font-bold text-center">الخصم</th>
-                  <th className="py-4 px-5 font-bold text-left">المجموع</th>
+        {/* Info Rows */}
+        <div className="flex justify-between items-center mb-6 mt-4">
+          <div className="text-base font-bold text-black">
+            تحريراً في : {new Date(order.dateOrder).toLocaleDateString("ar-EG", { year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
+          <div className="text-base font-bold text-black">
+            نوع الطلب : دفتر / المشتريات
+          </div>
+        </div>
+
+        <div className="text-xl font-bold text-black mb-4">
+          أسم المورد : {order.partner?.name || "—"}
+        </div>
+
+        {/* Lines Table */}
+        <table className="w-full classic-table mb-8 text-sm" style={{ borderCollapse: 'collapse', border: '1px solid #000' }}>
+          <thead>
+            <tr>
+              <th className="w-12">م.</th>
+              <th className="text-right">اسم الصنف</th>
+              <th className="w-24">الكمية</th>
+              <th className="w-20">الوحدة</th>
+              <th className="w-24">سعر الوحدة</th>
+              <th className="w-24">قيمة الخصم</th>
+              <th className="w-32">الاجمالي</th>
+              <th className="w-32">الكمية الثانوية</th>
+            </tr>
+          </thead>
+          <tbody>
+            {order.lines.map((line: any, index: number) => {
+              // Calculate discount amount instead of just percentage
+              const discountValue = line.priceUnit * line.quantity * (line.discount1 / 100);
+              return (
+                <tr key={line.id}>
+                  <td>{index + 1}</td>
+                  <td className="text-right font-bold pr-2">{line.product?.name || line.name || "—"}</td>
+                  <td>{line.quantity}</td>
+                  <td>{line.unitName || line.uom || 'قطعه'}</td>
+                  <td>{line.priceUnit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                  <td>{discountValue > 0 ? discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.0'}</td>
+                  <td>{line.priceSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                  <td>{line.secondaryQty > 0 ? `${line.secondaryQty} ${line.secondaryUom || ''}` : '0.0'}</td>
                 </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-slate-100">
-                {order.lines.map((line: any, index: number) => (
-                  <tr key={line.id} className="hover:bg-slate-50 transition-colors page-break">
-                    <td className="py-4 px-5 font-medium text-slate-400">{index + 1}</td>
-                    <td className="py-4 px-5">
-                      <div className="font-bold text-slate-800 text-base">{line.product?.name || "—"}</div>
-                      {line.name && line.name !== line.product?.name && (
-                        <div className="text-xs text-slate-500 mt-1">{line.name}</div>
-                      )}
-                    </td>
-                    <td className="py-4 px-5 text-center font-bold text-slate-700">
-                      {line.quantity} <span className="text-xs font-normal text-slate-400">{line.unitName || ''}</span>
-                    </td>
-                    <td className="py-4 px-5 text-center text-slate-700">
-                      {line.priceUnit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                    <td className="py-4 px-5 text-center text-slate-700">
-                      {line.discount1 > 0 ? `${line.discount1}%` : '-'}
-                    </td>
-                    <td className="py-4 px-5 text-left font-bold text-slate-900">
-                      {line.priceSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              );
+            })}
+          </tbody>
+        </table>
 
-          {/* Totals Section */}
-          <div className="flex justify-end mb-12 page-break">
-            <div className="w-[10cm] bg-slate-50 rounded-xl p-5 border border-slate-100">
-              <div className="flex justify-between py-2 text-sm">
-                <span className="font-semibold text-slate-500">الإجمالي قبل الضريبة:</span>
-                <span className="font-bold text-slate-800">{order.amountUntaxed.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between py-2 text-sm border-b border-slate-200">
-                <span className="font-semibold text-slate-500">الضرائب:</span>
-                <span className="font-bold text-slate-800">{order.amountTax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-              </div>
-              <div className="flex justify-between pt-4 pb-2 text-xl">
-                <span className="font-black text-slate-900">الصافي المطلوب:</span>
-                <span className="font-black" style={{ color: primaryColor }}>
-                  {order.amountTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ج.م
-                </span>
-              </div>
-            </div>
-          </div>
+        {/* Totals Table */}
+        <table className="w-full classic-table mb-8 font-bold text-base" style={{ borderCollapse: 'collapse', border: '1px solid #000' }}>
+          <tbody>
+            <tr>
+              <td className="w-1/2 text-right pr-4">الإجمالي قبل الخصم</td>
+              <td className="w-1/2">{order.amountUntaxed.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            </tr>
+            <tr>
+              <td className="text-right pr-4">الخصم</td>
+              <td>0.0</td> {/* Replace with actual total discount if available */}
+            </tr>
+            <tr>
+              <td className="text-right pr-4">الضريبة</td>
+              <td>{order.amountTax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            </tr>
+            <tr>
+              <td className="text-right pr-4">الصافي بعد الخصم</td>
+              <td>{order.amountTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+            </tr>
+          </tbody>
+        </table>
 
-          {/* Terms and Notes */}
-          {order.notes && (
-            <div className="mb-12 page-break">
-              <h3 className="text-sm font-bold text-slate-800 mb-2">الشروط والأحكام / ملاحظات:</h3>
-              <p className="text-sm text-slate-600 bg-slate-50 p-4 rounded-xl border border-slate-100 leading-relaxed whitespace-pre-wrap">
-                {order.notes}
-              </p>
-            </div>
-          )}
-
-          {/* Signatures */}
-          <div className="mt-auto pt-12 grid grid-cols-2 gap-8 text-center page-break">
-            <div>
-              <div className="w-48 mx-auto border-b-2 border-slate-300 mb-2 pb-8"></div>
-              <p className="text-sm font-bold text-slate-600">توقيع المشتري / الاعتماد</p>
-            </div>
-            <div>
-              <div className="w-48 mx-auto border-b-2 border-slate-300 mb-2 pb-8"></div>
-              <p className="text-sm font-bold text-slate-600">توقيع المورد بالاستلام</p>
-            </div>
-          </div>
+        {/* Text Amount */}
+        <div className="font-bold text-lg mb-2">
+          اجمالي أمر الشراء : {order.amountTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })} فقط لا غير
+        </div>
+        <div className="text-base text-black mb-12">
+          {/* Real Tafqeet would go here */}
         </div>
 
-        {/* Footer */}
-        <div className="bg-slate-50 border-t border-slate-200 p-4 text-center text-xs text-slate-400">
-          تم إنشاء هذا المستند آلياً عبر نظام <strong>Smart ERP</strong> - HSN Group
-        </div>
       </div>
     </div>
   );

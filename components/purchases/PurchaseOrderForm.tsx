@@ -837,9 +837,25 @@ const buildContextActions = () => {
     });
     actions.push({
       label: 'طباعة طلب عرض السعر',
-      onClick: () => {
+      onClick: async () => {
         if (initialData?.id) {
-          window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+          const loadingToast = toast.loading("جاري تحميل الملف...");
+          try {
+            const { generatePdfFromPrintPage } = await import('@/lib/whatsappShare');
+            const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
+            const pdfBlob = await generatePdfFromPrintPage(printUrl);
+            const url = window.URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${initialData?.name || 'أمر_شراء'}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+            toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
+          } catch (e) {
+            toast.error("حدث خطأ أثناء تحميل الملف", { id: loadingToast });
+          }
         } else {
           toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
         }
@@ -1256,9 +1272,25 @@ const columns: any[] = [{
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => {
+            <ActionMenu onPrint={async () => {
               if (initialData?.id) {
-                window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+                const loadingToast = toast.loading("جاري تحميل الملف...");
+                try {
+                  const { generatePdfFromPrintPage } = await import('@/lib/whatsappShare');
+                  const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
+                  const pdfBlob = await generatePdfFromPrintPage(printUrl);
+                  const url = window.URL.createObjectURL(pdfBlob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `${initialData?.name || 'أمر_شراء'}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  window.URL.revokeObjectURL(url);
+                  toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
+                } catch (e) {
+                  toast.error("حدث خطأ أثناء تحميل الملف", { id: loadingToast });
+                }
               } else {
                 toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
               }
