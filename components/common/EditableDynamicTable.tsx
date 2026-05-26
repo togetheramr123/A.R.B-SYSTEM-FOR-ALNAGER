@@ -231,12 +231,12 @@ export function EditableDynamicTable({
           </div>{" "}
           <div className="max-h-60 overflow-y-auto">
             {" "}
-            {columns.filter(c => !c.required && c.label?.trim()).map(col => <label key={col.id} className="flex flex-row-reverse justify-between items-center px-4 py-2 hover:bg-slate-50 cursor-pointer">
+            {columns.filter(c => !c.required && c.label?.trim()).map(col => <label key={col.id} className="flex flex-row-reverse justify-between items-center px-4 py-2 hover:bg-slate-50 cursor-pointer" onMouseDown={e => e.stopPropagation()}>
                   {" "}
                   <span className="text-sm text-slate-700 font-medium">
                     {col.label}
                   </span>{" "}
-                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleColumns[col.id]} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[#017E84] focus:ring-indigo-500 w-4 h-4" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={!!visibleColumns[col.id]} onChange={() => toggleColumn(col.id)} className="rounded border-slate-300 text-[#017E84] focus:ring-indigo-500 w-4 h-4 cursor-pointer" />{" "}
                 </label>)}{" "}
           </div>{" "}
         </div>}{" "}
