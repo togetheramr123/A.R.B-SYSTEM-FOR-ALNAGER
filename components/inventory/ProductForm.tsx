@@ -240,7 +240,7 @@ export function ProductForm({
         ? "storable"
         : initialData?.detailedType) || "storable",
     invoicingPolicy: initialData?.invoicingPolicy || "delivered",
-    price: initialData?.salePrice ?? initialData?.price ?? 0.0,
+    price: initialData?.salePrice ?? initialData?.price ?? 1.0,
     cost: initialData?.costPrice ?? initialData?.cost ?? 0.0,
     tax_customer: initialData?.taxes ?? initialData?.tax_customer ?? 14,
     tax_vendor: initialData?.taxVendor ?? initialData?.tax_vendor ?? 0,
