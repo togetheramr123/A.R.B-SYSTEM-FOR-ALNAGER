@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Trash, Check, ArrowRight, CornerUpLeft, Search } from "lucide-react";
 import { createBankStatement, updateBankStatement, addBankStatementLine } from "@/app/actions/bank-reconciliation";
+import { Chatter } from "@/components/chatter/Chatter";
 import { toast } from "sonner";
 import { convertArabicToEnglishNumbers } from "@/lib/utils/numberUtils";
 interface BankStatementFormProps {
@@ -255,6 +256,7 @@ export function BankStatementForm({
               </Table>{" "}
             </div>{" "}
           </div>{" "}
+          {initialData?.id && <div className="mt-8 pt-8 border-t"><Chatter model="bankStatement" id={initialData.id} /></div>}
         </div>{" "}
       </form>{" "}
     </Sheet>;

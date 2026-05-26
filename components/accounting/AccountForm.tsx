@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { useFormDraft } from '@/hooks/useFormDraft';
 import { useStatusStore } from '@/store/statusStore';
 import { TopPortal } from '@/components/common/TopPortal';
+import { Chatter } from "@/components/chatter/Chatter";
 type Props = {
   initialData: any;
   locale: string;
@@ -324,5 +325,7 @@ export function AccountForm({
                     return journal ? <span key={id} className="text-slate-800 text-[13px] ml-1 flex items-center gap-1 group"> {journal.name} <button type="button" onClick={() => setValue('allowedJournals', watch('allowedJournals').filter((x: string) => x !== id), {
                         shouldDirty: true
                       })} className="text-slate-300 opacity-0 group-hover:opacity-100 hover:text-red-500 font-bold px-1 transition-all">×</button> </span> : null;
-                  })} <select {...register('allowedJournals')} className="flex-1 min-w-[20px] text-[13px] text-transparent focus:text-slate-900 outline-none bg-transparent appearance-none"> <option value="" className="text-slate-400"></option> {availableJournals?.filter(j => !watch('allowedJournals')?.includes(j.id)).map(j => <option key={j.id} value={j.id} className="text-slate-900">{j.name}</option>)} </select> </div> </div> </div> </div> {} <div className="space-y-4"> <div className="flex items-start"> <label className="text-[13px] text-slate-700 w-1/3 text-right pt-1 pl-2 font-medium">مهمل</label> <div className="w-2/3 flex items-center pt-1"> <input type="checkbox" {...register('deprecated')} className="w-4 h-4 text-[#017E84] rounded border-slate-300" /> </div> </div> <div className="flex items-start"> <label className="text-[13px] text-slate-700 w-1/3 text-right pt-1 pl-2 font-medium">المجموعة <span className="text-[10px] text-blue-500 font-bold ml-1 cursor-help">?</span></label> <div className="w-2/3 border-b border-slate-300"> <input disabled className="w-full text-[13px] bg-transparent outline-none text-slate-400 pb-1" /> </div> </div> </div> </div> </div> </div> {} </div>;
+                  })} <select {...register('allowedJournals')} className="flex-1 min-w-[20px] text-[13px] text-transparent focus:text-slate-900 outline-none bg-transparent appearance-none"> <option value="" className="text-slate-400"></option> {availableJournals?.filter(j => !watch('allowedJournals')?.includes(j.id)).map(j => <option key={j.id} value={j.id} className="text-slate-900">{j.name}</option>)} </select> </div> </div> </div> </div> {} <div className="space-y-4"> <div className="flex items-start"> <label className="text-[13px] text-slate-700 w-1/3 text-right pt-1 pl-2 font-medium">مهمل</label> <div className="w-2/3 flex items-center pt-1"> <input type="checkbox" {...register('deprecated')} className="w-4 h-4 text-[#017E84] rounded border-slate-300" /> </div> </div> <div className="flex items-start"> <label className="text-[13px] text-slate-700 w-1/3 text-right pt-1 pl-2 font-medium">المجموعة <span className="text-[10px] text-blue-500 font-bold ml-1 cursor-help">?</span></label> <div className="w-2/3 border-b border-slate-300"> <input disabled className="w-full text-[13px] bg-transparent outline-none text-slate-400 pb-1" /> </div> </div> </div> </div> </div> </div> {} 
+{initialData?.id && <div className="mt-8 pt-8 border-t"><Chatter model="account" id={initialData.id} /></div>}
+</div>;
 }

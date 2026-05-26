@@ -30,6 +30,7 @@ import {
 import { TopPortal } from "@/components/common/TopPortal";
 import { useFormDraft } from "@/hooks/useFormDraft";
 import { useStatusStore } from "@/store/statusStore";
+import { Chatter } from "@/components/chatter/Chatter";
 interface CategoryFormProps {
   category?: any;
   categories: any[];
@@ -397,7 +398,7 @@ export function CategoryForm({
                 {...register("name", {
                   required: true,
                 })}
-                autoComplete="off"
+                autoComplete="new-password"
                 className="text-3xl font-bold bg-transparent outline-none w-full text-slate-900 placeholder-slate-200 border-b border-transparent hover:border-slate-300 focus:border-slate-800 transition-all pb-1"
                 placeholder="e.g. All"
               />{" "}
@@ -678,6 +679,7 @@ export function CategoryForm({
             )}{" "}
           </div>{" "}
         </form>{" "}
+        {category?.id && <div className="px-4 sm:px-8 pb-12"><Chatter model="productCategory" id={category.id} /></div>}
         {}{" "}
         <ConfirmDialog
           open={showDeleteConfirm}

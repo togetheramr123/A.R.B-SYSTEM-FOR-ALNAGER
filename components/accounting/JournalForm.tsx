@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useStatusStore } from "@/store/statusStore";
 import { TopPortal } from "@/components/common/TopPortal";
 import { Loader2 } from "lucide-react";
+import { Chatter } from "@/components/chatter/Chatter";
 type Props = {
   initialData: any;
   accounts: any[];
@@ -445,6 +446,7 @@ export function JournalForm({
               لا توجد إعدادات متقدمة مخصصة لهذا الدفتر في الوقت الحالي.{" "}
             </div>}{" "}
         </div>{" "}
+        {initialData?.id && <div className="mt-8 pt-8 border-t"><Chatter model="journal" id={initialData.id} /></div>}
       </div>{" "}
     </div>;
 }

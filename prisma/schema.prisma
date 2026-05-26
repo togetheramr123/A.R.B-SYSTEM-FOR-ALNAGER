@@ -287,6 +287,8 @@ model PriceList {
   categoryId String?
   category   ProductCategory? @relation("PriceListCategory", fields: [categoryId], references: [id])
 
+  messages Message[]
+
   @@index([currencyId])
   @@index([companyId])
   @@index([categoryId])
@@ -572,6 +574,8 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  messages Message[]
+
   @@unique([code, companyId])
   @@index([companyId])
 }
@@ -627,6 +631,8 @@ model Journal {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
 
   @@unique([code, companyId])
   @@index([companyId])
@@ -887,6 +893,8 @@ model ProductCategory {
   companyId        String?
   StockPutawayRule StockPutawayRule[]
 
+  messages Message[]
+
   @@index([parentId])
   @@index([propertyAccountIncomeId])
   @@index([propertyAccountExpenseId])
@@ -1129,6 +1137,8 @@ model Warehouse {
   locations                 Location[]
   saleOrders                SaleOrder[]
   InventoryAdjustmentRecord InventoryAdjustmentRecord[]
+
+  messages Message[]
 
   @@index([companyId])
 }
@@ -1675,6 +1685,33 @@ model Message {
   productId String?
   product   Product? @relation(fields: [productId], references: [id])
 
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  assetId String?
+  asset   Asset?  @relation(fields: [assetId], references: [id])
+
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  stockScrapId String?
+  stockScrap   StockScrap? @relation(fields: [stockScrapId], references: [id])
+
+  bankStatementId String?
+  bankStatement   BankStatement? @relation(fields: [bankStatementId], references: [id])
+
+  journalId String?
+  journal   Journal? @relation(fields: [journalId], references: [id])
+
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+
+  priceListId String?
+  priceList   PriceList? @relation(fields: [priceListId], references: [id])
+
+  productCategoryId String?
+  productCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
+
   attachments Attachment[]
 
   createdAt DateTime @default(now())
@@ -1809,6 +1846,8 @@ model Asset {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  messages Message[]
+
   @@index([categoryId])
   @@index([companyId])
 }
@@ -1864,6 +1903,8 @@ model Employee {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
 
   @@index([departmentId])
   @@index([userId])
@@ -1980,6 +2021,8 @@ model StockScrap {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
 
   @@index([productId])
   @@index([uomId])
@@ -2115,6 +2158,8 @@ model BankStatement {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
 
   @@index([journalId])
   @@index([companyId])

@@ -8,6 +8,7 @@ import { createPriceList, updatePriceList, deletePriceListItem, deletePriceList 
 import { RotateCcw, Settings2, CloudUpload, Search, Filter, X, Download, PackageOpen, UserPlus, Users, Trash2, ChevronDown, Percent } from 'lucide-react';
 import { OdooCombobox } from '@/components/ui/OdooCombobox';
 import { cn } from '@/lib/utils';
+import { Chatter } from '@/components/chatter/Chatter';
 
 type Props = {
   initialData: any;
@@ -766,6 +767,7 @@ export function PriceListForm({
               </div>
             )}
           </div>
+          {initialData?.id && <div className="mt-8 px-8 pb-8 border-t pt-8"><Chatter model="priceList" id={initialData.id} /></div>}
         </div>
       </div>
     </div>
