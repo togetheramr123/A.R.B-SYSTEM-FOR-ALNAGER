@@ -88,7 +88,7 @@ const PurchaseLineSchema = z.object({
   price: numericField('السعر').min(0, 'السعر لا يمكن أن يكون سالباً'),
   discount: numericField('الخصم').min(0).max(100, 'الخصم لا يمكن أن يتجاوز 100%').optional().default(0),
   taxRate: positiveOptional('نسبة الضريبة'),
-  taxes: z.boolean().optional(),
+  taxes: z.union([z.boolean(), z.number(), z.string(), z.null()]).optional(),
   unitSelection: z.enum(['primary', 'secondary']).optional().default('primary'),
   accountId: optionalString(),
 }).passthrough();
