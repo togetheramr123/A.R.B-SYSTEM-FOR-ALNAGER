@@ -837,7 +837,13 @@ const buildContextActions = () => {
     });
     actions.push({
       label: 'طباعة طلب عرض السعر',
-      onClick: () => window.print(),
+      onClick: () => {
+        if (initialData?.id) {
+          window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+        } else {
+          toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
+        }
+      },
       style: 'secondary',
       disabled: isSaving
     });
@@ -1250,7 +1256,13 @@ const columns: any[] = [{
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => window.print()} onDuplicate={async () => {
+            <ActionMenu onPrint={() => {
+              if (initialData?.id) {
+                window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+              } else {
+                toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
+              }
+            }} onDuplicate={async () => {
               if (!initialData?.id) return;
               try {
                 const newOrder = await duplicatePurchaseOrder(initialData.id);

@@ -1585,7 +1585,13 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => window.print()} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
+            <ActionMenu onPrint={() => {
+              if (initialData?.id) {
+                window.open(`/${locale}/sales/${initialData.id}/print`, '_blank');
+              } else {
+                toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
+              }
+            }} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
           </div>
         </TopPortal>
 
