@@ -167,7 +167,7 @@ export function PurchaseOrderForm({
       receivedQty: l.qtyReceived || 0,
       billedQty: l.qtyInvoiced || 0,
       price: l.priceUnit,
-      discount: l.discount || 0,
+      discount: l.discount1 || 0,
       appliedPriceListName: l.appliedPriceListName || '',
       taxes: false,
       subtotal: l.priceSubtotal,
@@ -850,13 +850,12 @@ const buildContextActions = () => {
             a.download = `${initialData?.name || 'أمر_شراء'}.pdf`;
             document.body.appendChild(a);
             a.click();
-            a.remove();
             window.URL.revokeObjectURL(url);
-            toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
-          } catch (e) {
-            console.error("PDF generation failed:", e);
-            toast.error("تعذر تحميل الملف مباشرة، سيتم فتح صفحة الطباعة...", { id: loadingToast });
-            window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+            document.body.removeChild(a);
+            toast.success('تم تحميل الملف بنجاح', { id: toastId });
+          } catch (err) {
+            console.error(err);
+            toast.error('فشل في تجهيز ملف الطباعة', { id: toastId });
           }
         } else {
           toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
@@ -1292,8 +1291,7 @@ const columns: any[] = [{
                   toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
                 } catch (e) {
                   console.error("PDF generation failed:", e);
-                  toast.error("تعذر تحميل الملف مباشرة، سيتم فتح صفحة الطباعة...", { id: loadingToast });
-                  window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
+                  toast.error("فشل في تجهيز ملف الطباعة", { id: loadingToast });
                 }
               } else {
                 toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");

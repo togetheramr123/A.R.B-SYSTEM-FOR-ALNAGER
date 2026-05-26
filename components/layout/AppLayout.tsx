@@ -34,12 +34,13 @@ export function AppLayout({
   // Normalize path to check if it's the login or splash page
   const pathnameWithoutLocale = pathname ? pathname.replace(/^\/(ar|en)/, '') : '';
   const isPublicOrSplash = pathnameWithoutLocale === '' || pathnameWithoutLocale === '/' || pathnameWithoutLocale === '/login' || pathnameWithoutLocale.startsWith('/login');
+  const isPrintPage = pathnameWithoutLocale.endsWith('/print');
 
-  if (isPublicOrSplash) {
+  if (isPublicOrSplash || isPrintPage) {
     return (
-      <div className="min-h-screen w-full bg-slate-50 flex flex-col relative">
-        <NextTopLoader color="#4f46e5" showSpinner={false} height={3} shadow="0 0 10px #4f46e5,0 0 5px #4f46e5" />
-        <main className="flex-1 flex flex-col relative w-full">
+      <div className="min-h-screen w-full bg-white flex flex-col relative print:bg-white">
+        {!isPrintPage && <NextTopLoader color="#4f46e5" showSpinner={false} height={3} shadow="0 0 10px #4f46e5,0 0 5px #4f46e5" />}
+        <main className="flex-1 flex flex-col relative w-full print:p-0">
           {children}
         </main>
       </div>
