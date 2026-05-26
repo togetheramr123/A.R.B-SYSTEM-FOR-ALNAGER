@@ -854,7 +854,9 @@ const buildContextActions = () => {
             window.URL.revokeObjectURL(url);
             toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
           } catch (e) {
-            toast.error("حدث خطأ أثناء تحميل الملف", { id: loadingToast });
+            console.error("PDF generation failed:", e);
+            toast.error("تعذر تحميل الملف مباشرة، سيتم فتح صفحة الطباعة...", { id: loadingToast });
+            window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
           }
         } else {
           toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
@@ -1289,7 +1291,9 @@ const columns: any[] = [{
                   window.URL.revokeObjectURL(url);
                   toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
                 } catch (e) {
-                  toast.error("حدث خطأ أثناء تحميل الملف", { id: loadingToast });
+                  console.error("PDF generation failed:", e);
+                  toast.error("تعذر تحميل الملف مباشرة، سيتم فتح صفحة الطباعة...", { id: loadingToast });
+                  window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
                 }
               } else {
                 toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");

@@ -42,8 +42,7 @@ export default async function PurchasePrintPage(props: {
   return (
     <div className="bg-white min-h-screen text-black print:p-0 print:bg-white font-sans" dir="rtl">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-        body, div, table, th, td { font-family: 'Cairo', sans-serif; }
+        body, div, table, th, td { font-family: system-ui, -apple-system, sans-serif; }
         @media print {
           @page { size: A4; margin: 1cm; }
           body { -webkit-print-color-adjust: exact; background: white; }
