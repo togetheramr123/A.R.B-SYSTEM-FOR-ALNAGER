@@ -15,6 +15,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Check, Plus, Trash2, FileText, Send, Truck, CreditCard, ArrowRight, CloudUpload, RotateCcw, Loader2, AlertCircle, ChevronRight, ChevronLeft, Settings, ChevronDown, Save, Package, X, ExternalLink, AreaChart, History } from 'lucide-react';
 import { TopPortal } from '@/components/common/TopPortal';
 import { ActionMenu } from '@/components/common/ActionMenu';
+import { Chatter } from '@/components/chatter/Chatter';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useStatusStore } from '@/store/statusStore';
