@@ -5,6 +5,8 @@ import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
+import { CreateJournalEntrySchema, validateSafe } from '@/lib/validations';
+import { fail } from '@/lib/actionResult';
 export async function getJournalEntries(opts?: {
   search?: string;
 }) {
@@ -100,8 +102,10 @@ export async function createJournalEntry(data: any) {
   if (!session) throw new Error("غير مصرح");
   await ensureAccess("base", "write");
 
-  var session = await getSession();
-  if (!session) throw new Error('Unauthorized');
+  const validation = validateSafe(CreateJournalEntrySchema, data);
+  if (!validation.success) return fail(validation.error);
+  data = validation.data;
+
   try {
     const entry = await prisma.journalEntry.create({
       data: {
@@ -158,8 +162,10 @@ export async function updateJournalEntry(id: string, data: any) {
   if (!session) throw new Error("غير مصرح");
   await ensureAccess("base", "write");
 
-  var session = await getSession();
-  if (!session) throw new Error('Unauthorized');
+  const validation = validateSafe(CreateJournalEntrySchema, data);
+  if (!validation.success) return fail(validation.error);
+  data = validation.data;
+
   try {
     const existing = await prisma.journalEntry.findUnique({
       where: {

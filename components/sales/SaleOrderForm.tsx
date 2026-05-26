@@ -991,6 +991,7 @@ export function SaleOrderForm({
       }
     };
   }, [watch, setStoreUnsaved, backgroundSave, keepaliveSave, setHasUnsavedChangesSync]);
+  const showSecondaryUnits = fields.some((field: any) => field.hasSecondaryUnit);
   const columns: any[] = [{
     id: 'product',
     label: 'المنتج',
@@ -1083,6 +1084,7 @@ export function SaleOrderForm({
     id: 'secondaryQty',
     label: 'الكمية الثانوية',
     minWidth: '110px',
+    hide: !showSecondaryUnits,
     renderCell: (field: any, index: number, register: any, control: any) => {
       const line = lines[index] || {};
       if (!line.hasSecondaryUnit) return <div className="text-xs text-center text-slate-400 py-2">-</div>;
@@ -1107,6 +1109,7 @@ export function SaleOrderForm({
     id: 'secondaryUom',
     label: 'الثانوية UOM',
     width: '110px',
+    hide: !showSecondaryUnits,
     renderCell: (field: any, index: number, register: any, control: any) => {
       const line = lines[index] || {};
       if (!line.hasSecondaryUnit || !line.secondaryUom) {

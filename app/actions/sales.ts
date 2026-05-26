@@ -16,6 +16,7 @@ export async function createSaleOrder(data: any) {
   await ensureAccess('sale_order', 'create');
   const validation = validateSafe(CreateSaleOrderSchema, data);
   if (!validation.success) return fail(validation.error);
+  data = validation.data;
   // Ensure lines is valid and filter empty placeholder rows
   if (!data.lines || !Array.isArray(data.lines)) data.lines = [];
   data.lines = data.lines.filter((line: any) => line.productId || (line.id && line.id !== ''));
@@ -159,7 +160,10 @@ export async function createDraftSaleOrder() {
 export async function updateSaleOrder(orderId: string, data: any) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess('sale_order', 'write'); // Calculate totals using Decimal for precision
+  await ensureAccess('sale_order', 'write');
+  const validation = validateSafe(CreateSaleOrderSchema, data);
+  if (!validation.success) return fail(validation.error);
+  data = validation.data;
   // Ensure lines is valid and filter empty placeholder rows
   if (!data.lines || !Array.isArray(data.lines)) data.lines = [];
   data.lines = data.lines.filter((line: any) => line.productId || (line.id && line.id !== ''));

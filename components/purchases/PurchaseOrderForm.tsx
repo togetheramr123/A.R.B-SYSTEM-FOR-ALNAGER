@@ -916,6 +916,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
       router.push(`/${locale}/inventory/operations/receipts?search=${initialData?.name}`);
     }
   }} /> {smartData.billCount > 0 && <OdooSmartButton icon={<FileText className="w-5 h-5" />} count={smartData.billCount} label="فواتير الموردين" href={smartData.billCount === 1 && smartData.firstBillId ? `/${locale}/accounting/bills/${smartData.firstBillId}` : `/${locale}/accounting/bills?search=${initialData?.name}`} />} </> : undefined;
+const showSecondaryUnits = fields.some((field: any) => field.hasSecondaryUnit);
 const columns: any[] = [{
   id: 'product',
   label: 'المنتج',
@@ -1048,6 +1049,7 @@ const columns: any[] = [{
 }, {
   id: 'secondaryQty',
   label: 'الكمية الثانوية',
+  hide: !showSecondaryUnits,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
     if (!line.hasSecondaryUnit) return <div className="text-xs text-center text-slate-400 py-2">-</div>;
@@ -1074,6 +1076,7 @@ const columns: any[] = [{
   id: 'secondaryUom',
   label: 'الثانوية UOM',
   width: '110px',
+  hide: !showSecondaryUnits,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
     if (!line.hasSecondaryUnit || !line.secondaryUom) {
@@ -1660,6 +1663,13 @@ const columns: any[] = [{
         secondaryUomFactor: p.secondaryUomFactor,
         hasSecondaryUnit: p.hasSecondaryUnit
       }))} categories={productCategories} existingProductIds={lines.filter((l: any) => l.productId).map((l: any) => l.productId)} onConfirm={handleProductBrowserConfirm} />
+
+      {/* Chatter / Tracking */}
+      {initialData?.id && (
+        <div className="mt-8 border-t border-slate-200 pt-8">
+          <Chatter model="purchaseOrder" id={initialData.id} />
+        </div>
+      )}
     </>
   );
 }

@@ -14,6 +14,7 @@ export async function createPurchaseOrder(data: any) {
   await ensureAccess('purchase_order', 'create');
   const validation = validateSafe(CreatePurchaseOrderSchema, data);
   if (!validation.success) return fail(validation.error);
+  data = validation.data;
   // Ensure lines is valid and filter empty placeholder rows
   if (!data.lines || !Array.isArray(data.lines)) data.lines = [];
   data.lines = data.lines.filter((line: any) => line.productId || (line.id && line.id !== ''));
@@ -188,6 +189,9 @@ export async function updatePurchaseOrder(orderId: string, data: any) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
   await ensureAccess('purchase_order', 'write');
+  const validation = validateSafe(CreatePurchaseOrderSchema, data);
+  if (!validation.success) return fail(validation.error);
+  data = validation.data;
   // Ensure lines is always a valid array, filter out empty placeholder rows
   if (!data.lines || !Array.isArray(data.lines)) data.lines = [];
   data.lines = data.lines.filter((line: any) => line.productId || (line.id && line.id !== ''));
