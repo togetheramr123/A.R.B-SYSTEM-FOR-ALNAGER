@@ -59,6 +59,23 @@ export function OdooAutocomplete({
   });
 
   const isInteractingRef = useRef(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Reset highlighted index when query or isOpen changes
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [query, isOpen]);
+
+  // Scroll highlighted item into view
+  useEffect(() => {
+    if (isOpen && optionRefs.current[highlightedIndex]) {
+      optionRefs.current[highlightedIndex]?.scrollIntoView({
+        block: 'nearest',
+        behavior: 'smooth'
+      });
+    }
+  }, [highlightedIndex, isOpen]);
 
   // A random name ensures Chrome never matches it to previous forms.
   const randomNameRef = useRef("");
@@ -182,6 +199,53 @@ export function OdooAutocomplete({
     }
   };
 
+  const handleKeyDownLocal = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isOpen) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        handleOpen();
+      } else {
+        if (onKeyDown) onKeyDown(e);
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      // stop propagation to prevent parent table from changing focused row
+      e.stopPropagation();
+      setHighlightedIndex(prev => (prev + 1) % Math.max(1, displayOptions.length));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      e.stopPropagation();
+      setHighlightedIndex(prev => (prev - 1 + displayOptions.length) % Math.max(1, displayOptions.length));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (displayOptions[highlightedIndex]) {
+        handleSelect(displayOptions[highlightedIndex]);
+      } else if (showCreateEdit) {
+        handleCreateEdit();
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsOpen(false);
+      const selected = (options || []).find(o => o.id === value);
+      if (selected) {
+        setQuery(selected.label);
+      } else if (!value) {
+        setQuery(initialQuery || '');
+      }
+    } else if (e.key === 'Tab') {
+      if (displayOptions[highlightedIndex]) {
+        handleSelect(displayOptions[highlightedIndex]);
+      }
+    } else {
+      if (onKeyDown) onKeyDown(e);
+    }
+  };
+
   const safeQuery = (query || "").toString();
   const trimmedQuery = safeQuery.trim().toLowerCase();
   // Show "Create" if: has query, has callback, and no exact label match in options
@@ -214,7 +278,7 @@ export function OdooAutocomplete({
             setIsOpen(true);
             if (value) onChange(null);
           }}
-          onKeyDown={onKeyDown}
+          onKeyDown={handleKeyDownLocal}
           onClick={() => {
             handleOpen();
           }}
@@ -297,13 +361,17 @@ export function OdooAutocomplete({
                 <div className="space-y-0.5">
                   {displayOptions.map((opt, idx) => (
                     <button
+                      ref={el => { optionRefs.current[idx] = el; }}
                       type="button"
                       key={opt.id}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSelect(opt)}
+                      onMouseEnter={() => setHighlightedIndex(idx)}
                       className={`w-full text-right px-3 py-2 text-[14px] rounded-lg flex flex-col items-start transition-all duration-150 ${
                         opt.id === value
                           ? 'bg-teal-50/80 text-teal-900 font-semibold'
+                          : idx === highlightedIndex
+                          ? 'bg-slate-100 text-slate-900 font-medium'
                           : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                       }`}
                     >
