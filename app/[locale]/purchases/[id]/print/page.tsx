@@ -117,18 +117,25 @@ export default async function PurchasePrintPage(props: {
           </thead>
           <tbody>
             {order.lines.map((line: any, index: number) => {
-              // Calculate discount amount instead of just percentage
-              const discountValue = line.priceUnit * line.quantity * (line.discount1 / 100);
+              // Ensure numeric values since Prisma might return Decimal objects
+              const qty = Number(line.quantity || 0);
+              const priceUnit = Number(line.priceUnit || 0);
+              const discount1 = Number(line.discount1 || 0);
+              const subtotal = Number(line.priceSubtotal || 0);
+              const secondaryQty = Number(line.secondaryQty || 0);
+              
+              // Calculate discount amount
+              const discountValue = priceUnit * qty * (discount1 / 100);
               return (
                 <tr key={line.id}>
                   <td>{index + 1}</td>
                   <td className="text-right font-bold pr-2">{line.product?.name || line.name || "—"}</td>
-                  <td>{line.quantity}</td>
+                  <td>{qty}</td>
                   <td>{line.unitName || line.uom || 'قطعه'}</td>
-                  <td>{line.priceUnit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td>{discountValue > 0 ? discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.0'}</td>
-                  <td>{line.priceSubtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td>{line.secondaryQty > 0 ? `${line.secondaryQty} ${line.secondaryUom || ''}` : '0.0'}</td>
+                  <td>{priceUnit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                  <td>{discountValue > 0 ? discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.00'}</td>
+                  <td>{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                  <td>{secondaryQty > 0 ? `${secondaryQty} ${line.secondaryUom || ''}` : '0.00'}</td>
                 </tr>
               );
             })}
@@ -140,26 +147,26 @@ export default async function PurchasePrintPage(props: {
           <tbody>
             <tr>
               <td className="w-1/2 text-right pr-4">الإجمالي قبل الخصم</td>
-              <td className="w-1/2">{order.amountUntaxed.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td className="w-1/2">{Number(order.amountUntaxed || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
             </tr>
             <tr>
               <td className="text-right pr-4">الخصم</td>
-              <td>0.0</td> {/* Replace with actual total discount if available */}
+              <td>{order.lines.reduce((sum: number, line: any) => sum + (Number(line.priceUnit || 0) * Number(line.quantity || 0) * (Number(line.discount1 || 0) / 100)), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
             </tr>
             <tr>
               <td className="text-right pr-4">الضريبة</td>
-              <td>{order.amountTax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td>{Number(order.amountTax || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
             </tr>
             <tr>
               <td className="text-right pr-4">الصافي بعد الخصم</td>
-              <td>{order.amountTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+              <td>{Number(order.amountTotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
             </tr>
           </tbody>
         </table>
 
         {/* Text Amount */}
         <div className="font-bold text-lg mb-2">
-          اجمالي أمر الشراء : {order.amountTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })} فقط لا غير
+          اجمالي أمر الشراء : {Number(order.amountTotal || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} فقط لا غير
         </div>
         <div className="text-base text-black mb-12">
           {/* Real Tafqeet would go here */}
