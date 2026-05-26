@@ -58,7 +58,7 @@ export default async function PurchasePrintPage(props: {
 
       {/* Control Bar (No Print) */}
       <div className="fixed top-8 left-8 flex flex-col gap-3 no-print z-50">
-        <button onClick={() => {}} className="no-print">
+        <button className="no-print">
           <a href="javascript:window.print()" className="bg-slate-800 text-white p-4 rounded-full shadow-lg hover:bg-slate-900 flex items-center justify-center" title="طباعة">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.728 13.5H17.27m-10.54 3h10.54M6.728 10.5h10.54M3 7.5h18m-1.5 0v10.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 18.5V7.5m15 0v-3a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v3" />
