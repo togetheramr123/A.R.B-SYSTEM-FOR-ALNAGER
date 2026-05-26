@@ -184,13 +184,9 @@ export function OdooAutocomplete({
 
   const safeQuery = (query || "").toString();
   const trimmedQuery = safeQuery.trim().toLowerCase();
-  // Don't show "Create" if: no query, no onCreateEdit callback, 
-  // OR if any option label exactly matches the query,
-  // OR if a product is currently selected and the query matches it
-  const selectedOpt = (options || []).find(o => o.id === value);
+  // Show "Create" if: has query, has callback, and no exact label match in options
   const hasExactMatch = (options || []).some(opt => (opt.label || "").toString().trim().toLowerCase() === trimmedQuery);
-  const isSelectedLabel = selectedOpt && (selectedOpt.label || "").toString().trim().toLowerCase() === trimmedQuery;
-  const showCreateEdit = onCreateEdit && trimmedQuery.length > 0 && !hasExactMatch && !isSelectedLabel && !value;
+  const showCreateEdit = onCreateEdit && trimmedQuery.length > 0 && !hasExactMatch;
 
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
@@ -297,12 +293,7 @@ export function OdooAutocomplete({
           >
             {/* Scrollable items area */}
             <div className="overflow-y-auto flex-1 p-1.5 custom-scrollbar" style={{ maxHeight: '320px' }}>
-              {displayOptions.length === 0 ? (
-                <div className="px-4 py-8 text-center text-slate-500 flex flex-col items-center justify-center gap-2">
-                  <Search className="w-6 h-6 text-slate-300" />
-                  <span className="text-[14px] font-medium">لا توجد نتائج مطابقة</span>
-                </div>
-              ) : (
+              {displayOptions.length > 0 && (
                 <div className="space-y-0.5">
                   {displayOptions.map((opt, idx) => (
                     <button
