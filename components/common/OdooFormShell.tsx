@@ -196,13 +196,14 @@ export default function OdooFormShell({
             </div>{" "}
           </div>{" "}
         </div>{" "}
-        {/* Bottom Chatter */}{" "}
+        {/* Bottom Chatter removed per user request */}
+        {/*
         {chatterId && chatterModel && (
           <div className="o_chatter_area">
-            {" "}
-            <Chatter model={chatterModel as ChatterModel} id={chatterId} />{" "}
+            <Chatter model={chatterModel as ChatterModel} id={chatterId} /> 
           </div>
-        )}{" "}
+        )}
+        */}
       </div>{" "}
     </div>
   );

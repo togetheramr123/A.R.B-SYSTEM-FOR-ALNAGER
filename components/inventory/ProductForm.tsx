@@ -2557,7 +2557,8 @@ export function ProductForm({
             )}{" "}
           </div>{" "}
         </div>{" "}
-        {!isNewRecord && <Chatter model="product" id={initialData.id} />}{" "}
+        {/* Chatter removed per user request */}
+        {/* {!isNewRecord && <Chatter model="product" id={initialData.id} />} */}
 
         <ConfirmDialog
           open={showDeleteConfirm}

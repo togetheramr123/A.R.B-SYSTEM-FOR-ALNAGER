@@ -679,7 +679,6 @@ export function CategoryForm({
             )}{" "}
           </div>{" "}
         </form>{" "}
-        {category?.id && <div className="px-4 sm:px-8 pb-12"><Chatter model="productCategory" id={category.id} /></div>}
         {}{" "}
         <ConfirmDialog
           open={showDeleteConfirm}
