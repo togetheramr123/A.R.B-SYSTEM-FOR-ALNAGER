@@ -143,7 +143,7 @@ const EditableUomCellSale = ({ uomName, factor, uomOptions, onSave }: { uomName:
       const [name, f] = val.split('|');
       onSave(name, Number(f));
     }}
-    className="w-full h-full p-1 min-w-0 bg-transparent outline-none text-xs text-center text-[#017E84] cursor-pointer appearance-none hover:bg-teal-50/50 transition-colors"
+    className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-800 m-0"
     title="اختر الوحدة الثانوية"
   >
     {uomOptions.map(opt => (
@@ -1114,7 +1114,7 @@ export function SaleOrderForm({
       }
       const currentFactor = Number(line.secondaryUomFactor) || 0;
       if (!canEditUomFactor) {
-        return <div className="text-xs text-center py-1 text-slate-500 h-full w-full flex items-center justify-center leading-tight" title={`المتغير: ${currentFactor}`}><span className="truncate max-w-[100px]">{line.secondaryUom}</span></div>;
+        return <div className="text-sm text-center py-2 text-slate-500 h-full w-full flex items-center justify-center" title={`المتغير: ${currentFactor}`}>{line.secondaryUom}</div>;
       }
       // Build unique UOM options from all products that have secondary units
       const uomMap = new Map<string, { name: string; factor: number }>();
