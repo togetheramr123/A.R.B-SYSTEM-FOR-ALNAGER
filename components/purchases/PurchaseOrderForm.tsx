@@ -852,10 +852,10 @@ const buildContextActions = () => {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
-            toast.success('تم تحميل الملف بنجاح', { id: toastId });
+            toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
           } catch (err) {
             console.error(err);
-            toast.error('فشل في تجهيز ملف الطباعة', { id: toastId });
+            toast.error('فشل في تجهيز ملف الطباعة', { id: loadingToast });
           }
         } else {
           toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
