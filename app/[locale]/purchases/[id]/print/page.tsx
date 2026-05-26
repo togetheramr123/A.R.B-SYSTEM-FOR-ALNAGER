@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { serializeDecimal } from "@/lib/serialize";
 
 // Simple Arabic Tafqeet (Number to words) function
 function tafqeet(number: number): string {
@@ -25,7 +26,7 @@ export default async function PurchasePrintPage(props: {
   if (!session) redirect(`/${locale}/login`);
 
   /* Fetch Order with Relations */
-  const order = await prisma.purchaseOrder.findUnique({
+  const orderRaw = await prisma.purchaseOrder.findUnique({
     where: { id },
     include: {
       partner: true,
@@ -37,7 +38,9 @@ export default async function PurchasePrintPage(props: {
     }
   });
 
-  if (!order) notFound();
+  if (!orderRaw) notFound();
+
+  const order = serializeDecimal(orderRaw);
 
   return (
     <div className="bg-white min-h-screen text-black print:p-0 print:bg-white font-sans" dir="rtl">
@@ -109,7 +112,11 @@ export default async function PurchasePrintPage(props: {
           </div>
           <div className="text-sm font-bold text-black flex gap-2">
             <span>تحريراً في:</span>
-            <span>{new Date(order.dateOrder).toLocaleDateString("ar-EG", { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            <span>
+              {order.dateOrder && !isNaN(new Date(order.dateOrder).getTime())
+                ? new Date(order.dateOrder).toLocaleDateString("ar-EG", { year: 'numeric', month: 'long', day: 'numeric' })
+                : "—"}
+            </span>
           </div>
         </div>
         
@@ -141,7 +148,7 @@ export default async function PurchasePrintPage(props: {
               const priceUnit = Number(line.priceUnit || 0);
               const discount1 = Number(line.discount1 || 0);
               const subtotal = Number(line.priceSubtotal || 0);
-              const secondaryQty = Number(line.secondaryQty || 0);
+              const secondaryQty = Number(line.secondaryQuantity || 0);
               
               const discountValue = priceUnit * qty * (discount1 / 100);
               return (
@@ -149,11 +156,11 @@ export default async function PurchasePrintPage(props: {
                   <td>{index + 1}</td>
                   <td className="text-right font-bold pr-2">{line.product?.name || line.name || "—"}</td>
                   <td>{qty}</td>
-                  <td>{line.unitName || line.uom || 'قطعه'}</td>
+                  <td>{line.unitName || line.product?.uom || 'قطعه'}</td>
                   <td>{priceUnit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
                   <td>{discountValue > 0 ? discountValue.toLocaleString(undefined, { minimumFractionDigits: 2 }) : '0.0'}</td>
                   <td>{subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
-                  <td>{secondaryQty > 0 ? `${secondaryQty} ${line.secondaryUom || ''}` : '0.0'}</td>
+                  <td>{secondaryQty > 0 ? `${secondaryQty} ${line.secondaryUnit || ''}` : '0.0'}</td>
                 </tr>
               );
             })}
