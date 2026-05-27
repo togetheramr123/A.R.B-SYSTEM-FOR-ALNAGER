@@ -105,9 +105,6 @@ function buildInvoiceHtml(
       font-size: 14px;
       line-height: 1.6;
     ">
-      <!-- Google Font Cairo -->
-      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-
       <!-- Header -->
       <div style="display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #000;padding-bottom:12px;margin-bottom:20px;">
         <div>
@@ -192,26 +189,52 @@ function buildInvoiceHtml(
 
 /**
  * Renders invoice HTML into a PDF blob using html2pdf.js.
+ * Uses an isolated iframe to avoid inheriting page CSS (prevents oklab() errors).
  * The browser handles Arabic text natively — no font embedding required.
  */
 async function renderHtmlToPdf(html: string): Promise<Blob> {
   // Dynamically import html2pdf.js (client-side only)
   const html2pdf = (await import('html2pdf.js')).default;
 
-  // Create a temporary container
-  const container = document.createElement('div');
-  container.innerHTML = html;
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.zIndex = '-1';
-  document.body.appendChild(container);
+  // Create an isolated iframe (clean CSS context - no page styles leak in)
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.left = '-9999px';
+  iframe.style.top = '0';
+  iframe.style.width = '210mm';
+  iframe.style.height = '297mm';
+  iframe.style.border = 'none';
+  iframe.style.zIndex = '-1';
+  document.body.appendChild(iframe);
 
-  // Wait for fonts to load
-  await document.fonts.ready;
-  await new Promise(res => setTimeout(res, 300));
+  // Write our HTML directly into the iframe (no URL load, fully self-contained)
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!iframeDoc) throw new Error('Cannot access iframe document');
 
-  const element = (container.querySelector('#pdf-content') || container) as HTMLElement;
+  iframeDoc.open();
+  iframeDoc.write(`
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+      <meta charset="UTF-8">
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+      <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: white; font-family: 'Cairo', 'Segoe UI', 'Tahoma', sans-serif; }
+        table td, table th { border: 1px solid #000; padding: 6px 8px; text-align: center; font-size: 13px; }
+      </style>
+    </head>
+    <body>
+      ${html}
+    </body>
+    </html>
+  `);
+  iframeDoc.close();
+
+  // Wait for fonts to load inside the iframe
+  await new Promise(res => setTimeout(res, 1200));
+
+  const element = iframeDoc.getElementById('pdf-content') || iframeDoc.body;
 
   const opt: any = {
     margin: 0,
@@ -235,7 +258,7 @@ async function renderHtmlToPdf(html: string): Promise<Blob> {
     const pdfBlob: Blob = await (html2pdf() as any).set(opt).from(element).outputPdf('blob');
     return pdfBlob;
   } finally {
-    document.body.removeChild(container);
+    document.body.removeChild(iframe);
   }
 }
 
