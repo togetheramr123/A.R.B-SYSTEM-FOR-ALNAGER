@@ -756,7 +756,7 @@ export function SaleOrderForm({
     try {
       const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
       const pdfData = buildSalePdfData();
-      const pdfBlob = generateSaleOrderPdf(pdfData);
+      const pdfBlob = await generateSaleOrderPdf(pdfData);
       const url = window.URL.createObjectURL(pdfBlob);
       const a = document.createElement('a');
       a.href = url;
@@ -783,7 +783,7 @@ export function SaleOrderForm({
       const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
       const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
       const pdfData = buildSalePdfData();
-      const pdfBlob = generateSaleOrderPdf(pdfData);
+      const pdfBlob = await generateSaleOrderPdf(pdfData);
       const pdfFileName = orderName || initialData?.name || 'عرض_سعر';
       await shareViaWhatsApp({
         phone,

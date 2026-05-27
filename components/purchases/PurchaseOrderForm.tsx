@@ -653,7 +653,7 @@ const downloadPdf = async () => {
   try {
     const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
     const pdfData = buildPdfData();
-    const pdfBlob = generatePurchaseOrderPdf(pdfData);
+    const pdfBlob = await generatePurchaseOrderPdf(pdfData);
     const url = window.URL.createObjectURL(pdfBlob);
     const a = document.createElement('a');
     a.href = url;
@@ -680,7 +680,7 @@ const openWhatsApp = async () => {
     const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
     const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
     const pdfData = buildPdfData();
-    const pdfBlob = generatePurchaseOrderPdf(pdfData);
+    const pdfBlob = await generatePurchaseOrderPdf(pdfData);
     const pdfFileName = orderName || initialData?.name || 'أمر_شراء';
     await shareViaWhatsApp({
       phone,
