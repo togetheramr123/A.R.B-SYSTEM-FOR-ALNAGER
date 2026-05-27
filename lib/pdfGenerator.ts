@@ -138,26 +138,20 @@ function renderInvoiceOnCanvas(
   let y = 55;
 
   // ── Header ──
-  // HSN logo (left side in RTL = right of canvas)
+  // Company name on the right (RTL)
+  setFont(ctx, 20, true);
+  ctx.fillStyle = '#000';
+  drawText(ctx, 'النجار للأدوات الصحية', rightEdge, y, 'right');
+
+  // HSN logo on the left
   setFont(ctx, 30, true);
   ctx.fillStyle = '#1e40af';
-  drawText(ctx, 'H', rightEdge, y, 'right');
-  const hWidth = ctx.measureText('H').width / SCALE;
-  ctx.fillStyle = '#dc2626';
-  drawText(ctx, 'S', rightEdge - hWidth, y, 'right');
-  const sWidth = ctx.measureText('S').width / SCALE;
-  ctx.fillStyle = '#1e40af';
-  drawText(ctx, 'N', rightEdge - hWidth - sWidth, y, 'right');
+  drawText(ctx, 'HSN', leftEdge, y, 'left');
 
   // GROUP subtitle
   setFont(ctx, 9, true);
   ctx.fillStyle = '#dc2626';
-  drawText(ctx, 'G R O U P', rightEdge, y + 16, 'right');
-
-  // Company name (right side in RTL = left of canvas)
-  setFont(ctx, 20, true);
-  ctx.fillStyle = '#000';
-  drawText(ctx, 'النجار للأدوات الصحية', leftEdge, y, 'left');
+  drawText(ctx, 'G R O U P', leftEdge, y + 16, 'left');
 
   y += 30;
   drawLine(ctx, leftEdge, y, rightEdge, y, '#000', 2);
@@ -166,8 +160,8 @@ function renderInvoiceOnCanvas(
   y += 28;
   setFont(ctx, 11, true);
   ctx.fillStyle = '#000';
-  drawText(ctx, `${data.name} : رقم ${typeLabel}`, rightEdge, y, 'right');
-  drawText(ctx, `${fmtDate(data.dateOrder)} : التاريخ`, leftEdge, y, 'left');
+  drawText(ctx, `رقم ${typeLabel} : ${data.name}`, rightEdge, y, 'right');
+  drawText(ctx, `التاريخ : ${fmtDate(data.dateOrder)}`, leftEdge, y, 'left');
 
   // ── Order Type ──
   y += 28;
@@ -177,12 +171,12 @@ function renderInvoiceOnCanvas(
   // ── Partner ──
   y += 30;
   setFont(ctx, 14, true);
-  drawText(ctx, `${data.partnerName || '—'} : ${partnerLabel}`, rightEdge, y, 'right');
+  drawText(ctx, `${partnerLabel} : ${data.partnerName || '—'}`, rightEdge, y, 'right');
 
-  // ── Table ──
+  // ── Table (RTL: columns drawn from RIGHT to LEFT) ──
   y += 25;
 
-  // Column definitions (RTL: rightmost column first)
+  // Column definitions in RTL display order (right → left)
   const cols = [
     { label: 'م.', width: 35 },
     { label: 'اسم الصنف', width: 200 },
@@ -195,21 +189,21 @@ function renderInvoiceOnCanvas(
   ];
 
   const tableWidth = cols.reduce((s, c) => s + c.width, 0);
-  const tableLeft = (A4_W - tableWidth) / 2;
+  const tableRight = rightEdge;
+  const tableLeft = tableRight - tableWidth;
   const rowH = 28;
 
   // Draw header row
   drawRect(ctx, tableLeft, y, tableWidth, rowH, '#f0f0f0', '#000');
 
-  let cx = tableLeft;
+  // Draw columns from RIGHT to LEFT
+  let cx = tableRight;
   setFont(ctx, 10, true);
   ctx.fillStyle = '#000';
   for (const col of cols) {
-    // Draw cell border
+    cx -= col.width; // move left by column width
     drawRect(ctx, cx, y, col.width, rowH, undefined, '#000');
-    // Draw text centered
     drawText(ctx, col.label, cx + col.width / 2, y + 19, 'center');
-    cx += col.width;
   }
 
   // Draw data rows
@@ -236,11 +230,13 @@ function renderInvoiceOnCanvas(
       secQty > 0 ? `${secQty} ${line.secondaryUnit || ''}` : '—',
     ];
 
-    cx = tableLeft;
     const bgColor = i % 2 === 1 ? '#f9f9f9' : '#fff';
     drawRect(ctx, tableLeft, y, tableWidth, rowH, bgColor);
 
+    // Draw cells from RIGHT to LEFT (matching header)
+    cx = tableRight;
     for (let j = 0; j < cols.length; j++) {
+      cx -= cols[j].width;
       drawRect(ctx, cx, y, cols[j].width, rowH, undefined, '#000');
       const align: CanvasTextAlign = j === 1 ? 'right' : 'center';
       const tx = j === 1 ? cx + cols[j].width - 6 : cx + cols[j].width / 2;
@@ -254,15 +250,14 @@ function renderInvoiceOnCanvas(
         text += '...';
       }
       drawText(ctx, text, tx, y + 19, align);
-      cx += cols[j].width;
     }
     y += rowH;
   }
 
-  // ── Totals Section ──
+  // ── Totals Section (RTL: label right, value left) ──
   y += 15;
   const totalsWidth = 320;
-  const totalsLeft = (A4_W - totalsWidth) / 2;
+  const totalsRight = rightEdge;
   const labelW = totalsWidth / 2;
   const valueW = totalsWidth / 2;
 
@@ -280,14 +275,14 @@ function renderInvoiceOnCanvas(
   setFont(ctx, 11, true);
 
   for (const row of totals) {
-    // Label cell
-    drawRect(ctx, totalsLeft + valueW, y, labelW, rowH, row.bg, '#000');
+    // Label cell (RIGHT side)
+    drawRect(ctx, totalsRight - labelW, y, labelW, rowH, row.bg, '#000');
     ctx.fillStyle = '#000';
-    drawText(ctx, row.label, totalsLeft + valueW + labelW / 2, y + 19, 'center');
+    drawText(ctx, row.label, totalsRight - labelW / 2, y + 19, 'center');
 
-    // Value cell
-    drawRect(ctx, totalsLeft, y, valueW, rowH, '#fff', '#000');
-    drawText(ctx, row.value, totalsLeft + valueW / 2, y + 19, 'center');
+    // Value cell (LEFT of label)
+    drawRect(ctx, totalsRight - labelW - valueW, y, valueW, rowH, '#fff', '#000');
+    drawText(ctx, row.value, totalsRight - labelW - valueW / 2, y + 19, 'center');
 
     y += rowH;
   }
