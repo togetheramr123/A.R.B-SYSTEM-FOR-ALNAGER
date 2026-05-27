@@ -721,6 +721,57 @@ export function SaleOrderForm({
     const customer = customers.find(c => c.id === customerId);
     return customer?.mobile || '';
   };
+  // Helper: Build PDF data from form state (for sales)
+  const buildSalePdfData = () => {
+    const formData = getValues();
+    const customerId = formData.customer;
+    const customer = customers.find((c: any) => c.id === customerId);
+    const lines = (formData.lines || []).map((l: any) => {
+      const product = productsList.find((p: any) => p.id === l.productId);
+      return {
+        productName: product?.label || l.description || '—',
+        quantity: Number(l.qty) || 0,
+        unitName: l.uom || 'pc',
+        priceUnit: Number(l.price) || 0,
+        discount1: Number(l.discount) || 0,
+        priceSubtotal: Number(l.subtotal) || 0,
+        secondaryQuantity: Number(l.secondaryQuantity) || 0,
+        secondaryUnit: l.secondaryUom || '',
+      };
+    });
+    return {
+      name: orderName || initialData?.name || 'SO',
+      dateOrder: formData.date || initialData?.dateOrder,
+      partnerName: customer?.label || initialData?.partner?.name || '—',
+      companyName: initialData?.company?.name || '',
+      lines,
+      amountUntaxed: Number(initialData?.amountUntaxed || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+      amountTax: Number(initialData?.amountTax || 0),
+      amountTotal: Number(initialData?.amountTotal || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+    };
+  };
+
+  const downloadSalePdf = async () => {
+    const loadingToast = toast.loading("جاري تحميل الملف...");
+    try {
+      const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
+      const pdfData = buildSalePdfData();
+      const pdfBlob = generateSaleOrderPdf(pdfData);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${orderName || initialData?.name || 'عرض_سعر'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
+    } catch (err: any) {
+      console.error('PDF generation error:', err);
+      toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
+    }
+  };
+
   const openWhatsApp = async () => {
     const phone = getCustomerPhone().replace(/[^0-9+]/g, '');
     if (!phone) {
@@ -729,13 +780,11 @@ export function SaleOrderForm({
     }
     setWhatsappLoading(true);
     try {
-      const {
-        generatePdfFromPrintPage,
-        shareViaWhatsApp
-      } = await import('@/lib/whatsappShare');
-      const printUrl = `${window.location.origin}/${locale}/sales/${initialData.id}/print`;
-      const pdfBlob = await generatePdfFromPrintPage(printUrl);
-      const pdfFileName = initialData?.name || 'عرض_سعر';
+      const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
+      const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
+      const pdfData = buildSalePdfData();
+      const pdfBlob = generateSaleOrderPdf(pdfData);
+      const pdfFileName = orderName || initialData?.name || 'عرض_سعر';
       await shareViaWhatsApp({
         phone,
         pdfBlob,
@@ -1585,13 +1634,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => {
-              if (initialData?.id) {
-                window.open(`/${locale}/sales/${initialData.id}/print`, '_blank');
-              } else {
-                toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
-              }
-            }} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
+            <ActionMenu onPrint={downloadSalePdf} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
           </div>
         </TopPortal>
 

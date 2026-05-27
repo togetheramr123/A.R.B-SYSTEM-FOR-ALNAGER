@@ -618,6 +618,57 @@ const getVendorPhone = () => {
   const vendor = vendorsList.find(v => v.id === vendorId);
   return vendor?.mobile || '';
 };
+// Helper: Build PDF data from form state
+const buildPdfData = () => {
+  const formData = getValues();
+  const vendorId = formData.vendor;
+  const vendor = vendorsList.find((v: any) => v.id === vendorId);
+  const lines = (formData.lines || []).map((l: any) => {
+    const product = productsList.find((p: any) => p.id === l.productId);
+    return {
+      productName: product?.label || l.description || '—',
+      quantity: Number(l.qty) || 0,
+      unitName: l.uom || 'pc',
+      priceUnit: Number(l.price) || 0,
+      discount1: Number(l.discount) || 0,
+      priceSubtotal: Number(l.subtotal) || 0,
+      secondaryQuantity: Number(l.secondaryQty) || 0,
+      secondaryUnit: l.secondaryUom || '',
+    };
+  });
+  return {
+    name: orderName || initialData?.name || 'PO',
+    dateOrder: formData.date || initialData?.dateOrder,
+    partnerName: vendor?.label || initialData?.partner?.name || '—',
+    companyName: initialData?.company?.name || '',
+    lines,
+    amountUntaxed: Number(initialData?.amountUntaxed || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+    amountTax: Number(initialData?.amountTax || 0),
+    amountTotal: Number(initialData?.amountTotal || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+  };
+};
+
+const downloadPdf = async () => {
+  const loadingToast = toast.loading("جاري تحميل الملف...");
+  try {
+    const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
+    const pdfData = buildPdfData();
+    const pdfBlob = generatePurchaseOrderPdf(pdfData);
+    const url = window.URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${orderName || initialData?.name || 'أمر_شراء'}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
+  } catch (err: any) {
+    console.error('PDF generation error:', err);
+    toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
+  }
+};
+
 const openWhatsApp = async () => {
   const phone = getVendorPhone().replace(/[^0-9+]/g, '');
   if (!phone) {
@@ -626,13 +677,11 @@ const openWhatsApp = async () => {
   }
   setWhatsappLoading(true);
   try {
-    const {
-      generatePdfFromPrintPage,
-      shareViaWhatsApp
-    } = await import('@/lib/whatsappShare');
-    const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
-    const pdfBlob = await generatePdfFromPrintPage(printUrl);
-    const pdfFileName = initialData?.name || 'أمر_شراء';
+    const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
+    const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
+    const pdfData = buildPdfData();
+    const pdfBlob = generatePurchaseOrderPdf(pdfData);
+    const pdfFileName = orderName || initialData?.name || 'أمر_شراء';
     await shareViaWhatsApp({
       phone,
       pdfBlob,
@@ -837,30 +886,7 @@ const buildContextActions = () => {
     });
     actions.push({
       label: 'طباعة طلب عرض السعر',
-      onClick: async () => {
-        if (initialData?.id) {
-          const loadingToast = toast.loading("جاري تحميل الملف...");
-          try {
-            const { generatePdfFromPrintPage } = await import('@/lib/whatsappShare');
-            const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
-            const pdfBlob = await generatePdfFromPrintPage(printUrl);
-            const url = window.URL.createObjectURL(pdfBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${initialData?.name || 'أمر_شراء'}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
-          } catch (err: any) {
-            console.error(err);
-            toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
-          }
-        } else {
-          toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
-        }
-      },
+      onClick: downloadPdf,
       style: 'secondary',
       disabled: isSaving
     });
@@ -1273,30 +1299,7 @@ const columns: any[] = [{
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={async () => {
-              if (initialData?.id) {
-                const loadingToast = toast.loading("جاري تحميل الملف...");
-                try {
-                  const { generatePdfFromPrintPage } = await import('@/lib/whatsappShare');
-                  const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
-                  const pdfBlob = await generatePdfFromPrintPage(printUrl);
-                  const url = window.URL.createObjectURL(pdfBlob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `${initialData?.name || 'أمر_شراء'}.pdf`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                  window.URL.revokeObjectURL(url);
-                  toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
-                } catch (e: any) {
-                  console.error("PDF generation failed:", e);
-                  toast.error("فشل في تجهيز ملف الطباعة: " + (e?.message || String(e)), { id: loadingToast });
-                }
-              } else {
-                toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
-              }
-            }} onDuplicate={async () => {
+            <ActionMenu onPrint={downloadPdf} onDuplicate={async () => {
               if (!initialData?.id) return;
               try {
                 const newOrder = await duplicatePurchaseOrder(initialData.id);
