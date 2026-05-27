@@ -853,9 +853,9 @@ const buildContextActions = () => {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
             toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
-          } catch (err) {
+          } catch (err: any) {
             console.error(err);
-            toast.error('فشل في تجهيز ملف الطباعة', { id: loadingToast });
+            toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
           }
         } else {
           toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
@@ -1289,9 +1289,9 @@ const columns: any[] = [{
                   a.remove();
                   window.URL.revokeObjectURL(url);
                   toast.success("تم تحميل الملف بنجاح", { id: loadingToast });
-                } catch (e) {
+                } catch (e: any) {
                   console.error("PDF generation failed:", e);
-                  toast.error("فشل في تجهيز ملف الطباعة", { id: loadingToast });
+                  toast.error("فشل في تجهيز ملف الطباعة: " + (e?.message || String(e)), { id: loadingToast });
                 }
               } else {
                 toast.error("يرجى حفظ الأمر أولاً قبل الطباعة");
