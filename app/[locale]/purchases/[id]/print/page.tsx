@@ -20,29 +20,30 @@ export default async function PurchasePrintPage(props: {
     id: string;
   }>;
 }) {
-  const { locale, id } = await props.params;
-  const session = await getSession();
+  try {
+    const { locale, id } = await props.params;
+    const session = await getSession();
 
-  if (!session) redirect(`/${locale}/login`);
+    if (!session) redirect(`/${locale}/login`);
 
-  /* Fetch Order with Relations */
-  const orderRaw = await prisma.purchaseOrder.findUnique({
-    where: { id },
-    include: {
-      partner: true,
-      company: true,
-      lines: {
-        include: { product: true },
-        orderBy: { sequence: 'asc' }
+    /* Fetch Order with Relations */
+    const orderRaw = await prisma.purchaseOrder.findUnique({
+      where: { id },
+      include: {
+        partner: true,
+        company: true,
+        lines: {
+          include: { product: true },
+          orderBy: { sequence: 'asc' }
+        }
       }
-    }
-  });
+    });
 
-  if (!orderRaw) notFound();
+    if (!orderRaw) notFound();
 
-  const order = serializeDecimal(orderRaw);
+    const order = serializeDecimal(orderRaw);
 
-  return (
+    return (
     <div className="bg-white min-h-screen text-black print:p-0 print:bg-white font-sans" dir="rtl">
       <style>{`
         body, div, table, th, td, span, p { font-family: 'Cairo', system-ui, -apple-system, sans-serif !important; }
@@ -197,4 +198,15 @@ export default async function PurchasePrintPage(props: {
       </div>
     </div>
   );
+  } catch (err: any) {
+    if (err && err.digest && err.digest.startsWith('NEXT_REDIRECT')) {
+      throw err;
+    }
+    return (
+      <div style={{ padding: '20px', color: 'red', direction: 'ltr', fontFamily: 'monospace' }}>
+        <h1>Technical Error inside Print Page rendering:</h1>
+        <pre>{err?.stack || err?.message || String(err)}</pre>
+      </div>
+    );
+  }
 }
