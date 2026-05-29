@@ -15,8 +15,11 @@ export default async function PurchasePrintPage(props: {
     design?: "1" | "2";
   }>;
 }) {
-  const { locale, id } = await props.params;
-  const { design } = await props.searchParams;
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+  const locale = params?.locale;
+  const id = params?.id;
+  const design = searchParams?.design;
   const session = await getSession();
   
   if (!session) redirect(`/${locale}/login`);
