@@ -34,14 +34,14 @@ export default function PartnerLedgerFilters() {
         <label className="block text-sm font-medium text-slate-700 mb-1">
           من تاريخ
         </label>{" "}
-        <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="border border-slate-300 rounded px-3 py-2 text-sm" />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} className="border border-slate-300 rounded px-3 py-2 text-sm" />{" "}
       </div>{" "}
       <div>
         {" "}
         <label className="block text-sm font-medium text-slate-700 mb-1">
           إلى تاريخ
         </label>{" "}
-        <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="border border-slate-300 rounded px-3 py-2 text-sm" />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} className="border border-slate-300 rounded px-3 py-2 text-sm" />{" "}
       </div>{" "}
       <div className="min-w-[200px]">
         {" "}

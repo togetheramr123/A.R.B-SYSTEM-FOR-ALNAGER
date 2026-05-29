@@ -96,7 +96,7 @@ export default function OCRMappingClient({ initialRules, products }: { initialRu
         <div className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">الكلمة المكتوبة في الصورة (Keyword)</label>
-            <input 
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} 
               type="text" 
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
@@ -107,7 +107,7 @@ export default function OCRMappingClient({ initialRules, products }: { initialRu
 
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1">وحدة القياس الافتراضية (اختياري)</label>
-            <input 
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} 
               type="text" 
               value={defaultUom}
               onChange={(e) => setDefaultUom(e.target.value)}
@@ -122,7 +122,7 @@ export default function OCRMappingClient({ initialRules, products }: { initialRu
             <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-sm p-2 space-y-1">
               {products.map(p => (
                 <label key={p.id} className="flex items-center gap-2 p-1 hover:bg-slate-50 rounded cursor-pointer">
-                  <input 
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                     type="checkbox" 
                     checked={selectedProductIds.includes(p.id)}
                     onChange={() => toggleProductSelection(p.id)}
@@ -162,7 +162,7 @@ export default function OCRMappingClient({ initialRules, products }: { initialRu
           <h2 className="text-lg font-bold">القاموس الحالي</h2>
           <div className="relative">
             <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input 
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} 
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

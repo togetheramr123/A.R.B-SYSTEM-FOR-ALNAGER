@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { SaleOrderForm } from "@/components/sales/SaleOrderForm";
 import { serializeDecimal } from "@/lib/serialize";
+import { getUserGroupPermissions } from "@/app/actions/settings";
 export const dynamic = "force-dynamic";
 export default async function SaleOrderDetailPage(props: {
   params: Promise<{
@@ -24,40 +25,39 @@ export default async function SaleOrderDetailPage(props: {
   } = await import("@/lib/auth");
   const session = await getSession();
   const userRole = session?.role || "USER";
-  if (id === "create") {
-    return <SaleOrderForm userRole={userRole} />;
-  }
-  const order = await prisma.saleOrder.findUnique({
-    where: {
-      id
-    },
-    include: {
-      partner: true,
-      lines: {
-        include: {
-          product: true
+
+  // Fetch permissions and order in parallel
+  const [permissions, order] = await Promise.all([
+    getUserGroupPermissions(),
+    id === "create" ? Promise.resolve(null) : prisma.saleOrder.findUnique({
+      where: { id },
+      include: {
+        partner: true,
+        lines: {
+          include: { product: true },
+          orderBy: { sequence: "asc" }
         },
-        orderBy: {
-          sequence: "asc"
-        }
-      },
-      user: true,
-      salesTeam: true,
-      warehouse: true,
-      entreprise: true,
-      fiscalPosition: true,
-      paymentTerm: true,
-      priceList: true,
-      messages: {
-        include: {
-          author: true
-        },
-        orderBy: {
-          createdAt: "desc"
+        user: true,
+        salesTeam: true,
+        warehouse: true,
+        entreprise: true,
+        fiscalPosition: true,
+        paymentTerm: true,
+        priceList: true,
+        messages: {
+          include: { author: true },
+          orderBy: { createdAt: "desc" }
         }
       }
-    }
-  });
+    })
+  ]);
+
+  const canViewCustomerDetails = userRole === "ADMIN" || permissions._isAdmin || permissions.cust_view_details || false;
+  const canEditUomFactor = userRole === "ADMIN" || permissions._isAdmin || permissions.inv_edit_uom_factor || false;
+  if (id === "create") {
+    return <SaleOrderForm userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} canEditUomFactor={canEditUomFactor} />;
+  }
+
   if (!order) {
     notFound();
   }
@@ -86,5 +86,5 @@ export default async function SaleOrderDetailPage(props: {
       name: updatedBy.name || updatedBy.email
     } : null
   });
-  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} />;
+  return <SaleOrderForm initialData={serializedOrder} defaultEditing={isEditing} userRole={userRole} canViewCustomerDetails={canViewCustomerDetails} canEditUomFactor={canEditUomFactor} />;
 }

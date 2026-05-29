@@ -57,7 +57,7 @@ export function FileUploadArea() {
           <span className="text-[10px] font-bold text-slate-500">
             {t("uploadFile")}
           </span>{" "}
-          <input type="file" multiple className="hidden" onChange={handleFileChange} />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" multiple className="hidden" onChange={handleFileChange} />{" "}
         </label>{" "}
       </div>{" "}
     </div>;

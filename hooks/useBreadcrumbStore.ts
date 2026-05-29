@@ -30,24 +30,49 @@ export const useBreadcrumbStore = create<BreadcrumbState>()(
             
             push: (item) => {
                 set((state) => {
-                    // If the user navigates to an item already in the stack, this is a "back" action.
-                    // We should slice the stack up to that point.
-                    const existingIndex = state.stack.findIndex(i => Math.abs(i.href.localeCompare(item.href)) === 0 || i.id === item.id);
-                    
-                    if (existingIndex !== -1) {
-                        // If it's the exact same as the last item, avoid state mutation
-                        if (existingIndex === state.stack.length - 1 && state.stack[existingIndex].label === item.label) {
-                            return state;
-                        }
+                    const cleanItemHref = item.href.split('?')[0];
+
+                    // Find if the exact URL or a parent path is in the stack
+                    let matchIndex = -1;
+                    let isExact = false;
+
+                    for (let i = state.stack.length - 1; i >= 0; i--) {
+                        const cleanStackHref = state.stack[i].href.split('?')[0];
                         
-                        // Update the label just in case it changed, and slice off the future items
-                        const newStack = state.stack.slice(0, existingIndex + 1);
-                        newStack[existingIndex] = { ...newStack[existingIndex], label: item.label, href: item.href };
-                        return { stack: newStack };
+                        // Ignore pure locale paths like /ar or /en as parent indicators
+                        const isPureLocale = /^\/(ar|en)\/?$/.test(cleanStackHref);
+                        if (isPureLocale) continue;
+
+                        if (cleanItemHref === cleanStackHref || state.stack[i].id === item.id) {
+                            matchIndex = i;
+                            isExact = true;
+                            break;
+                        }
+                        // Check if cleanStackHref is a parent path of cleanItemHref
+                        if (cleanItemHref.startsWith(cleanStackHref + '/')) {
+                            matchIndex = i;
+                            break;
+                        }
                     }
-                    
-                    // Otherwise, just push the new item
-                    return { stack: [...state.stack, item] };
+
+                    if (matchIndex !== -1) {
+                        if (isExact) {
+                            // Exact match found: treat as back navigation and trim the stack
+                            if (matchIndex === state.stack.length - 1 && state.stack[matchIndex].label === item.label) {
+                                return state;
+                            }
+                            const newStack = state.stack.slice(0, matchIndex + 1);
+                            newStack[matchIndex] = { ...newStack[matchIndex], label: item.label, href: item.href };
+                            return { stack: newStack };
+                        } else {
+                            // Ancestor match found: trim to the ancestor, and append the new item
+                            const newStack = state.stack.slice(0, matchIndex + 1);
+                            return { stack: [...newStack, item] };
+                        }
+                    }
+
+                    // No relation found: start a clean stack for this new branch/module
+                    return { stack: [item] };
                 });
             },
             

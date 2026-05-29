@@ -387,3 +387,48 @@ export async function deleteUser(id: string) {
     return { success: false, error: "فشل في حذف المستخدم: " + (error as any)?.message };
   }
 }
+
+/**
+ * Fetches the merged permissions (JSON field) for the current user across all their groups.
+ * Uses OR logic: if any group grants a permission key, it is considered granted.
+ * Admins automatically get all permissions.
+ */
+export async function getUserGroupPermissions(): Promise<Record<string, boolean>> {
+  const session = await getSession();
+  if (!session?.userId) return {};
+
+  // Admins get everything
+  if (session.role === "ADMIN") {
+    return { _isAdmin: true } as any; // marker — caller checks isAdmin OR specific key
+  }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
+      include: {
+        groups: {
+          select: { permissions: true }
+        }
+      }
+    });
+
+    if (!user) return {};
+
+    const merged: Record<string, boolean> = {};
+
+    for (const group of user.groups) {
+      if (!group.permissions) continue;
+      try {
+        const parsed = JSON.parse(group.permissions) as Record<string, boolean>;
+        for (const [key, value] of Object.entries(parsed)) {
+          if (value) merged[key] = true; // OR logic
+        }
+      } catch { /* skip malformed JSON */ }
+    }
+
+    return merged;
+  } catch (error) {
+    console.error("Failed to fetch user group permissions:", error);
+    return {};
+  }
+}

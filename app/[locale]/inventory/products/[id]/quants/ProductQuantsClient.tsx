@@ -189,7 +189,7 @@ export function ProductQuantsClient({
                 if (col.hiddenToggle) return null;
                 return <label key={col.id} className="flex items-center gap-2 px-4 py-1.5 hover:bg-slate-50 cursor-pointer">
                         {" "}
-                        <input type="checkbox" checked={visibleColumns[col.id as keyof typeof visibleColumns]} onChange={e => setVisibleColumns(prev => ({
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleColumns[col.id as keyof typeof visibleColumns]} onChange={e => setVisibleColumns(prev => ({
                     ...prev,
                     [col.id]: e.target.checked
                   }))} className="rounded border-slate-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
@@ -214,7 +214,7 @@ export function ProductQuantsClient({
               {" "}
               <th className="px-3 py-2.5 font-bold w-10 text-center">
                 {" "}
-                <input type="checkbox" className="rounded border-slate-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
               </th>{" "}
               <th className="px-3 py-2.5 font-bold">الموقع</th>{" "}
               {visibleColumns.product && <th className="px-3 py-2.5 font-bold">المنتج</th>}{" "}
@@ -249,7 +249,7 @@ export function ProductQuantsClient({
                     {" "}
                     <td className="px-3 py-1.5 text-center">
                       {" "}
-                      <input type="checkbox" className="rounded border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 transition-opacity" />{" "}
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300 text-[#017E84] focus:ring-[#017E84] opacity-0 group-hover:opacity-100 transition-opacity" />{" "}
                     </td>{" "}
                     <td className="px-3 py-1.5 text-slate-800 font-medium">
                       {quant.locationName}
@@ -266,7 +266,7 @@ export function ProductQuantsClient({
                       </td>}{" "}
                     <td className="px-3 py-1 text-left relative">
                       {" "}
-                      {isEditing ? <input type="number" className="w-full bg-fuchsia-50/50 border border-fuchsia-300 text-fuchsia-800 rounded-sm px-2 py-1 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 text-left font-medium" dir="ltr" value={quant.countedQty !== null ? quant.countedQty : ""} onChange={e => handleCountChange(quant.id, e.target.value)} disabled={isRowLoading} autoFocus /> : <div className="w-full px-2 py-1 text-left cursor-pointer hover:bg-slate-100 rounded border border-transparent hover:border-slate-300 transition-colors min-h-[28px]" onClick={() => handleAssign(quant.id, quant.onHand)}>
+                      {isEditing ? <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" className="w-full bg-fuchsia-50/50 border border-fuchsia-300 text-fuchsia-800 rounded-sm px-2 py-1 focus:outline-none focus:border-fuchsia-500 focus:ring-1 focus:ring-fuchsia-500 text-left font-medium" dir="ltr" value={quant.countedQty !== null ? quant.countedQty : ""} onChange={e => handleCountChange(quant.id, e.target.value)} disabled={isRowLoading} autoFocus /> : <div className="w-full px-2 py-1 text-left cursor-pointer hover:bg-slate-100 rounded border border-transparent hover:border-slate-300 transition-colors min-h-[28px]" onClick={() => handleAssign(quant.id, quant.onHand)}>
                           {" "}
                           {quant.countedQty !== null ? quant.countedQty.toFixed(3) : ""}{" "}
                         </div>}{" "}

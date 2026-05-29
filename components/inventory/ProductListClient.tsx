@@ -4,10 +4,12 @@ import { useState, useCallback, useRef, useEffect, Fragment } from "react";
 import * as XLSX from "xlsx";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Package, Check, X, FileSpreadsheet, FileText, Archive, LayoutGrid, List, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCheck, Upload, Filter, AlignLeft, Star, Settings2, Loader2 } from "lucide-react";
+import { Package, Check, X, FileSpreadsheet, FileText, Archive, LayoutGrid, List, Search, ChevronLeft, ChevronRight, ChevronDown, CheckCheck, Upload, Filter, AlignLeft, Star, Settings2, Loader2, Trash2, ArchiveRestore } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getProductIdsByFilter, fetchProductsForGroup, getProductsForExport } from "@/app/actions/inventory";
 import { ExportDialog, ExportField } from "@/components/common/ExportDialog";
+import { bulkDeleteRecords, bulkArchiveRecords } from "@/app/actions/bulk-actions";
+import { toast } from "sonner";
 interface Product {
   id: string;
   name: string;
@@ -120,6 +122,40 @@ export function ProductListClient({
   
   const [lastClickedIndex, setLastClickedIndex] = useState<number | null>(null);
   const [isLoadingBulk, setIsLoadingBulk] = useState(false);
+
+  /* Bulk Actions State */
+  const [isConfirmOpen, setIsConfirmOpen] = useState<'delete' | 'archive' | 'unarchive' | null>(null);
+  const [isActionPending, setIsActionPending] = useState(false);
+
+  const handleBulkAction = async (actionType: 'delete' | 'archive' | 'unarchive') => {
+    setIsActionPending(true);
+    try {
+      let result;
+      const ids = Array.from(selectedIds);
+      if (actionType === 'delete') {
+        result = await bulkDeleteRecords('product', ids);
+      } else if (actionType === 'archive') {
+        result = await bulkArchiveRecords('product', ids, false);
+      } else if (actionType === 'unarchive') {
+        result = await bulkArchiveRecords('product', ids, true);
+      }
+
+      if (result?.error) {
+        toast.error(result.error, {
+          style: { direction: 'rtl', textAlign: 'right' }
+        });
+      } else if (result?.success) {
+        toast.success("تم تنفيذ العملية بنجاح");
+        setSelectedIds(new Set());
+        router.refresh();
+      }
+    } catch (err: any) {
+      toast.error("حدث خطأ أثناء تنفيذ العملية: " + (err.message || ''));
+    } finally {
+      setIsActionPending(false);
+      setIsConfirmOpen(null);
+    }
+  };
   const filtersRef = useRef<HTMLDivElement>(null);
   const groupByRef = useRef<HTMLDivElement>(null);
   const favoritesRef = useRef<HTMLDivElement>(null);
@@ -276,10 +312,10 @@ export function ProductListClient({
       {/* Checkbox (Top Right) */}{" "}
       <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
         {" "}
-        <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
       </div>{" "}
       {isSelected && <div className="absolute top-2 right-2 z-20 opacity-100">
-          <input type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
         </div>}{" "}
       {" "}
       <Link href={`/${locale}/inventory/products/${product.id}`} className="flex p-3 gap-3 h-full items-start">
@@ -350,7 +386,7 @@ export function ProductListClient({
             router.push(`${pathname}?${sp.toString()}`);
           }}>
               {" "}
-              <input type="text" name="q" defaultValue={searchQuery} placeholder="بحث في المنتجات..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" name="q" defaultValue={searchQuery} placeholder="بحث في المنتجات..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
             </form>{" "}
           </div>{" "}
         </div>{" "}
@@ -555,7 +591,7 @@ export function ProductListClient({
                   {" "}
                   <th className="px-3 py-2.5 w-10 font-medium">
                     {" "}
-                    <input type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
                   if (el) el.indeterminate = someSelected && !allPageSelected;
                 }} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] cursor-pointer" />{" "}
                   </th>{" "}
@@ -611,7 +647,7 @@ export function ProductListClient({
                   }} className="w-full px-3 py-1.5 text-[13px] text-gray-700 hover:bg-gray-100 flex items-center gap-2">
                             {" "}
                             <div className="flex items-center gap-2 w-full">
-                              <input type="checkbox" checked={visibleColumns.includes(col.id)} readOnly className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-auto" />
+                              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleColumns.includes(col.id)} readOnly className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84] ml-auto" />
                               <span className="flex-1 text-right">{col.label}</span>
                             </div>
                           </button>)}{" "}
@@ -628,7 +664,7 @@ export function ProductListClient({
                       return (
                         <tr key={product.id} className={cn("hover:bg-gray-50 transition-colors group", isSelected && "bg-blue-50/30")}>
                           <td className="px-3 py-2">
-                            <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
                           </td>
                           <td className="px-3 py-2 font-bold text-gray-900 truncate max-w-[250px]">
                             <Link href={`/${locale}/inventory/products/${product.id}`} className="hover:text-[#017E84]">
@@ -718,7 +754,7 @@ export function ProductListClient({
                             return (
                               <tr key={product.id} className={cn("hover:bg-gray-50 transition-colors group", isSelected && "bg-blue-50/30")}>
                                 <td className="px-3 py-2">
-                                  <input type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
+                                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(product.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />
                                 </td>
                                 <td className="px-3 py-2 font-bold text-gray-900 truncate max-w-[250px]">
                                   <Link href={`/${locale}/inventory/products/${product.id}`} className="hover:text-[#017E84] pr-4">
@@ -845,7 +881,7 @@ export function ProductListClient({
               </span>
             </span>{" "}
           </div>{" "}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 font-arabic">
             {" "}
             <button onClick={exportExcel} className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
               {" "}
@@ -856,10 +892,18 @@ export function ProductListClient({
               {" "}
               <FileText className="w-4 h-4 text-gray-300" /> طباعة{" "}
             </button>{" "}
-            <button className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
-              {" "}
-              <Archive className="w-4 h-4 text-amber-400" /> أرشفة{" "}
-            </button>{" "}
+            {currentFilter === "archived" ? (
+              <button onClick={() => setIsConfirmOpen('unarchive')} className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
+                <ArchiveRestore className="w-4 h-4 text-teal-400" /> إلغاء الأرشفة
+              </button>
+            ) : (
+              <button onClick={() => setIsConfirmOpen('archive')} className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
+                <Archive className="w-4 h-4 text-amber-400" /> أرشفة
+              </button>
+            )}
+            <button onClick={() => setIsConfirmOpen('delete')} className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
+              <Trash2 className="w-4 h-4 text-red-400" /> حذف
+            </button>
             <button onClick={clearSelection} className="ml-2 p-1.5 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors" title="إلغاء التحديد">
               {" "}
               <X className="w-4 h-4" />{" "}
@@ -875,5 +919,35 @@ export function ProductListClient({
         onExport={handleExport}
         isExporting={isExporting}
       />
+      {isConfirmOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 font-arabic">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-2xl border border-gray-200" dir="rtl">
+            <h3 className="text-base font-bold text-gray-900 mb-2">تأكيد الإجراء</h3>
+            <p className="text-xs text-gray-500 mb-6">
+              {isConfirmOpen === 'delete' && `هل أنت متأكد من رغبتك في حذف ${selectedIds.size} عنصر؟ لا يمكن التراجع عن هذا الإجراء.`}
+              {isConfirmOpen === 'archive' && `هل أنت متأكد من رغبتك في أرشفة ${selectedIds.size} عنصر؟`}
+              {isConfirmOpen === 'unarchive' && `هل أنت متأكد من رغبتك في إلغاء أرشفة ${selectedIds.size} عنصر؟`}
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                disabled={isActionPending}
+                onClick={() => setIsConfirmOpen(null)}
+                className="px-4 py-2 rounded text-xs font-bold text-gray-500 hover:bg-gray-100 disabled:opacity-50"
+              >
+                إلغاء
+              </button>
+              <button
+                disabled={isActionPending}
+                onClick={() => handleBulkAction(isConfirmOpen)}
+                className={`px-4 py-2 rounded text-xs font-bold text-white disabled:opacity-50 ${
+                  isConfirmOpen === 'delete' ? 'bg-red-600 hover:bg-red-700' : 'bg-[#017E84] hover:bg-[#015e63]'
+                }`}
+              >
+                {isActionPending ? 'جاري التنفيذ...' : 'تأكيد'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>;
 }

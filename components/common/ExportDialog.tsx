@@ -87,7 +87,7 @@ export function ExportDialog({
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-gray-700">صيغة الملف المصدر:</span>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                     type="radio" 
                     name="format" 
                     checked={format === "xlsx"} 
@@ -97,7 +97,7 @@ export function ExportDialog({
                   <span className="text-sm text-gray-700">XLSX</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                     type="radio" 
                     name="format" 
                     checked={format === "csv"} 
@@ -109,7 +109,7 @@ export function ExportDialog({
               </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
-              <input 
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                 type="checkbox" 
                 checked={importCompatible}
                 onChange={(e) => setImportCompatible(e.target.checked)}
@@ -176,7 +176,7 @@ export function ExportDialog({
               <div className="p-3 border-b border-gray-200 bg-white">
                 <div className="relative">
                   <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input 
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                     type="text" 
                     placeholder="بحث..."
                     value={searchQuery}

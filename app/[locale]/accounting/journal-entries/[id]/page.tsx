@@ -259,7 +259,7 @@ export default function JournalEntryDetailsPage(props: {
                   <label className="text-sm font-bold text-slate-700">
                     المرجع
                   </label>{" "}
-                  <input type="text" disabled={isReadOnly} value={entry.ref} onChange={e => setEntry({
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" disabled={isReadOnly} value={entry.ref} onChange={e => setEntry({
                   ...entry,
                   ref: e.target.value
                 })} className="w-full border-b border-slate-300 focus:border-sky-600 outline-none py-1.5 text-slate-900 bg-transparent transition-colors disabled:opacity-70" placeholder="مثلاً: فاتورة #1234" />{" "}
@@ -273,7 +273,7 @@ export default function JournalEntryDetailsPage(props: {
                   <label className="text-sm font-bold text-slate-700">
                     التاريخ المحاسبي
                   </label>{" "}
-                  <input type="date" disabled={isReadOnly} value={entry.date} onChange={e => setEntry({
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" disabled={isReadOnly} value={entry.date} onChange={e => setEntry({
                   ...entry,
                   date: e.target.value
                 })} className="w-full border-b border-slate-300 focus:border-sky-600 outline-none py-1.5 text-slate-900 bg-transparent transition-colors disabled:opacity-70" />{" "}
@@ -357,15 +357,15 @@ export default function JournalEntryDetailsPage(props: {
                         </td>{" "}
                         <td className="px-4 py-1.5">
                           {" "}
-                          <input type="text" disabled={isReadOnly} value={item.name} onChange={e => handleItemChange(item.id, "name", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm disabled:opacity-100 disabled:cursor-default" placeholder="البيان..." />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" disabled={isReadOnly} value={item.name} onChange={e => handleItemChange(item.id, "name", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm disabled:opacity-100 disabled:cursor-default" placeholder="البيان..." />{" "}
                         </td>{" "}
                         <td className="px-4 py-1.5">
                           {" "}
-                          <input type="number" disabled={isReadOnly} min="0" step="0.01" value={item.debit === 0 ? "" : item.debit} onChange={e => handleItemChange(item.id, "debit", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm text-left tabular-nums focus:bg-white disabled:opacity-100 disabled:cursor-default" placeholder="0.00" dir="ltr" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" disabled={isReadOnly} min="0" step="0.01" value={item.debit === 0 ? "" : item.debit} onChange={e => handleItemChange(item.id, "debit", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm text-left tabular-nums focus:bg-white disabled:opacity-100 disabled:cursor-default" placeholder="0.00" dir="ltr" />{" "}
                         </td>{" "}
                         <td className="px-4 py-1.5">
                           {" "}
-                          <input type="number" disabled={isReadOnly} min="0" step="0.01" value={item.credit === 0 ? "" : item.credit} onChange={e => handleItemChange(item.id, "credit", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm text-left tabular-nums focus:bg-white disabled:opacity-100 disabled:cursor-default" placeholder="0.00" dir="ltr" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" disabled={isReadOnly} min="0" step="0.01" value={item.credit === 0 ? "" : item.credit} onChange={e => handleItemChange(item.id, "credit", e.target.value)} className="w-full bg-transparent border-0 border-b border-transparent focus:border-sky-500 focus:ring-0 px-0 py-1 text-sm text-left tabular-nums focus:bg-white disabled:opacity-100 disabled:cursor-default" placeholder="0.00" dir="ltr" />{" "}
                         </td>{" "}
                         <td className="px-4 py-1.5 text-left">
                           {" "}

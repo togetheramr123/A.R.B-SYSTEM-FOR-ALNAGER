@@ -17,10 +17,10 @@ export function ShortageTopActions({
           {" "}
           <Filter className="w-3.5 h-3.5 text-indigo-500" />{" "}
           <label className="text-slate-600 text-[11px] font-bold">من:</label>{" "}
-          <input type="date" name="from" defaultValue={from || ""} className="bg-transparent border-none text-[11px] outline-none text-slate-700 w-28" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" name="from" defaultValue={from || ""} className="bg-transparent border-none text-[11px] outline-none text-slate-700 w-28" />{" "}
           <div className="h-3.5 w-px bg-slate-300"></div>{" "}
           <label className="text-slate-600 text-[11px] font-bold">إلى:</label>{" "}
-          <input type="date" name="to" defaultValue={to || ""} className="bg-transparent border-none text-[11px] outline-none text-slate-700 w-28" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" name="to" defaultValue={to || ""} className="bg-transparent border-none text-[11px] outline-none text-slate-700 w-28" />{" "}
           <button type="submit" className="text-indigo-600 font-bold hover:text-indigo-800 border-r border-slate-300 pr-2 transition-colors text-[11px]">
             {" "}
             تطبيق{" "}

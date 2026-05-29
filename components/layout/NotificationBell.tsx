@@ -106,7 +106,7 @@ export function NotificationBell() {
               <div className="mt-3">
                 {rejectingId === notif.id ? (
                   <div className="flex flex-col gap-2">
-                    <input type="text" autoFocus placeholder="الرجاء كتابة سبب الرفض..." value={rejectReason} onChange={e => setRejectReason(e.target.value)} onClick={e => e.stopPropagation()} className="w-full text-xs border border-slate-300 rounded px-2 py-1.5 focus:outline-none focus:border-red-500" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" autoFocus placeholder="الرجاء كتابة سبب الرفض..." value={rejectReason} onChange={e => setRejectReason(e.target.value)} onClick={e => e.stopPropagation()} className="w-full text-xs border border-slate-300 rounded px-2 py-1.5 focus:outline-none focus:border-red-500" />
                     <div className="flex gap-2">
                       <button onClick={e => handleReject(e, notif.id, notif.resourceId)} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded shadow-sm font-bold text-xs flex-1 transition-colors">تأكيد الرفض</button>
                       <button onClick={e => { e.stopPropagation(); setRejectingId(null); setRejectReason(""); }} className="bg-slate-200 hover:bg-slate-300 text-slate-800 px-3 py-1.5 rounded shadow-sm font-bold text-xs transition-colors">إلغاء</button>

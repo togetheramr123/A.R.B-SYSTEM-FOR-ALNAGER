@@ -140,10 +140,10 @@ export function PriceListListClient({
       {/* Checkbox */}{" "}
       <div className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
         {" "}
-        <input type="checkbox" checked={isSelected} onChange={e => toggleOne(item.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(item.id, index, (e.nativeEvent as any).shiftKey)} className={cn("w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm", isSelected ? "opacity-100" : "")} />{" "}
       </div>{" "}
       {isSelected && <div className="absolute top-2 right-2 z-20 opacity-100">
-          <input type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={true} readOnly className="w-4 h-4 rounded border-gray-300 accent-[#017E84] focus:ring-[#017E84] bg-white cursor-pointer shadow-sm" />
         </div>}{" "}
       <Link href={`${listBaseUrl}/${item.id}`} className="flex flex-col p-4 gap-2 min-h-[90px]">
         {" "}
@@ -201,7 +201,7 @@ export function PriceListListClient({
             router.push(`${pathname}?${sp.toString()}`);
           }}>
               {" "}
-              <input type="text" name="q" defaultValue={searchQuery} placeholder="بحث..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" name="q" defaultValue={searchQuery} placeholder="بحث..." className="w-full bg-gray-100/80 hover:bg-gray-200/50 focus:bg-white text-[13px] py-1.5 pr-9 pl-3 rounded outline-none border border-transparent focus:border-blue-400 focus:ring-1 focus:ring-blue-400 transition-all font-medium placeholder:text-gray-400" />{" "}
             </form>{" "}
           </div>{" "}
         </div>{" "}
@@ -323,12 +323,12 @@ export function PriceListListClient({
                       </div>{" "}
                       <div className="flex items-center gap-2 text-[12px] text-gray-600 mb-1.5">
                         {" "}
-                        <input type="checkbox" className="w-3.5 h-3.5 accent-[#017E84]" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="w-3.5 h-3.5 accent-[#017E84]" />{" "}
                         <span>استخدمه كافتراضي</span>{" "}
                       </div>{" "}
                       <div className="flex items-center gap-2 text-[12px] text-gray-600 mb-3">
                         {" "}
-                        <input type="checkbox" className="w-3.5 h-3.5 accent-[#017E84]" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="w-3.5 h-3.5 accent-[#017E84]" />{" "}
                         <span>المشاركة مع كافة المستخدمين</span>{" "}
                       </div>{" "}
                       <button className="bg-[#017E84] hover:bg-[#01656a] text-white px-3 py-1 rounded text-[12px] font-bold w-full transition-colors">
@@ -393,7 +393,7 @@ export function PriceListListClient({
                   {" "}
                   <th className="px-3 py-2.5 w-10 font-medium">
                     {" "}
-                    <input type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={allPageSelected} onChange={toggleAll} ref={el => {
                   if (el) el.indeterminate = someSelected && !allPageSelected;
                 }} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] cursor-pointer" />{" "}
                   </th>{" "}
@@ -437,7 +437,7 @@ export function PriceListListClient({
                           {" "}
                           <td className="px-3 py-2">
                             {" "}
-                            <input type="checkbox" checked={isSelected} onChange={e => toggleOne(item.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />{" "}
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={e => toggleOne(item.id, index, (e.nativeEvent as any).shiftKey)} className="rounded border-gray-300 w-4 h-4 accent-[#017E84] focus:ring-[#017E84] opacity-50 group-hover:opacity-100 data-[checked=true]:opacity-100 transition-opacity cursor-pointer" data-checked={isSelected} />{" "}
                           </td>{" "}
                           <td className="px-3 py-2 font-bold text-gray-900">
                             {" "}
@@ -450,7 +450,7 @@ export function PriceListListClient({
                           </td>{" "}
                           <td className="px-3 py-2">
                             {" "}
-                            <input type="checkbox" className="w-4 h-4 accent-gray-400 cursor-pointer opacity-40 group-hover:opacity-100" />{" "}
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="w-4 h-4 accent-gray-400 cursor-pointer opacity-40 group-hover:opacity-100" />{" "}
                           </td>{" "}
                         </tr>{" "}
                       </Fragment>;

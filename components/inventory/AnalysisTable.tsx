@@ -113,7 +113,7 @@ export function AnalysisTable({
       <div className="flex gap-4 items-center"> 
         <div className="flex gap-2"> 
           <div className="relative"> 
-            <input type="text" placeholder={searchPlaceholder} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-8 pr-4 py-1 border border-slate-300 rounded-sm text-[13px] w-64 focus:outline-none focus:border-[#017E84]" /> 
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder={searchPlaceholder} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-8 pr-4 py-1 border border-slate-300 rounded-sm text-[13px] w-64 focus:outline-none focus:border-[#017E84]" /> 
             <Search className="w-4 h-4 text-slate-400 absolute left-2 top-1.5" /> 
           </div> 
           <div className="relative" ref={filterRef}>
@@ -196,7 +196,7 @@ export function AnalysisTable({
       <table className="w-full text-right text-[13px]"> 
         <thead className="bg-white border-b-2 border-slate-300 text-slate-700 font-bold whitespace-nowrap"> 
           <tr> 
-            <th className="px-3 py-2 w-10"> <input type="checkbox" className="rounded border-slate-300" /> </th> 
+            <th className="px-3 py-2 w-10"> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300" /> </th> 
             {columns.map(col => <th key={col.key} className={`px-2 py-2 ${col.align === 'left' ? 'text-left' : col.align === 'center' ? 'text-center' : 'text-right'}`}> {col.label} </th>)} 
           </tr> 
         </thead> 
@@ -213,14 +213,14 @@ export function AnalysisTable({
                   </td>
                 </tr>
                 {group.rows.map((row, idx) => <tr key={idx} className="border-b border-slate-100 odd:bg-white even:bg-[#f9fafb] hover:bg-slate-50 transition-colors whitespace-nowrap"> 
-                  <td className="px-3 py-1.5"> <input type="checkbox" className="rounded border-slate-300" /> </td> 
+                  <td className="px-3 py-1.5"> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300" /> </td> 
                   {columns.map(col => <td key={col.key} className={`px-2 py-1.5 text-slate-800 ${col.align === 'left' ? 'text-left' : col.align === 'center' ? 'text-center' : 'text-right'}`}> {col.render ? col.render(row[col.key], row) : row[col.key]} </td>)} 
                 </tr>)}
               </React.Fragment>
             ))
           ) : (
             filteredData.map((row, idx) => <tr key={idx} className="border-b border-slate-200 odd:bg-white even:bg-[#f9fafb] hover:bg-slate-100 transition-colors whitespace-nowrap"> 
-              <td className="px-3 py-1.5"> <input type="checkbox" className="rounded border-slate-300" /> </td> 
+              <td className="px-3 py-1.5"> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-slate-300" /> </td> 
               {columns.map(col => <td key={col.key} className={`px-2 py-1.5 text-slate-800 ${col.align === 'left' ? 'text-left' : col.align === 'center' ? 'text-center' : 'text-right'}`}> {col.render ? col.render(row[col.key], row) : row[col.key]} </td>)} 
             </tr>)
           )} 

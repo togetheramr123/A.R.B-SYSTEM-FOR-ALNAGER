@@ -110,7 +110,7 @@ export default function PartnerChangeModal({
               <div className="relative">
                 {" "}
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-                <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث عن العميل الصحيح..." className="w-full border border-slate-300 rounded-lg py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:border-blue-500 transition" autoFocus />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="ابحث عن العميل الصحيح..." className="w-full border border-slate-300 rounded-lg py-2.5 pr-10 pl-4 text-sm focus:outline-none focus:border-blue-500 transition" autoFocus />{" "}
               </div>{" "}
               {/* Partner List */}{" "}
               <div className="max-h-[250px] overflow-y-auto border border-slate-200 rounded-lg divide-y divide-slate-100">

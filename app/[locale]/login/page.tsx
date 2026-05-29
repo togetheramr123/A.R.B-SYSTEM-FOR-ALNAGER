@@ -75,7 +75,7 @@ export default function LoginPage({
           </div>
 
           <form action={formAction} className="space-y-5">
-            <input type="hidden" name="locale" value={locale} />
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="locale" value={locale} />
             
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-slate-700 block text-right">
@@ -85,7 +85,7 @@ export default function LoginPage({
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <User className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="text" 
                   name="username" 
                   required 
@@ -103,7 +103,7 @@ export default function LoginPage({
                 <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="password" 
                   name="password" 
                   required 
@@ -136,7 +136,15 @@ export default function LoginPage({
           </form>
 
           <div className="mt-8 text-center flex flex-col items-center gap-4">
-            {!isDemoMode && (
+            {isDemoMode ? (
+              <a 
+                href={process.env.NEXT_PUBLIC_LIVE_URL || "https://a-r-b-system-for-alnager.onrender.com"}
+                className="text-sm font-semibold text-[#714B67] hover:text-[#5e3e56] flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#714B67]/20 hover:bg-[#714B67]/5 transition-all duration-200"
+              >
+                <Server className="w-4 h-4" />
+                العودة للنسخة الأصلية (Live)
+              </a>
+            ) : (
               <button 
                 type="button"
                 onClick={() => setIsDemoModalOpen(true)}
@@ -174,7 +182,7 @@ export default function LoginPage({
                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-[#714B67] transition-colors">
                   <Lock className="w-5 h-5" />
                 </div>
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   type="password" 
                   value={demoPin}
                   onChange={(e) => setDemoPin(e.target.value)}

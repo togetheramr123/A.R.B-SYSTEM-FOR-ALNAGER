@@ -186,7 +186,7 @@ export function VariantGridModal({
                           {/* Bottom section: Quantity Input */}{" "}
                           <div className="flex items-center justify-center p-2 mt-auto pb-4">
                             {" "}
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="number"
                               min="0"
                               step="1"
@@ -262,7 +262,7 @@ export function VariantGridModal({
                       {" "}
                       <div className="flex justify-center">
                         {" "}
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="number"
                           min="0"
                           step="1"

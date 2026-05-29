@@ -37,7 +37,7 @@ export function ProductSalesTab({ register, setValue, convertArabicToEnglishNumb
                       </label>{" "}
                       <div className="flex items-center gap-2">
                         {" "}
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="number"
                           step="0.01"
                           {...register("tax_customer", {

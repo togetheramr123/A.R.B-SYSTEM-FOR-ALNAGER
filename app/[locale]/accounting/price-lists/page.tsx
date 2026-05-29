@@ -133,11 +133,11 @@ export default async function PriceListsPage(props: {
           </h1>{" "}
           {selectedPL && <form method="GET" className="flex items-center gap-2">
               {" "}
-              <input type="hidden" name="id" value={selectedPL.id} />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="id" value={selectedPL.id} />{" "}
               <div className="relative">
                 {" "}
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-                <input name="search" defaultValue={search || ""} placeholder="بحث في المنتجات..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-300 rounded-md w-64 focus:outline-none focus:ring-1 focus:ring-sky-500" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} name="search" defaultValue={search || ""} placeholder="بحث في المنتجات..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-300 rounded-md w-64 focus:outline-none focus:ring-1 focus:ring-sky-500" />{" "}
               </div>{" "}
             </form>}{" "}
         </div>{" "}

@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useStatusStore } from "@/store/statusStore";
 import { TopPortal } from "@/components/common/TopPortal";
 import { Loader2 } from "lucide-react";
+import { Chatter } from "@/components/chatter/Chatter";
 type Props = {
   initialData: any;
   accounts: any[];
@@ -202,7 +203,7 @@ export function JournalForm({
             </label>{" "}
             <input {...register("name", {
             required: true
-          })} autoComplete="off" className="text-3xl font-bold text-slate-900 border-b border-slate-300 focus:border-[#017E84] outline-none w-full bg-transparent placeholder-slate-300 pb-1" placeholder="مثال: فودافون كاش" />{" "}
+          })} autoComplete="new-password" className="text-3xl font-bold text-slate-900 border-b border-slate-300 focus:border-[#017E84] outline-none w-full bg-transparent placeholder-slate-300 pb-1" placeholder="مثال: فودافون كاش" />{" "}
           </div>{" "}
         </div>{" "}
         <div className="grid grid-cols-2 gap-12 mb-8">
@@ -338,7 +339,7 @@ export function JournalForm({
                     </label>{" "}
                     <input {...register("code", {
                       required: true
-                    })} autoComplete="off" className="w-2/3 text-sm bg-transparent outline-none uppercase font-mono" placeholder="مثال: INV" />{" "}
+                    })} autoComplete="new-password" className="w-2/3 text-sm bg-transparent outline-none uppercase font-mono" placeholder="مثال: INV" />{" "}
                   </div>{" "}
               </div>{" "}
               <div className="space-y-4 mt-8">
@@ -348,7 +349,7 @@ export function JournalForm({
                     <label className="text-sm font-medium text-slate-700">
                       تسلسل دفع مخصص
                     </label>{" "}
-                    <input type="checkbox" {...register("dedicatedPaymentSequence")} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84]" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" {...register("dedicatedPaymentSequence")} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84]" />{" "}
                   </div>}{" "}
 
               </div>{" "}
@@ -379,7 +380,7 @@ export function JournalForm({
                         {" "}
                         <td className="py-3 px-2">
                           {" "}
-                          <input type="checkbox" checked={inboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, false)} className="rounded border-slate-300 text-[#017E84]" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={inboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, false)} className="rounded border-slate-300 text-[#017E84]" />{" "}
                         </td>{" "}
                         <td className="py-3 font-medium text-slate-700">
                           {method.name}
@@ -422,7 +423,7 @@ export function JournalForm({
                         {" "}
                         <td className="py-3 px-2">
                           {" "}
-                          <input type="checkbox" checked={outboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, true)} className="rounded border-slate-300 text-[#017E84]" />{" "}
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={outboundMethods.includes(method.id)} onChange={() => togglePaymentMethod(method.id, true)} className="rounded border-slate-300 text-[#017E84]" />{" "}
                         </td>{" "}
                         <td className="py-3 font-medium text-slate-700">
                           {method.name}
@@ -445,6 +446,7 @@ export function JournalForm({
               لا توجد إعدادات متقدمة مخصصة لهذا الدفتر في الوقت الحالي.{" "}
             </div>}{" "}
         </div>{" "}
+        {initialData?.id && <div className="mt-8 pt-8 border-t"><Chatter model="journal" id={initialData.id} /></div>}
       </div>{" "}
     </div>;
 }

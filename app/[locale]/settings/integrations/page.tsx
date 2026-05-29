@@ -157,7 +157,7 @@ export default function IntegrationsPage() {
                             {field.label}
                           </span>{" "}
                         </div>{" "}
-                        <input type="checkbox" defaultChecked={field.enabled} className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" defaultChecked={field.enabled} className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />{" "}
                       </label>)}{" "}
                 </div>)}{" "}
             </div>{" "}
@@ -223,7 +223,7 @@ export default function IntegrationsPage() {
                 <label className="text-sm font-bold text-slate-700 block mb-1">
                   API Token
                 </label>{" "}
-                <input type="password" placeholder="••••••••••••••••••••••••" className="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-left" dir="ltr" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="password" placeholder="••••••••••••••••••••••••" className="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-left" dir="ltr" />{" "}
               </div>{" "}
             </div>{" "}
             <button onClick={() => alert("تم حفظ الإعدادات وسيتم إرسال رسالة تجريبية لمدير النظام.")} className="bg-[#25D366] text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors w-full shadow-md ">
@@ -265,7 +265,7 @@ export default function IntegrationsPage() {
                 <label className="text-sm font-bold text-slate-700 block mb-1">
                   Merchant API Key
                 </label>{" "}
-                <input type="password" placeholder="••••••••••••••••••••••••" className="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-left" dir="ltr" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="password" placeholder="••••••••••••••••••••••••" className="w-full bg-slate-50 border border-slate-200 rounded px-3 py-2 text-left" dir="ltr" />{" "}
               </div>{" "}
             </div>{" "}
             <button onClick={() => alert("تم حفظ إعدادات بوابات الدفع بنجاح.")} className="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors w-full shadow-md ">

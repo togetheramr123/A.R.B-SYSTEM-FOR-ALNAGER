@@ -101,6 +101,9 @@ model User {
 
   // --- المفكرة الشخصية ---
   stickyNotes UserNote[]
+
+  @@index([managerId])
+  @@index([companyId])
 }
 
 model UserPerformanceLog {
@@ -114,6 +117,9 @@ model UserPerformanceLog {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([userId])
+  @@index([companyId])
 }
 
 // --- Access Rights ---
@@ -153,6 +159,8 @@ model IrModelAccess {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([groupId])
 }
 
 model Company {
@@ -231,6 +239,8 @@ model Company {
   accountStatementRequests  AccountStatementRequest[]
   InventoryAdjustmentRecord InventoryAdjustmentRecord[]
   Ticket                    Ticket[]
+
+  @@index([taxId])
 }
 
 model Currency {
@@ -259,6 +269,12 @@ model PriceList {
   partner   Partner?  @relation("PricelistPartner", fields: [partnerId], references: [id])
   partners  Partner[] @relation("PriceListPartners") // Multi-partner support
 
+  // === نسب الخصم على مستوى القائمة ===
+  discount1 Decimal @default(0) // خصم 1 %
+  discount2 Decimal @default(0) // خصم 2 %
+  discount3 Decimal @default(0) // خصم 3 %
+  addition  Decimal @default(0) // إضافة (علاوة) %
+
   company Company         @relation(fields: [companyId], references: [id])
   items   PriceListItem[]
 
@@ -270,6 +286,12 @@ model PriceList {
 
   categoryId String?
   category   ProductCategory? @relation("PriceListCategory", fields: [categoryId], references: [id])
+
+  messages Message[]
+
+  @@index([currencyId])
+  @@index([companyId])
+  @@index([categoryId])
 }
 
 model PriceListItem {
@@ -299,6 +321,10 @@ model PriceListItem {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([priceListId])
+  @@index([productId])
+  @@index([categoryId])
 }
 
 // --- Attachments & Media ---
@@ -326,6 +352,14 @@ model Attachment {
   message         Message?       @relation(fields: [messageId], references: [id])
   paymentId       String?
   payment         Payment?       @relation("AttachmentPayment", fields: [paymentId], references: [id])
+
+  @@index([productId])
+  @@index([purchaseOrderId])
+  @@index([saleOrderId])
+  @@index([stockMoveId])
+  @@index([invoiceId])
+  @@index([messageId])
+  @@index([paymentId])
 }
 
 // --- Integration & API ---
@@ -340,6 +374,8 @@ model ApiKey {
   companyId String
   company   Company   @relation(fields: [companyId], references: [id])
   createdAt DateTime  @default(now())
+
+  @@index([companyId])
 }
 
 model Webhook {
@@ -367,13 +403,16 @@ model Catalog {
   companyId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 // --- Partners ---
 
 model Partner {
-  id   String @id @default(uuid())
-  name String
+  id     String  @id @default(uuid())
+  name   String
+  active Boolean @default(true)
 
   // Identity & Contact
   type          String         @default("person") // company, person, private, invoice, delivery, other
@@ -456,6 +495,16 @@ model Partner {
   erpUser                  User?                     @relation("UserPartner")
   accountStatementRequests AccountStatementRequest[]
   Ticket                   Ticket[]
+
+  @@index([parentId])
+  @@index([propertyPaymentTermId])
+  @@index([propertySupplierPaymentTermId])
+  @@index([propertyPriceListId])
+  @@index([propertyAccountReceivableId])
+  @@index([propertyAccountPayableId])
+  @@index([companyId])
+  @@index([createdById])
+  @@index([updatedById])
 }
 
 model PartnerTag {
@@ -471,6 +520,8 @@ model ResPartnerBank {
   bankName  String?
   partnerId String
   partner   Partner @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId])
 }
 
 // --- Accounting Module ---
@@ -523,7 +574,10 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  messages Message[]
+
   @@unique([code, companyId])
+  @@index([companyId])
 }
 
 model PaymentMethod {
@@ -578,7 +632,14 @@ model Journal {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  messages Message[]
+
   @@unique([code, companyId])
+  @@index([companyId])
+  @@index([defaultAccountId])
+  @@index([suspenseAccountId])
+  @@index([profitAccountId])
+  @@index([lossAccountId])
 }
 
 model JournalEntry {
@@ -612,6 +673,11 @@ model JournalEntry {
 
   createdById String?
   createdBy   User?   @relation("JournalEntryCreator", fields: [createdById], references: [id])
+
+  @@index([journalId])
+  @@index([partnerId])
+  @@index([companyId])
+  @@index([createdById])
 }
 
 model JournalItem {
@@ -641,6 +707,14 @@ model JournalItem {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([entryId])
+  @@index([accountId])
+  @@index([productId])
+  @@index([analyticAccountId])
+  @@index([partnerId])
+  @@index([bankStatementLineId])
+  @@index([companyId])
 }
 
 model Invoice {
@@ -709,6 +783,12 @@ model Invoice {
   @@index([partnerId, state])
   @@index([companyId, state])
   @@index([dateInvoice])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([journalId])
+  @@index([fiscalPositionId])
+  @@index([saleOrderId])
+  @@index([purchaseOrderId])
 }
 
 // === رسائل التحصيل بين المستخدمين ===
@@ -732,6 +812,9 @@ model CollectionMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([invoiceId])
+  @@index([companyId])
 }
 
 model InvoiceLine {
@@ -766,6 +849,11 @@ model InvoiceLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([invoiceId])
+  @@index([productId])
+  @@index([accountId])
+  @@index([assetCategoryId])
 }
 
 // --- Inventory Module ---
@@ -804,6 +892,19 @@ model ProductCategory {
   odooId           Int?               @unique
   companyId        String?
   StockPutawayRule StockPutawayRule[]
+
+  messages Message[]
+
+  @@index([parentId])
+  @@index([propertyAccountIncomeId])
+  @@index([propertyAccountExpenseId])
+  @@index([propertyAccountScrapId])
+  @@index([propertyStockAccountId])
+  @@index([propertyStockAccountInputId])
+  @@index([propertyStockAccountOutputId])
+  @@index([propertyStockJournalId])
+  @@index([propertyAccountPriceDifferenceId])
+  @@index([companyId])
 }
 
 model UomCategory {
@@ -821,6 +922,8 @@ model Uom {
   ratio      Decimal     @default(1.0)
   rounding   Decimal     @default(0.01)
   active     Boolean     @default(true)
+
+  @@index([categoryId])
 }
 
 model Attribute {
@@ -840,6 +943,8 @@ model AttributeValue {
 
   productLines ProductAttributeLine[]
   variants     Product[]              @relation("VariantValues")
+
+  @@index([attributeId])
 }
 
 model ProductAttributeLine {
@@ -850,6 +955,9 @@ model ProductAttributeLine {
   attribute   Attribute @relation(fields: [attributeId], references: [id])
 
   values AttributeValue[]
+
+  @@index([productId])
+  @@index([attributeId])
 }
 
 model ProductTag {
@@ -982,6 +1090,14 @@ model Product {
   // --- Portal ---
   portalFavorites         PortalFavorite[]
   InventoryAdjustmentLine InventoryAdjustmentLine[]
+
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([propertyAccountIncomeId])
+  @@index([propertyAccountExpenseId])
+  @@index([categoryId])
+  @@index([companyId])
+  @@index([templateId])
 }
 
 model ProductSupplierInfo {
@@ -1004,6 +1120,11 @@ model ProductSupplierInfo {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([partnerId])
+  @@index([currencyId])
+  @@index([companyId])
 }
 
 model Warehouse {
@@ -1016,6 +1137,10 @@ model Warehouse {
   locations                 Location[]
   saleOrders                SaleOrder[]
   InventoryAdjustmentRecord InventoryAdjustmentRecord[]
+
+  messages Message[]
+
+  @@index([companyId])
 }
 
 model Location {
@@ -1048,6 +1173,10 @@ model Location {
   defaultTypeSource       OperationType[]           @relation("DefaultSource")
   defaultTypeDest         OperationType[]           @relation("DefaultDest")
   InventoryAdjustmentLine InventoryAdjustmentLine[]
+
+  @@index([warehouseId])
+  @@index([parentId])
+  @@index([companyId])
 }
 
 model StockQuant {
@@ -1068,6 +1197,10 @@ model StockQuant {
   version Int @default(0)
 
   @@unique([productId, locationId, lotId])
+  @@index([productId])
+  @@index([locationId])
+  @@index([lotId])
+  @@index([companyId])
 }
 
 model StockLot {
@@ -1089,6 +1222,8 @@ model StockLot {
   updatedAt DateTime @updatedAt
 
   @@unique([name, productId])
+  @@index([productId])
+  @@index([companyId])
 }
 
 model StockPicking {
@@ -1136,6 +1271,16 @@ model StockPicking {
   messages        Message[]
   operationTypeId String?
   operationType   OperationType? @relation(fields: [operationTypeId], references: [id])
+
+  @@index([partnerId])
+  @@index([locationId])
+  @@index([locationDestId])
+  @@index([saleOrderId])
+  @@index([purchaseOrderId])
+  @@index([backorderId])
+  @@index([entrepriseId])
+  @@index([companyId])
+  @@index([operationTypeId])
 }
 
 model StockMove {
@@ -1183,6 +1328,16 @@ model StockMove {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([productId])
+  @@index([sourceLocationId])
+  @@index([destLocationId])
+  @@index([lotId])
+  @@index([pickingId])
+  @@index([purchaseLineId])
+  @@index([saleLineId])
+  @@index([journalEntryId])
+  @@index([companyId])
 }
 
 // --- Purchases Module ---
@@ -1232,6 +1387,15 @@ model PurchaseOrder {
   updatedAt DateTime @updatedAt
 
   odooId Int? @unique
+
+  @@index([partnerId])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([entrepriseId])
+  @@index([fiscalPositionId])
+  @@index([companyId])
+  @@index([priceListId])
+  @@index([paymentTermId])
 }
 
 model PurchaseOrderLine {
@@ -1268,6 +1432,10 @@ model PurchaseOrderLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+  @@index([accountId])
 }
 
 // --- Entreprise / Branch System ---
@@ -1283,6 +1451,8 @@ model Entreprise {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 // --- Sales Team ---
@@ -1295,6 +1465,8 @@ model SalesTeam {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 // --- Fiscal Position ---
@@ -1309,6 +1481,8 @@ model FiscalPosition {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([companyId])
 }
 
 // --- Sales Module ---
@@ -1390,6 +1564,15 @@ model SaleOrder {
   @@index([dateOrder])
   @@index([companyId, status])
   @@index([partnerId])
+  @@index([createdById])
+  @@index([updatedById])
+  @@index([warehouseId])
+  @@index([entrepriseId])
+  @@index([salesTeamId])
+  @@index([fiscalPositionId])
+  @@index([userId])
+  @@index([paymentTermId])
+  @@index([priceListId])
 }
 
 model SaleOrderLine {
@@ -1423,6 +1606,9 @@ model SaleOrderLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model SaleOrderOption {
@@ -1436,6 +1622,9 @@ model SaleOrderOption {
   priceUnit Decimal
   uom       String?
   discount  Decimal   @default(0.0)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model PaymentTerm {
@@ -1448,6 +1637,8 @@ model PaymentTerm {
   saleOrders     SaleOrder[]
   purchaseOrders PurchaseOrder[]
   lines          PaymentTermLine[]
+
+  @@index([companyId])
 }
 
 model PaymentTermLine {
@@ -1459,6 +1650,8 @@ model PaymentTermLine {
   days          Int         @default(0)
   dayOfMonth    Int? // optional: specific day of month
   sequence      Int         @default(10)
+
+  @@index([paymentTermId])
 }
 
 model Message {
@@ -1492,12 +1685,48 @@ model Message {
   productId String?
   product   Product? @relation(fields: [productId], references: [id])
 
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  assetId String?
+  asset   Asset?  @relation(fields: [assetId], references: [id])
+
+  warehouseId String?
+  warehouse   Warehouse? @relation(fields: [warehouseId], references: [id])
+
+  stockScrapId String?
+  stockScrap   StockScrap? @relation(fields: [stockScrapId], references: [id])
+
+  bankStatementId String?
+  bankStatement   BankStatement? @relation(fields: [bankStatementId], references: [id])
+
+  journalId String?
+  journal   Journal? @relation(fields: [journalId], references: [id])
+
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+
+  priceListId String?
+  priceList   PriceList? @relation(fields: [priceListId], references: [id])
+
+  productCategoryId String?
+  productCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
+
   attachments Attachment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   trackingValues TrackingValue[]
+
+  @@index([authorId])
+  @@index([partnerId])
+  @@index([purchaseOrderId])
+  @@index([saleOrderId])
+  @@index([invoiceId])
+  @@index([stockPickingId])
+  @@index([paymentId])
+  @@index([productId])
 }
 
 model TrackingValue {
@@ -1512,6 +1741,8 @@ model TrackingValue {
   newValue String?
 
   createdAt DateTime @default(now())
+
+  @@index([messageId])
 }
 
 model Payment {
@@ -1548,6 +1779,12 @@ model Payment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([partnerId])
+  @@index([journalId])
+  @@index([destinationAccountId])
+  @@index([companyId])
+  @@index([createdById])
 }
 
 // --- Fixed Assets ---
@@ -1576,6 +1813,12 @@ model AssetCategory {
 
   companyId String?
   company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([accountAssetId])
+  @@index([accountDeprId])
+  @@index([accountExpenseId])
+  @@index([journalId])
+  @@index([companyId])
 }
 
 model Asset {
@@ -1602,6 +1845,11 @@ model Asset {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([categoryId])
+  @@index([companyId])
 }
 
 model AssetLine {
@@ -1618,6 +1866,9 @@ model AssetLine {
   move   JournalEntry? @relation(fields: [moveId], references: [id])
 
   posted Boolean @default(false)
+
+  @@index([assetId])
+  @@index([moveId])
 }
 
 // --- HR & Payroll ---
@@ -1631,6 +1882,8 @@ model Department {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([managerId])
 }
 
 model Employee {
@@ -1650,6 +1903,11 @@ model Employee {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([departmentId])
+  @@index([userId])
 }
 
 model ContractTemplate {
@@ -1663,6 +1921,8 @@ model ContractTemplate {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model ContractTemplateClause {
@@ -1672,6 +1932,8 @@ model ContractTemplateClause {
   title      String?
   content    String
   sequence   Int              @default(10)
+
+  @@index([templateId])
 }
 
 model Contract {
@@ -1692,6 +1954,9 @@ model Contract {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
+  @@index([templateId])
 }
 
 model ContractClause {
@@ -1701,6 +1966,8 @@ model ContractClause {
   title      String?
   content    String
   sequence   Int      @default(10)
+
+  @@index([contractId])
 }
 
 model Payslip {
@@ -1724,6 +1991,8 @@ model Payslip {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([employeeId])
 }
 
 model StockScrap {
@@ -1752,6 +2021,14 @@ model StockScrap {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([productId])
+  @@index([uomId])
+  @@index([sourceLocationId])
+  @@index([scrapLocationId])
+  @@index([companyId])
 }
 
 // --- Budget Management ---
@@ -1779,6 +2056,10 @@ model StockValuationLayer {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([productId])
+  @@index([stockMoveId])
+  @@index([companyId])
 }
 
 // --- Budget Management ---
@@ -1801,6 +2082,9 @@ model Budget {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([companyId])
 }
 
 model BudgetLine {
@@ -1827,6 +2111,11 @@ model BudgetLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([budgetId])
+  @@index([analyticAccountId])
+  @@index([generalAccountId])
+  @@index([companyId])
 }
 
 model AnalyticAccount {
@@ -1844,6 +2133,9 @@ model AnalyticAccount {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+  @@index([companyId])
 }
 
 // --- Bank Reconciliation ---
@@ -1866,6 +2158,11 @@ model BankStatement {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([journalId])
+  @@index([companyId])
 }
 
 model BankStatementLine {
@@ -1888,6 +2185,10 @@ model BankStatementLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([statementId])
+  @@index([partnerId])
+  @@index([companyId])
 }
 
 // --- Bill of Materials & Manufacturing ---
@@ -1903,6 +2204,9 @@ model BillOfMaterial {
   companyId String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([productId])
+  @@index([companyId])
 }
 
 model BOMLine {
@@ -1915,6 +2219,9 @@ model BOMLine {
 
   quantity Decimal
   uom      String?
+
+  @@index([bomId])
+  @@index([componentId])
 }
 
 // --- Approvals & Notifications System ---
@@ -1940,6 +2247,10 @@ model ApprovalRequest {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([requesterId])
+  @@index([approverId])
+  @@index([companyId])
 }
 
 model RecordShareLink {
@@ -1960,6 +2271,11 @@ model RecordShareLink {
   expiresAt DateTime // When this link expires (e.g., 24 hours from creation)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([resourceId])
+  @@index([targetUserId])
+  @@index([grantedById])
+  @@index([companyId])
 }
 
 model Notification {
@@ -1985,6 +2301,11 @@ model Notification {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([senderId])
+  @@index([resourceId])
+  @@index([companyId])
 }
 
 // --- Advanced Inventory Configuration ---
@@ -2003,6 +2324,12 @@ model StockPutawayRule {
   companyId     String?
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+
+  @@index([categoryId])
+  @@index([productId])
+  @@index([inLocationId])
+  @@index([outLocationId])
+  @@index([companyId])
 }
 
 model StockReplenishment {
@@ -2018,6 +2345,10 @@ model StockReplenishment {
   companyId   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([productId])
+  @@index([locationId])
+  @@index([companyId])
 }
 
 model StockRoute {
@@ -2029,6 +2360,8 @@ model StockRoute {
   companyId String?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+
+  @@index([companyId])
 }
 
 model StockRule {
@@ -2047,6 +2380,12 @@ model StockRule {
   companyId     String?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  @@index([routeId])
+  @@index([sourceLocId])
+  @@index([destLocId])
+  @@index([pickingTypeId])
+  @@index([companyId])
 }
 
 model OperationType {
@@ -2065,6 +2404,10 @@ model OperationType {
   companyId       String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+
+  @@index([defaultSourceId])
+  @@index([defaultDestId])
+  @@index([companyId])
 }
 
 model DeliveryMethod {
@@ -2076,6 +2419,8 @@ model DeliveryMethod {
   companyId  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 // --- Tax Engine (Odoo-style) ---
@@ -2111,6 +2456,8 @@ model Tax {
   purchaseOrderLineTaxes PurchaseOrderLineTax[]
   invoiceLineTaxes       InvoiceLineTax[]
   productTaxes           ProductTax[]
+
+  @@index([companyId])
 }
 
 // Many-to-many junction tables for tax relationships
@@ -2122,6 +2469,8 @@ model SaleOrderLineTax {
   tax    Tax           @relation(fields: [taxId], references: [id])
 
   @@unique([lineId, taxId])
+  @@index([lineId])
+  @@index([taxId])
 }
 
 model PurchaseOrderLineTax {
@@ -2132,6 +2481,8 @@ model PurchaseOrderLineTax {
   tax    Tax               @relation(fields: [taxId], references: [id])
 
   @@unique([lineId, taxId])
+  @@index([lineId])
+  @@index([taxId])
 }
 
 model InvoiceLineTax {
@@ -2142,6 +2493,8 @@ model InvoiceLineTax {
   tax    Tax         @relation(fields: [taxId], references: [id])
 
   @@unique([lineId, taxId])
+  @@index([lineId])
+  @@index([taxId])
 }
 
 model ProductTax {
@@ -2153,6 +2506,8 @@ model ProductTax {
   type      String  @default("sale") // sale or purchase
 
   @@unique([productId, taxId, type])
+  @@index([productId])
+  @@index([taxId])
 }
 
 // --- Centralized Sequence System ---
@@ -2170,6 +2525,8 @@ model IrSequence {
   companyId   String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([companyId])
 }
 
 // --- Activity Notifications (DB-Backed) ---
@@ -2211,6 +2568,8 @@ model PurchaseAgreement {
   branch    String? // الفرع
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([partnerId])
 }
 
 model SaleAgreement {
@@ -2228,6 +2587,8 @@ model SaleAgreement {
   branch    String? // الفرع
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([partnerId])
 }
 
 // === نظام الخزائن (Cash Register System) ===
@@ -2253,6 +2614,9 @@ model CashRegister {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([accountId])
+  @@index([companyId])
 }
 
 model CashTransaction {
@@ -2283,6 +2647,11 @@ model CashTransaction {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([registerId])
+  @@index([settlementId])
+  @@index([journalEntryId])
+  @@index([companyId])
 }
 
 model CashSettlement {
@@ -2319,6 +2688,12 @@ model CashSettlement {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([registerId])
+  @@index([userId])
+  @@index([performedById])
+  @@index([journalEntryId])
+  @@index([companyId])
 }
 
 // --- متابعة مديونية العملاء (Debt Follow-up) ---
@@ -2345,6 +2720,10 @@ model DebtFollowUp {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([partnerId])
+  @@index([assignedUserId])
+  @@index([companyId])
 }
 
 model DebtFollowUpHistory {
@@ -2361,6 +2740,9 @@ model DebtFollowUpHistory {
   newDate      DateTime?
 
   createdAt DateTime @default(now())
+
+  @@index([followUpId])
+  @@index([userId])
 }
 
 // === سجل المراجعة المحاسبي (Audit Log) ===
@@ -2430,6 +2812,7 @@ model Cheque {
   @@index([dueDate])
   @@index([partnerId])
   @@index([companyId, status])
+  @@index([createdById])
 }
 
 // === إقفال السنة المالية ===
@@ -2456,6 +2839,7 @@ model FiscalYearClosing {
   updatedAt DateTime @updatedAt
 
   @@unique([fiscalYear, companyId])
+  @@index([companyId])
 }
 
 // === الإيرادات/المصروفات المؤجلة ===
@@ -2487,6 +2871,9 @@ model DeferredEntry {
 
   @@index([status])
   @@index([type])
+  @@index([journalId])
+  @@index([companyId])
+  @@index([createdById])
 }
 
 model DeferredEntryLine {
@@ -2502,6 +2889,8 @@ model DeferredEntryLine {
   status String @default("pending") // pending, posted, skipped
 
   createdAt DateTime @default(now())
+
+  @@index([deferredEntryId])
 }
 
 // ============================================================
@@ -2533,6 +2922,8 @@ model PortalUser {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model PortalFavorite {
@@ -2544,6 +2935,8 @@ model PortalFavorite {
   createdAt    DateTime   @default(now())
 
   @@unique([portalUserId, productId])
+  @@index([portalUserId])
+  @@index([productId])
 }
 
 model PortalBanner {
@@ -2559,6 +2952,8 @@ model PortalBanner {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model AccountStatementRequest {
@@ -2578,6 +2973,9 @@ model AccountStatementRequest {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([partnerId])
+  @@index([companyId])
 }
 
 model CompanyPaymentMethod {
@@ -2594,6 +2992,8 @@ model CompanyPaymentMethod {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 model InventoryAdjustmentRecord {
@@ -2618,6 +3018,10 @@ model InventoryAdjustmentRecord {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([warehouseId])
+  @@index([userId])
+  @@index([companyId])
 }
 
 model InventoryAdjustmentLine {
@@ -2639,6 +3043,10 @@ model InventoryAdjustmentLine {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([recordId])
+  @@index([productId])
+  @@index([locationId])
 }
 
 // --- CRM / Helpdesk (Ticketing System) ---
@@ -2670,6 +3078,11 @@ model Ticket {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([partnerId])
+  @@index([assigneeId])
+  @@index([creatorId])
+  @@index([companyId])
 }
 
 model TicketMessage {
@@ -2686,6 +3099,9 @@ model TicketMessage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([ticketId])
+  @@index([authorId])
 }
 
 // --- Chat & Messaging ---
@@ -2701,6 +3117,8 @@ model ChatRoom {
 
   participants ChatRoomParticipant[]
   messages     ChatMessage[]
+
+  @@index([companyId])
 }
 
 model ChatRoomParticipant {
@@ -2713,6 +3131,8 @@ model ChatRoomParticipant {
   joinedAt DateTime @default(now())
 
   @@unique([roomId, userId])
+  @@index([roomId])
+  @@index([userId])
 }
 
 model ChatMessage {
@@ -2738,6 +3158,10 @@ model ChatMessage {
   company   Company? @relation(fields: [companyId], references: [id])
 
   reactions ChatMessageReaction[]
+
+  @@index([senderId])
+  @@index([roomId])
+  @@index([companyId])
 }
 
 // --- OCR Mapping Rules ---
@@ -2760,6 +3184,8 @@ model ChatMessageReaction {
   createdAt DateTime    @default(now())
 
   @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@index([userId])
 }
 
 // --- Dynamic Notification Rules Engine ---
@@ -2783,18 +3209,18 @@ model NotificationRule {
 
 // === المفكرة الشخصية (Sticky Notes) ===
 model UserNote {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  content   String   // نص الملاحظة
-  sortOrder Int      @default(0) // الترتيب
-  isDone    Boolean  @default(false) // هل تم (خط بالرصاص)؟
-  color     String   @default("yellow") // لون الملاحظة
+  content   String // نص الملاحظة
+  sortOrder Int     @default(0) // الترتيب
+  isDone    Boolean @default(false) // هل تم (خط بالرصاص)؟
+  color     String  @default("yellow") // لون الملاحظة
 
   // --- التذكير ---
-  reminderAt     DateTime? // موعد التذكير
-  reminderSent   Boolean   @default(false) // هل تم إرسال التذكير؟
+  reminderAt   DateTime? // موعد التذكير
+  reminderSent Boolean   @default(false) // هل تم إرسال التذكير؟
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

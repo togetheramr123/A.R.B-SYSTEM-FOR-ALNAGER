@@ -152,7 +152,7 @@ export function AdjustmentDetailClient({
                   <td className="px-4 py-3 font-bold text-slate-700" dir="ltr">{Number(line.bookQty).toFixed(2)}</td>
                   <td className="px-4 py-3">
                     <div className="relative flex items-center">
-                      <input type="number" disabled={!canEdit} className={cn("w-full border rounded-sm px-2 py-1.5 focus:outline-none focus:ring-1 text-left font-bold transition-colors", isChanged ? "border-fuchsia-400 focus:border-fuchsia-500 focus:ring-fuchsia-500 text-fuchsia-700 bg-white" : "border-slate-300 focus:border-[#017E84] focus:ring-[#017E84]", !canEdit && "bg-slate-100 cursor-not-allowed opacity-80")} dir="ltr" value={line.actualQty} onChange={e => handleActualQtyChange(line.id, e.target.value)} />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" disabled={!canEdit} className={cn("w-full border rounded-sm px-2 py-1.5 focus:outline-none focus:ring-1 text-left font-bold transition-colors", isChanged ? "border-fuchsia-400 focus:border-fuchsia-500 focus:ring-fuchsia-500 text-fuchsia-700 bg-white" : "border-slate-300 focus:border-[#017E84] focus:ring-[#017E84]", !canEdit && "bg-slate-100 cursor-not-allowed opacity-80")} dir="ltr" value={line.actualQty} onChange={e => handleActualQtyChange(line.id, e.target.value)} />
                       {loadingLines[line.id] && <Loader2 className="w-3 h-3 animate-spin text-slate-400 absolute left-2" />}
                     </div>
                   </td>

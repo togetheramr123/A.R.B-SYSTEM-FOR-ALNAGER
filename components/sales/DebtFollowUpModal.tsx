@@ -117,7 +117,7 @@ export function DebtFollowUpModal({
             <label className="text-sm font-medium text-slate-700 text-right">
               تاريخ المتابعة
             </label>
-            <input
+            <input autoComplete="off" autoCorrect="off" spellCheck={false}
               type="datetime-local"
               required
               value={followUpDate}

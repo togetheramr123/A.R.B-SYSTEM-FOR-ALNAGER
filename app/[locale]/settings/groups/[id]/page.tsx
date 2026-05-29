@@ -38,6 +38,7 @@ const MODULE_SECTIONS = [
       { key: "cust_view", label: "رؤية قائمة العملاء", desc: "الاطلاع على بيانات العملاء" },
       { key: "cust_create", label: "إنشاء عميل جديد", desc: "إضافة عميل جديد للنظام" },
       { key: "cust_edit", label: "تعديل بيانات العميل", desc: "تعديل الاسم والهاتف والعنوان" },
+      { key: "cust_view_details", label: "الدخول على صفحة بيانات العميل", desc: "النقر على اسم العميل للانتقال لصفحته التفصيلية" },
       { key: "cust_commercial", label: "التعامل مع العملاء التجاريين (آجل)", desc: "الوصول لعملاء الحساب التجاري" },
       { key: "cust_cash", label: "التعامل مع العملاء النقديين (كاش)", desc: "الوصول لعملاء الدفع الفوري" },
       { key: "cust_view_balance", label: "رؤية رصيد العميل", desc: "عرض المبالغ المستحقة والمدفوعة" },
@@ -73,6 +74,7 @@ const MODULE_SECTIONS = [
       { key: "inv_negative", label: "السماح بصرف بالسالب", desc: "البيع حتى لو الكمية المتوفرة صفر" },
       { key: "inv_view_cost", label: "رؤية تكلفة المنتج", desc: "عرض سعر التكلفة في شاشة المنتج" },
       { key: "inv_scrap", label: "إنشاء إتلاف", desc: "إتلاف كميات تالفة من المخزون" },
+      { key: "inv_edit_uom_factor", label: "تعديل متغير الوحدة الثانوية", desc: "السماح بتغيير عدد القطع في الوحدة الثانوية (مثلاً كرتونة 100 → 90) مباشرة من سطر الأمر" },
     ]
   },
   {
@@ -128,6 +130,19 @@ const MODULE_SECTIONS = [
       { key: "rep_inventory", label: "تقارير المخزون", desc: "رؤية تقارير حركة المخزون والجرد" },
       { key: "rep_financial", label: "التقارير المالية", desc: "ميزان المراجعة وقائمة الدخل" },
       { key: "rep_partner_ledger", label: "كشف حساب الشركاء", desc: "الأستاذ المساعد للعملاء والموردين" },
+    ]
+  },
+  {
+    id: "pricelists",
+    title: "قوائم الأسعار والاتفاقيات",
+    icon: BarChart3,
+    color: "cyan",
+    permissions: [
+      { key: "pricelist_view", label: "رؤية قوائم الأسعار", desc: "الاطلاع على اتفاقيات وقوائم الأسعار" },
+      { key: "pricelist_create", label: "إنشاء قائمة أسعار جديدة", desc: "إضافة اتفاقيات أسعار جديدة" },
+      { key: "pricelist_edit", label: "تعديل قوائم الأسعار", desc: "تعديل الأسعار والخصومات والنطاق" },
+      { key: "pricelist_delete", label: "حذف قوائم الأسعار", desc: "حذف اتفاقيات الأسعار" },
+      { key: "pricelist_apply_discount", label: "تطبيق خصومات القائمة", desc: "استخدام خصومات القائمة في أوامر البيع والشراء" },
     ]
   },
   {
@@ -316,7 +331,7 @@ export default function GroupDetailsPage() {
                   <label className="text-sm font-bold text-slate-700">
                     اسم الدور
                   </label>{" "}
-                  <input type="text" value={group?.name} onChange={e => { setGroup({
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={group?.name} onChange={e => { setGroup({
                   ...group,
                   name: e.target.value
                 }); setIsDirty(true); }} className="w-full border-b border-slate-300 focus:border-sky-600 outline-none py-1.5 text-slate-900 font-medium bg-transparent transition-colors" placeholder="مثال: مندوب مبيعات" />{" "}
@@ -388,7 +403,7 @@ export default function GroupDetailsPage() {
                           key={perm.key}
                           className="flex items-center gap-3 px-4 py-2.5 cursor-pointer hover:bg-slate-50 transition-colors"
                         >
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="checkbox"
                             checked={permissions[perm.key] || false}
                             onChange={() => togglePermission(perm.key)}

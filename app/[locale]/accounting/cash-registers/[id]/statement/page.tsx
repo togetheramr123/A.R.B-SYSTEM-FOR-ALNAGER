@@ -53,18 +53,18 @@ export default function CashRegisterStatementPage() {
           <label className="block text-xs font-medium text-gray-600 mb-1">
             من تاريخ
           </label>{" "}
-          <input type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={fromDate} onChange={e => setFromDate(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}
         </div>{" "}
         <div>
           {" "}
           <label className="block text-xs font-medium text-gray-600 mb-1">
             إلى تاريخ
           </label>{" "}
-          <input type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={toDate} onChange={e => setToDate(e.target.value)} className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}
         </div>{" "}
         <label className="flex items-center gap-2 cursor-pointer pb-2">
           {" "}
-          <input type="checkbox" checked={includeOpening} onChange={e => setIncludeOpening(e.target.checked)} className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={includeOpening} onChange={e => setIncludeOpening(e.target.checked)} className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
           <span className="text-sm text-gray-700">شمول الرصيد السابق</span>{" "}
         </label>{" "}
         <button onClick={loadStatement} className="bg-[#017E84] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#01686c] transition-colors">

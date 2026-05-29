@@ -74,32 +74,32 @@ export function VendorBillForm() {
     minWidth: "200px",
     renderCell: (field, index, register) => <div className="flex flex-col gap-1">
           {" "}
-          <input {...register(`lines.${index}.label`)} // Just use label for now to simulate the "rubber gasket"
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.label`)} // Just use label for now to simulate the "rubber gasket"
       className="w-full p-1 font-bold bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm" placeholder="اختر منتج..." />{" "}
-          <input type="hidden" {...register(`lines.${index}.type`)} />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.type`)} />{" "}
         </div>
   }, {
     id: "label",
     label: "بطاقة عنوان",
     minWidth: "150px",
-    renderCell: (field, index, register) => <input {...register(`lines.${index}.label`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm" placeholder="وصف..." />
+    renderCell: (field, index, register) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.label`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm" placeholder="وصف..." />
   }, {
     id: "asset",
     label: "فئة الأصول",
     defaultVisible: false,
     minWidth: "120px",
-    renderCell: (field, index, register) => <input {...register(`lines.${index}.assetCategory`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm" />
+    renderCell: (field, index, register) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.assetCategory`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm" />
   }, {
     id: "account",
     label: "حساب",
     required: true,
     minWidth: "120px",
-    renderCell: (field, index, register) => <input {...register(`lines.${index}.account`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm font-mono text-slate-600" />
+    renderCell: (field, index, register) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.account`)} className="w-full p-1 bg-transparent border-b border-transparent focus:border-indigo-500 outline-none text-sm font-mono text-slate-600" />
   }, {
     id: "qty",
     label: "الكمية",
     width: "80px",
-    renderCell: (field: any, index: number, register: any, control: any) => <input type="number" step="0.01" {...register(`lines.${index}.qty`, {
+    renderCell: (field: any, index: number, register: any, control: any) => <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`lines.${index}.qty`, {
       valueAsNumber: true,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = convertArabicToEnglishNumbers(e.target.value);
@@ -113,7 +113,7 @@ export function VendorBillForm() {
     id: "price",
     label: "السعر",
     width: "100px",
-    renderCell: (field: any, index: number, register: any, control: any) => <input type="number" step="0.01" {...register(`lines.${index}.price`, {
+    renderCell: (field: any, index: number, register: any, control: any) => <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`lines.${index}.price`, {
       valueAsNumber: true,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = convertArabicToEnglishNumbers(e.target.value);
@@ -131,7 +131,7 @@ export function VendorBillForm() {
           {" "}
           <label className="flex items-center gap-2 text-xs cursor-pointer">
             {" "}
-            <input type="checkbox" {...register(`lines.${index}.taxes`)} className="rounded border-slate-300" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" {...register(`lines.${index}.taxes`)} className="rounded border-slate-300" />{" "}
             14%{" "}
           </label>{" "}
         </div>
@@ -281,14 +281,14 @@ export function VendorBillForm() {
                 <label className="text-sm font-bold text-slate-900">
                   المورد
                 </label>{" "}
-                <input {...register("vendor")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 font-bold text-slate-800 bg-transparent" placeholder="مثال: شركة النور" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("vendor")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 font-bold text-slate-800 bg-transparent" placeholder="مثال: شركة النور" />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   الرقم المرجعي
                 </label>{" "}
-                <input {...register("billReference")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("billReference")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
@@ -310,42 +310,42 @@ export function VendorBillForm() {
                 <label className="text-sm font-bold text-slate-900">
                   تاريخ الفاتورة
                 </label>{" "}
-                <input type="date" {...register("billDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("billDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register("billDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("billDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   تاريخ المحاسبة
                 </label>{" "}
-                <input type="date" {...register("accountingDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("accountingDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register("accountingDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("accountingDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   الرقم المرجعي للدفعة
                 </label>{" "}
-                <input {...register("paymentReference")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("paymentReference")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   البنك المستلم
                 </label>{" "}
-                <input {...register("recipientBank")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("recipientBank")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   تاريخ الاستحقاق
                 </label>{" "}
-                <input type="date" {...register("dueDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("dueDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register("dueDate")} className={`w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch("dueDate") ? "text-transparent focus:text-inherit" : ""}`} />{" "}
               </div>{" "}
               <div className="grid grid-cols-[140px_1fr] items-center">
                 {" "}
                 <label className="text-sm font-bold text-slate-900">
                   دفتر اليومية
                 </label>{" "}
-                <input {...register("journal")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("journal")} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />{" "}
               </div>{" "}
             </div>{" "}
           </div>{" "}

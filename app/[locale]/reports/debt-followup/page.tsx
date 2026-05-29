@@ -99,7 +99,7 @@ export default function DebtFollowupReportPage() {
           <div className="relative w-64">
             {" "}
             <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />{" "}
-            <input type="text" placeholder="بحث بعميل أو موظف..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-3 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث بعميل أو موظف..." value={search} onChange={e => setSearch(e.target.value)} className="w-full pl-3 pr-10 py-2 border border-slate-200 rounded-lg text-sm focus:border-indigo-500 outline-none" />{" "}
           </div>{" "}
         </div>{" "}
         <div className="overflow-x-auto">

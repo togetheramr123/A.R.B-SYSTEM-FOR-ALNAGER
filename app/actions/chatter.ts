@@ -4,7 +4,7 @@ import { ensureAccess } from '@/lib/access';
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
-export type ChatterModel = 'product' | 'saleOrder' | 'purchaseOrder' | 'invoice' | 'stockPicking' | 'partner' | 'payment';
+export type ChatterModel = 'product' | 'saleOrder' | 'purchaseOrder' | 'invoice' | 'stockPicking' | 'partner' | 'payment' | 'employee' | 'asset' | 'warehouse' | 'stockScrap' | 'bankStatement' | 'journal' | 'account' | 'priceList' | 'productCategory';
 const getModelField = (model: ChatterModel) => {
   switch (model) {
     case 'product':
@@ -21,6 +21,24 @@ const getModelField = (model: ChatterModel) => {
       return 'partnerId';
     case 'payment':
       return 'paymentId';
+    case 'employee':
+      return 'employeeId';
+    case 'asset':
+      return 'assetId';
+    case 'warehouse':
+      return 'warehouseId';
+    case 'stockScrap':
+      return 'stockScrapId';
+    case 'bankStatement':
+      return 'bankStatementId';
+    case 'journal':
+      return 'journalId';
+    case 'account':
+      return 'accountId';
+    case 'priceList':
+      return 'priceListId';
+    case 'productCategory':
+      return 'productCategoryId';
     default:
       throw new Error("Unsupported chatter model");
   }

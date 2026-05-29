@@ -148,7 +148,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
       renderCell: (field: any, index: number, register: any) => (
         <div className="flex flex-col">
           <span className="text-sm font-semibold text-slate-800">{field.description}</span>
-          <input type="hidden" {...register(`moves.${index}.productId`)} />
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`moves.${index}.productId`)} />
         </div>
       )
     },
@@ -169,7 +169,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
     {
       id: 'qtyDone', label: 'تم الانتهاء',
       renderCell: (field: any, index: number) => (
-        <input type="number" step="0.01" disabled={readOnly || (status === 'done' && isLocked)}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" disabled={readOnly || (status === 'done' && isLocked)}
           {...register(`moves.${index}.qtyDone`, {
             valueAsNumber: true,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +185,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
     {
       id: 'secQtyDone', label: 'الثانوي القيام به',
       renderCell: (field: any, index: number) => (
-        <input type="number" step="0.01" disabled={readOnly || (status === 'done' && isLocked)}
+        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" disabled={readOnly || (status === 'done' && isLocked)}
           {...register(`moves.${index}.secQtyDone`, {
             valueAsNumber: true,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -313,7 +313,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
           <div className="o_field_row">
             <label className="o_field_label">التاريخ المجدول</label>
             <div className="o_field_widget">
-              <input type="date" {...register('scheduledDate')} disabled={readOnly} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-teal-600 outline-none max-w-[200px] text-sm" />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register('scheduledDate')} disabled={readOnly} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-teal-600 outline-none max-w-[200px] text-sm" />
             </div>
           </div>
           <div className="o_field_row">
@@ -334,7 +334,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
                   {picking.origin}
                 </button>
               ) : (
-                <input {...register('origin')} disabled={readOnly} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-teal-600 outline-none max-w-[200px] text-sm" placeholder="مثال: PO0032" />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register('origin')} disabled={readOnly} className="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-teal-600 outline-none max-w-[200px] text-sm" placeholder="مثال: PO0032" />
               )}
             </div>
           </div>

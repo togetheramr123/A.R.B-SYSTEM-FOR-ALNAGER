@@ -268,7 +268,7 @@ export function AttachmentPanel({ model, recordId, readOnly = false }: Attachmen
                 <span className="text-[10px] text-slate-300">
                   PDF, صور, Excel, Word — الحد الأقصى 20 ميجا
                 </span>
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   ref={fileInputRef}
                   type="file"
                   multiple

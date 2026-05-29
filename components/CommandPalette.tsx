@@ -54,7 +54,7 @@ export function CommandPalette() {
         <div className="flex items-center border-b border-slate-100 px-4">
           {" "}
           <Search className="w-5 h-5 text-slate-400" />{" "}
-          <input className="flex-1 px-4 py-4 outline-none text-lg bg-transparent" placeholder={locale === "ar" ? "ابحث عن أمر أو صفحة..." : "Type a command or search..."} autoFocus value={search} onChange={e => setSearch(e.target.value)} />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} className="flex-1 px-4 py-4 outline-none text-lg bg-transparent" placeholder={locale === "ar" ? "ابحث عن أمر أو صفحة..." : "Type a command or search..."} autoFocus value={search} onChange={e => setSearch(e.target.value)} />{" "}
           <div className="text-xs text-slate-400 font-medium px-2 py-1 bg-slate-100 rounded">
             ESC
           </div>{" "}

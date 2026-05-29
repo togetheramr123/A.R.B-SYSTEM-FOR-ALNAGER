@@ -119,14 +119,14 @@ export default function SettingsPage() {
                   <label className="text-xs font-bold text-slate-500 block mb-1.5">
                     اسم الشركة
                   </label>{" "}
-                  <input type="text" defaultValue="نظام 2026 للمؤسسات" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" defaultValue="نظام 2026 للمؤسسات" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
                 </div>{" "}
                 <div>
                   {" "}
                   <label className="text-xs font-bold text-slate-500 block mb-1.5">
                     الرقم الضريبي
                   </label>{" "}
-                  <input type="text" placeholder="أدخل الرقم الضريبي..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="أدخل الرقم الضريبي..." className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
                 </div>{" "}
                 <div>
                   {" "}
@@ -136,7 +136,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     {" "}
                     <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-                    <input type="email" placeholder="info@company.com" className="w-full pr-10 pl-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="email" placeholder="info@company.com" className="w-full pr-10 pl-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
                   </div>{" "}
                 </div>{" "}
                 <div>
@@ -147,7 +147,7 @@ export default function SettingsPage() {
                   <div className="relative">
                     {" "}
                     <Phone className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-                    <input type="tel" placeholder="+20 123 456 7890" className="w-full pr-10 pl-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="tel" placeholder="+20 123 456 7890" className="w-full pr-10 pl-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-sky-500 outline-none" />{" "}
                   </div>{" "}
                 </div>{" "}
                 <div className="col-span-2">
@@ -170,7 +170,7 @@ export default function SettingsPage() {
                   <label className="text-xs font-bold text-slate-500 block mb-1.5">
                     الرقم السري لدخول النسخة التجريبية
                   </label>
-                  <input 
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                     type="text" 
                     value={demoPin} 
                     onChange={e => setDemoPin(e.target.value)} 
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                   </div>{" "}
                   <label className="relative inline-flex items-center cursor-pointer">
                     {" "}
-                    <input type="checkbox" className="sr-only peer" checked={allowHalfQuantities} onChange={e => setAllowHalfQuantities(e.target.checked)} disabled={isLoading} />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="sr-only peer" checked={allowHalfQuantities} onChange={e => setAllowHalfQuantities(e.target.checked)} disabled={isLoading} />{" "}
                     <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sky-600"></div>{" "}
                   </label>{" "}
                 </div>{" "}

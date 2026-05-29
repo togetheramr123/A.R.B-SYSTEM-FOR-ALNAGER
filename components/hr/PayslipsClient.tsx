@@ -110,7 +110,7 @@ export default function PayslipsClient({
               <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">
                 من تاريخ
               </label>{" "}
-              <input type="date" value={form.dateFrom} onChange={e => setForm({
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={form.dateFrom} onChange={e => setForm({
             ...form,
             dateFrom: e.target.value
           })} className="w-full border border-gray-200 rounded-sm px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" />{" "}
@@ -120,7 +120,7 @@ export default function PayslipsClient({
               <label className="block text-xs font-bold text-gray-500 mb-1.5 uppercase tracking-wider">
                 إلى تاريخ
               </label>{" "}
-              <input type="date" value={form.dateTo} onChange={e => setForm({
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={form.dateTo} onChange={e => setForm({
             ...form,
             dateTo: e.target.value
           })} className="w-full border border-gray-200 rounded-sm px-4 py-2.5 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" />{" "}

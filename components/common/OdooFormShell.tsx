@@ -73,7 +73,7 @@ export default function OdooFormShell({
           {" "}
           <div className="o_form_sheet_bg">
             {" "}
-            <form autoComplete="off" onSubmit={(e) => e.preventDefault()}>
+            <div className="o_form_sheet_form_wrapper">
               {" "}
               <div className="o_form_sheet">
                 {" "}
@@ -85,7 +85,7 @@ export default function OdooFormShell({
                       {" "}
                       {contextActions.map((action, i) => (
                         <button
-                          key={i}
+                           key={i}
                           type="button"
                           className={
                             action.style === "primary"
@@ -127,7 +127,7 @@ export default function OdooFormShell({
                                   fill="currentColor"
                                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                 />{" "}
-                              </svg>{" "}
+                               </svg>{" "}
                               {action.label}{" "}
                             </span>
                           ) : (
@@ -193,16 +193,17 @@ export default function OdooFormShell({
                 )}{" "}
                 {/* Main Form Content */} {children}{" "}
               </div>{" "}
-            </form>{" "}
+            </div>{" "}
           </div>{" "}
         </div>{" "}
-        {/* Bottom Chatter */}{" "}
+        {/* Bottom Chatter removed per user request */}
+        {/*
         {chatterId && chatterModel && (
           <div className="o_chatter_area">
-            {" "}
-            <Chatter model={chatterModel as ChatterModel} id={chatterId} />{" "}
+            <Chatter model={chatterModel as ChatterModel} id={chatterId} /> 
           </div>
-        )}{" "}
+        )}
+        */}
       </div>{" "}
     </div>
   );

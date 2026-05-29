@@ -107,7 +107,7 @@ export default function InternalTransferForm({
                   </td>{" "}
                   <td className="px-6 py-4">
                     {" "}
-                    <input type="number" name="quantity" min="1" step="0.01" defaultValue="1" className="w-24 border-gray-300 rounded-md shadow-sm p-1 border text-sm" required />{" "}
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" name="quantity" min="1" step="0.01" defaultValue="1" className="w-24 border-gray-300 rounded-md shadow-sm p-1 border text-sm" required />{" "}
                   </td>{" "}
                   <td className="px-6 py-4 text-right">
                     {" "}

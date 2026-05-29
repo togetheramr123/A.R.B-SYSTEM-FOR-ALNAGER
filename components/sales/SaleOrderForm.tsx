@@ -34,7 +34,9 @@ import ImageOrderParserModal from '../inventory/ImageOrderParserModal';
 import { DebtFollowUpModal } from './DebtFollowUpModal';
 import { createSaleOrder, updateSaleOrder, confirmSaleOrder, cancelSaleOrder, createInvoiceFromOrder, setToDraftSaleOrder, restoreSaleOrderAndInventory, fetchPurchaseInvoiceForSales, requestReservation, approveReservation, requestNegativeStockApproval, approveNegativeStock, rejectNegativeStock } from '@/app/actions/sales';
 import { getUsers } from '@/app/actions/settings';
-import { getProductPrice } from '@/app/actions/pricing';
+import { getProductPrice, getPartnerPricingOptions } from '@/app/actions/pricing';
+import type { PartnerPricingOptions, PricingOption } from '@/app/actions/pricing';
+import { PriceAgreementChooser } from './PriceAgreementChooser';
 import { getAllPriceLists } from '@/app/actions/pricelists';
 import { getAllPartners } from '@/app/actions/partner';
 import { getAllProducts, getProductCategories } from '@/app/actions/products';
@@ -129,13 +131,38 @@ const StockAvailabilityIcon = ({
         window.location.href = `/${locale}/sales/${initialData.id}/availability`;
       }} className="pt-2 text-[#714B67] hover:text-[#5B3C53] transition-colors text-sm font-bold flex items-center justify-start gap-1 cursor-pointer pointer-events-auto"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z" clipRule="evenodd" /></svg> عرض التنبؤات </div>} </div>, document.body)} </div>;
 };
+
+// Editable Secondary UOM Cell - simple select from existing UOM options
+const EditableUomCellSale = ({ uomName, factor, uomOptions, onSave }: { uomName: string; factor: number; uomOptions: { name: string; factor: number }[]; onSave: (name: string, factor: number) => void }) => {
+  const currentKey = `${uomName}|${factor}`;
+  return <select
+    value={currentKey}
+    onChange={e => {
+      const val = e.target.value;
+      if (!val) return;
+      const [name, f] = val.split('|');
+      onSave(name, Number(f));
+    }}
+    className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-800 m-0"
+    title="اختر الوحدة الثانوية"
+  >
+    {uomOptions.map(opt => (
+      <option key={`${opt.name}|${opt.factor}`} value={`${opt.name}|${opt.factor}`}>
+        {opt.name}
+      </option>
+    ))}
+  </select>;
+};
+
 export function SaleOrderForm({
   initialData,
   showMargins = false,
   defaultEditing = false,
   userRole = 'USER',
   userId = '',
-  allowedCustomerType = 'ALL'
+  allowedCustomerType = 'ALL',
+  canViewCustomerDetails = false,
+  canEditUomFactor = false
 }: {
   initialData?: any;
   showMargins?: boolean;
@@ -143,11 +170,14 @@ export function SaleOrderForm({
   userRole?: string;
   userId?: string;
   allowedCustomerType?: string;
+  canViewCustomerDetails?: boolean;
+  canEditUomFactor?: boolean;
 }) {
   const t = useTranslations('Sales');
   const router = useRouter();
   const locale = useLocale();
   const [activeTab, setActiveTab] = useState('lines');
+  const [pricingOptions, setPricingOptions] = useState<PartnerPricingOptions | null>(null);
   const [status, setStatus] = useState(initialData?.status || 'draft');
   const [isSaving, setIsSaving] = useState(false);
   const [draftId, setDraftId] = useState<string | null>(initialData?.id || null);
@@ -157,6 +187,7 @@ export function SaleOrderForm({
   const isQtyLocked = isFormLocked || status === 'sale';
   const [pageError, setPageError] = useState<string | null>(null);
   const isNewRecord = !initialData?.id;
+  const isQuotationStage = status === 'draft' || status === 'sent';
   const [variantModalOpen, setVariantModalOpen] = useState(false);
   const [variantProductId, setVariantProductId] = useState<string | null>(null);
   
@@ -398,6 +429,17 @@ export function SaleOrderForm({
       toast.info("تم تحديث الأسعار طبقاً لقائمة أسعار العميل المحددة.", {
         duration: 5000
       });
+    }
+    // === فحص تعارض الخصومات (اتفاقية العميل vs قائمة الأسعار) ===
+    try {
+      const options = await getPartnerPricingOptions(val, 'sale');
+      if (options.hasConflict) {
+        setPricingOptions(options);
+      } else {
+        setPricingOptions(null);
+      }
+    } catch {
+      setPricingOptions(null);
     }
   };
   const handleProductChange = async (index: number, productId: string | null) => {
@@ -679,6 +721,57 @@ export function SaleOrderForm({
     const customer = customers.find(c => c.id === customerId);
     return customer?.mobile || '';
   };
+  // Helper: Build PDF data from form state (for sales)
+  const buildSalePdfData = () => {
+    const formData = getValues();
+    const customerId = formData.customer;
+    const customer = customers.find((c: any) => c.id === customerId);
+    const lines = (formData.lines || []).map((l: any) => {
+      const product = productsList.find((p: any) => p.id === l.productId);
+      return {
+        productName: product?.label || l.description || '—',
+        quantity: Number(l.qty) || 0,
+        unitName: l.uom || 'pc',
+        priceUnit: Number(l.price) || 0,
+        discount1: Number(l.discount) || 0,
+        priceSubtotal: Number(l.subtotal) || 0,
+        secondaryQuantity: Number(l.secondaryQuantity) || 0,
+        secondaryUnit: l.secondaryUom || '',
+      };
+    });
+    return {
+      name: orderName || initialData?.name || 'SO',
+      dateOrder: formData.date || initialData?.dateOrder,
+      partnerName: customer?.label || initialData?.partner?.name || '—',
+      companyName: initialData?.company?.name || '',
+      lines,
+      amountUntaxed: Number(initialData?.amountUntaxed || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+      amountTax: Number(initialData?.amountTax || 0),
+      amountTotal: Number(initialData?.amountTotal || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+    };
+  };
+
+  const downloadSalePdf = async () => {
+    const loadingToast = toast.loading("جاري تحميل الملف...");
+    try {
+      const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
+      const pdfData = buildSalePdfData();
+      const pdfBlob = await generateSaleOrderPdf(pdfData);
+      const url = window.URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${orderName || initialData?.name || 'عرض_سعر'}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
+    } catch (err: any) {
+      console.error('PDF generation error:', err);
+      toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
+    }
+  };
+
   const openWhatsApp = async () => {
     const phone = getCustomerPhone().replace(/[^0-9+]/g, '');
     if (!phone) {
@@ -687,13 +780,11 @@ export function SaleOrderForm({
     }
     setWhatsappLoading(true);
     try {
-      const {
-        generatePdfFromPrintPage,
-        shareViaWhatsApp
-      } = await import('@/lib/whatsappShare');
-      const printUrl = `${window.location.origin}/${locale}/sales/${initialData.id}/print`;
-      const pdfBlob = await generatePdfFromPrintPage(printUrl);
-      const pdfFileName = initialData?.name || 'عرض_سعر';
+      const { generateSaleOrderPdf } = await import('@/lib/pdfGenerator');
+      const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
+      const pdfData = buildSalePdfData();
+      const pdfBlob = await generateSaleOrderPdf(pdfData);
+      const pdfFileName = orderName || initialData?.name || 'عرض_سعر';
       await shareViaWhatsApp({
         phone,
         pdfBlob,
@@ -834,7 +925,7 @@ export function SaleOrderForm({
             toast.success("تم الحفظ بنجاح");
           }
           pendingActionRef.current = null;
-          router.push(`/${locale}/sales/${(newOrder as any).id}`);
+          router.replace(`/${locale}/sales/${(newOrder as any).id}`);
         } else if ((newOrder as any)?.error) {
           const msg = parsePrismaError((newOrder as any).error);
           toast.error(msg);
@@ -949,6 +1040,7 @@ export function SaleOrderForm({
       }
     };
   }, [watch, setStoreUnsaved, backgroundSave, keepaliveSave, setHasUnsavedChangesSync]);
+  const showSecondaryUnits = fields.some((field: any) => field.hasSecondaryUnit);
   const columns: any[] = [{
     id: 'product',
     label: 'المنتج',
@@ -981,13 +1073,13 @@ export function SaleOrderForm({
               setProductBrowserOpen(true);
             }} onLinkClick={(e, id) => {
               safeNavigate(`/${locale}/inventory/products/${id}`);
-            }} disabled={isQtyLocked} placeholder="بحث عن منتج..." /> </div>} /> <input type="hidden" {...register(`lines.${index}.type`)} /> </div> </div>;
+            }} disabled={isQtyLocked} placeholder="بحث عن منتج..." /> </div>} /> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.type`)} /> </div> </div>;
     }
   }, {
     id: 'description',
     label: 'الوصف',
     minWidth: '300px',
-    renderCell: (field: any, index: number, register: any) => <input {...register(`lines.${index}.description`)} disabled={isQtyLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
+    renderCell: (field: any, index: number, register: any) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.description`)} disabled={isQtyLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
   }, {
     id: 'availability',
     label: ' ',
@@ -1007,9 +1099,9 @@ export function SaleOrderForm({
     label: 'الكمية',
     required: true,
     width: '100px',
-    renderCell: (field: any, index: number, register: any, control: any) => <> <input type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
+    renderCell: (field: any, index: number, register: any, control: any) => <> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
         field
-      }) => <input id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
+      }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
         setHasUnsavedChangesSync(true);
         const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
         field.onChange(val === '' ? null : val);
@@ -1041,12 +1133,13 @@ export function SaleOrderForm({
     id: 'secondaryQty',
     label: 'الكمية الثانوية',
     minWidth: '110px',
+    hide: !showSecondaryUnits,
     renderCell: (field: any, index: number, register: any, control: any) => {
       const line = lines[index] || {};
       if (!line.hasSecondaryUnit) return <div className="text-xs text-center text-slate-400 py-2">-</div>;
       return <Controller name={`lines.${index}.secondaryQty`} control={control} render={({
         field
-      }) => <input type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
+      }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
         setHasUnsavedChangesSync(true);
         const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
         field.onChange(val === '' ? null : val);
@@ -1064,10 +1157,41 @@ export function SaleOrderForm({
   }, {
     id: 'secondaryUom',
     label: 'الثانوية UOM',
-    renderCell: (field: any, index: number) => {
+    width: '110px',
+    hide: !showSecondaryUnits,
+    renderCell: (field: any, index: number, register: any, control: any) => {
       const line = lines[index] || {};
-      const label = line.hasSecondaryUnit && line.secondaryUom ? line.secondaryUom : '-';
-      return <div className="text-sm text-center py-2 text-slate-500 h-full w-full">{label}</div>;
+      if (!line.hasSecondaryUnit || !line.secondaryUom) {
+        return <div className="text-sm text-center py-2 text-slate-400 h-full w-full">-</div>;
+      }
+      const currentFactor = Number(line.secondaryUomFactor) || 0;
+      if (!canEditUomFactor) {
+        return <div className="text-sm text-center py-2 text-slate-500 h-full w-full flex items-center justify-center" title={`المتغير: ${currentFactor}`}>{line.secondaryUom}</div>;
+      }
+      // Build unique UOM options from all products that have secondary units
+      const uomMap = new Map<string, { name: string; factor: number }>();
+      productsList.filter((p: any) => p.hasSecondaryUnit && p.secondaryUom).forEach((p: any) => {
+        const key = `${p.secondaryUom}|${p.secondaryUomFactor}`;
+        if (!uomMap.has(key)) uomMap.set(key, { name: p.secondaryUom, factor: Number(p.secondaryUomFactor) || 1 });
+      });
+      const currentKey = `${line.secondaryUom}|${currentFactor}`;
+      if (!uomMap.has(currentKey)) uomMap.set(currentKey, { name: line.secondaryUom, factor: currentFactor });
+      const uomOptions = Array.from(uomMap.values());
+      return <EditableUomCellSale
+        uomName={line.secondaryUom}
+        factor={currentFactor}
+        uomOptions={uomOptions}
+        onSave={(newName: string, newFactor: number) => {
+          setValue(`lines.${index}.secondaryUom`, newName, { shouldDirty: true });
+          setValue(`lines.${index}.secondaryUomFactor`, newFactor, { shouldDirty: true });
+          const secondaryQty = Number(line.secondaryQty) || 0;
+          if (newFactor > 0 && secondaryQty > 0) {
+            setValue(`lines.${index}.qty`, parseFloat((secondaryQty * newFactor).toFixed(3)), { shouldValidate: true, shouldDirty: true });
+          }
+          setStoreUnsaved(true);
+          setHasUnsavedChangesSync(true);
+        }}
+      />;
     }
   }, {
     id: 'price',
@@ -1076,7 +1200,7 @@ export function SaleOrderForm({
     width: '120px',
     renderCell: (field: any, index: number, register: any, control: any) => <Controller name={`lines.${index}.price`} control={control} render={({
       field
-    }) => <input id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
       setHasUnsavedChangesSync(true);
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       field.onChange(val === '' ? null : val);
@@ -1087,7 +1211,7 @@ export function SaleOrderForm({
     width: '100px',
     renderCell: (field: any, index: number, register: any, control: any) => <div className="relative w-full h-full flex flex-col justify-center"> <Controller name={`lines.${index}.discount`} control={control} render={({
         field
-      }) => <input id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
+      }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
         setHasUnsavedChangesSync(true);
         const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
         field.onChange(val === '' ? null : val);
@@ -1099,7 +1223,7 @@ export function SaleOrderForm({
     defaultVisible: false,
     renderCell: (field: any, index: number, register: any, control: any) => <div className="relative w-full h-full flex flex-col justify-center"> <Controller name={`lines.${index}.discount2`} control={control} render={({
         field
-      }) => <input id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
+      }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isQtyLocked} value={field.value ?? ''} onChange={e => {
         setHasUnsavedChangesSync(true);
         const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
         field.onChange(val === '' ? null : val);
@@ -1510,7 +1634,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => window.print()} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
+            <ActionMenu onPrint={downloadSalePdf} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
           </div>
         </TopPortal>
 
@@ -1607,20 +1731,68 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
-                      <Controller name="customer" control={control} render={({
-                        field: {
-                          onChange,
-                          value
-                        }
-                      }) => (
-                        <div className="relative w-full">
-                          <OdooAutocomplete options={customers} value={value} onChange={val => handleCustomerChange(val as string, onChange)} onCreateEdit={query => {
-                            const currentPath = `/${locale}/sales${initialData?.id ? `/${initialData.id}` : '/new'}`;
-                            router.push(`/${locale}/contacts/create?name=${encodeURIComponent(query)}&isCustomer=true&returnUrl=${encodeURIComponent(currentPath)}`);
-                          }} onLinkClick={(e, id) => safeNavigate(`/${locale}/contacts/${id}`)} showWhatsApp={true} error={!!errors.customer} placeholder="ابدأ الكتابة للبحث أو الإنشاء..." />
-                          {errors.customer && <p className="text-xs text-red-500 mt-1">{errors.customer.message as string}</p>}
-                        </div>
-                      )} />
+                      {isQuotationStage ? (
+                        /* --- حالة عرض السعر (مسودة/مرسل): تعديل مباشر + سهم للانتقال --- */
+                        <Controller name="customer" control={control} render={({
+                          field: {
+                            onChange,
+                            value
+                          }
+                        }) => (
+                          <div className="relative w-full flex items-center gap-1">
+                            <div className="flex-1">
+                              <OdooAutocomplete options={customers} value={value} onChange={val => handleCustomerChange(val as string, onChange)} onCreateEdit={query => {
+                                const currentPath = `/${locale}/sales${initialData?.id ? `/${initialData.id}` : '/new'}`;
+                                router.push(`/${locale}/contacts/create?name=${encodeURIComponent(query)}&isCustomer=true&returnUrl=${encodeURIComponent(currentPath)}`);
+                              }} onLinkClick={canViewCustomerDetails ? ((e, id) => safeNavigate(`/${locale}/contacts/${id}`)) : undefined} showWhatsApp={true} error={!!errors.customer} placeholder="ابدأ الكتابة للبحث أو الإنشاء..." />
+                            </div>
+                            {value && canViewCustomerDetails && (
+                              <button
+                                type="button"
+                                onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                className="flex items-center justify-center w-7 h-7 rounded hover:bg-slate-100 text-[#714B67] hover:text-[#5B3C53] transition-colors shrink-0"
+                                title="الدخول على بيانات العميل"
+                              >
+                                <ChevronLeft className="w-5 h-5" />
+                              </button>
+                            )}
+                            {errors.customer && <p className="text-xs text-red-500 mt-1">{errors.customer.message as string}</p>}
+                          </div>
+                        )} />
+                      ) : (
+                        /* --- حالة بعد التأكيد (sale/done/cancel): رابط مباشر لصفحة العميل --- */
+                        <Controller name="customer" control={control} render={({
+                          field: { value }
+                        }) => {
+                          const selectedCustomer = customers.find(c => c.id === value);
+                          const customerName = selectedCustomer?.label || initialData?.partner?.name || '—';
+                          return (
+                            <div className="flex items-center gap-1 py-1.5">
+                              {canViewCustomerDetails && value ? (
+                                <button
+                                  type="button"
+                                  onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                  className="text-[15px] font-bold text-[#714B67] hover:underline cursor-pointer bg-transparent border-none outline-none transition-colors"
+                                >
+                                  {customerName}
+                                </button>
+                              ) : (
+                                <span className="text-[15px] font-bold text-slate-800">{customerName}</span>
+                              )}
+                              {canViewCustomerDetails && value && (
+                                <button
+                                  type="button"
+                                  onClick={() => safeNavigate(`/${locale}/contacts/${value}`)}
+                                  className="flex items-center justify-center w-7 h-7 rounded hover:bg-slate-100 text-[#714B67] hover:text-[#5B3C53] transition-colors shrink-0"
+                                  title="الدخول على بيانات العميل"
+                                >
+                                  <ChevronLeft className="w-5 h-5" />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        }} />
+                      )}
                     </div>
                     {watch('customer') && (
                       <div className="flex gap-1 shrink-0">
@@ -1635,13 +1807,13 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-800">{t('invoiceAddress') || 'عنوان الفاتورة'}</label>
-                <input className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent transition-colors" placeholder="..." />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent transition-colors" placeholder="..." />
               </div>
               <div className="grid grid-cols-[140px_1fr] items-center mt-2">
                 <label className="text-sm font-bold text-slate-800">{t('deliveryAddress') || 'عنوان التوصيل'}</label>
                 <div className="text-sm text-slate-600 py-1 border-b border-transparent">
                   {/* <span className="text-slate-400">نفس عنوان الفاتورة</span> */}
-                  <input className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent transition-colors" placeholder="..." />
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent transition-colors" placeholder="..." />
                 </div>
               </div>
 
@@ -1669,7 +1841,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                 </label>
                 <div className="flex flex-col gap-1 w-full">
                   <div className="flex items-center gap-2 border-b border-transparent hover:border-slate-300 w-full relative focus-within:border-[#017E84]">
-                    <input type="date" lang="en" dir="ltr" {...register('date', {
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('date', {
                       onChange: () => setTimeout(fetchPricesForAllLines, 0)
                     })} readOnly={!isAdmin} className={`w-full focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent ${!watch('date') ? 'text-transparent focus:text-inherit' : ''} ${!isAdmin ? 'opacity-80 cursor-not-allowed' : ''}`} />
                   </div>
@@ -1679,12 +1851,37 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-800">{t('expiration') || 'تاريخ الصلاحية'}</label>
-                <input type="date" lang="en" dir="ltr" {...register('validityDate')} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent ${!watch('validityDate') ? 'text-transparent focus:text-inherit' : ''}`} />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('validityDate')} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent ${!watch('validityDate') ? 'text-transparent focus:text-inherit' : ''}`} />
               </div>
 
 
             </div>
           </div>
+
+          {/* === شعار اختيار مصدر الخصم (اتفاقية vs قائمة أسعار) === */}
+          {pricingOptions && pricingOptions.hasConflict && (
+            <div className="px-4 sm:px-6">
+              <PriceAgreementChooser
+                options={pricingOptions}
+                onSelect={(source, option) => {
+                  // تطبيق الخصم المختار على جميع بنود الطلب
+                  const currentLines = getValues('lines');
+                  if (currentLines && Array.isArray(currentLines)) {
+                    for (let i = 0; i < currentLines.length; i++) {
+                      if (currentLines[i].lineType === 'line') {
+                        setValue(`lines.${i}.discount`, option.discount1 || 0);
+                        setValue(`lines.${i}.discount2`, option.discount2 || 0);
+                        setValue(`lines.${i}.appliedPriceListName`, option.name);
+                      }
+                    }
+                  }
+                  setPricingOptions(null);
+                  toast.success(`تم تطبيق خصومات ${source === 'agreement' ? 'اتفاقية العميل' : 'قائمة الأسعار'}: ${option.name}`);
+                }}
+                onDismiss={() => setPricingOptions(null)}
+              />
+            </div>
+          )}
 
           <div className="border-b border-slate-200 mb-4 px-4 sm:px-6">
             <div className="flex gap-8">
@@ -1826,7 +2023,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                   </div>
                   <div className="grid grid-cols-[120px_1fr] items-center">
                     <label className="text-sm font-bold text-slate-800">مسؤول المبيعات</label>
-                    <input {...register('userId')} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent" placeholder="اختر مسؤول المبيعات..." />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register('userId')} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent" placeholder="اختر مسؤول المبيعات..." />
                   </div>
                   <div className="grid grid-cols-[120px_1fr] items-center">
                     <label className="text-sm font-bold text-slate-800">فريق المبيعات</label>
@@ -1839,7 +2036,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                   </div>
                   <div className="grid grid-cols-[120px_1fr] items-center">
                     <label className="text-sm font-bold text-slate-800">مرجع العميل</label>
-                    <input {...register('clientOrderRef')} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent" placeholder="PO أو رقم طلب العميل" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register('clientOrderRef')} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent" placeholder="PO أو رقم طلب العميل" />
                   </div>
                   <div className="grid grid-cols-[120px_1fr] items-center">
                     <label className="text-sm font-bold text-slate-800">الوضع المالي</label>
@@ -1862,7 +2059,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                   </div>
                   <div className="grid grid-cols-[120px_1fr] items-center">
                     <label className="text-sm font-bold text-slate-800">تاريخ التسليم</label>
-                    <input type="date" lang="en" dir="ltr" className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent text-transparent focus:text-inherit" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none px-1 py-1 text-sm bg-transparent text-transparent focus:text-inherit" />
                   </div>
                 </div>
               </div>
@@ -1899,7 +2096,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                 سيتم إرسال طلب للمدير لحجز البضاعة. يرجى تحديد عدد الساعات المطلوبة للحجز.
               </p>
               <label className="block text-sm font-bold text-slate-700 mb-2">مدة الحجز (بالساعات)</label>
-              <input type="number" min="1" max="168" value={reservationHours} onChange={e => setReservationHours(parseInt(e.target.value) || 24)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-teal-500" />
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" min="1" max="168" value={reservationHours} onChange={e => setReservationHours(parseInt(e.target.value) || 24)} className="w-full border border-slate-300 rounded px-3 py-2 outline-none focus:border-teal-500" />
             </div>
             <div className="bg-slate-50 border-t border-slate-200 p-4 flex gap-3">
               <button onClick={async () => {
@@ -2051,7 +2248,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
             {/* Search Input */}
             <div className="p-5 border-b border-slate-100">
               <div className="flex gap-2">
-                <input type="text" value={importRef} onChange={e => setImportRef(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleImportSearch()} placeholder="اكتب رقم الفاتورة أو رقم أمر الشراء (مثال: P00002)..." className="flex-1 px-4 py-3 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" autoFocus />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={importRef} onChange={e => setImportRef(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleImportSearch()} placeholder="اكتب رقم الفاتورة أو رقم أمر الشراء (مثال: P00002)..." className="flex-1 px-4 py-3 border border-slate-300 rounded-lg text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none" autoFocus />
                 <button type="button" onClick={handleImportSearch} disabled={importLoading || !importRef.trim()} className="px-6 py-3 bg-teal-600 text-white rounded-lg text-sm font-bold hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
                   {importLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>🔍</span>}
                   بحث
@@ -2132,7 +2329,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
               <div className="flex-1">
                 {isAdmin && importResult && importResult.lines?.length > 0 && (
                   <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
-                    <input type="checkbox" checked={useCostPrice} onChange={e => setUseCostPrice(e.target.checked)} className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 cursor-pointer" />
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={useCostPrice} onChange={e => setUseCostPrice(e.target.checked)} className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500 cursor-pointer" />
                     استدعاء بأسعار الشراء (صلاحية مدير)
                   </label>
                 )}

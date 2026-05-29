@@ -288,7 +288,7 @@ export default async function BillsPage(props: {
               <tr>
                 {" "}
                 <th className="px-4 py-3 w-8">
-                  <input type="checkbox" className="rounded border-gray-300" />
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />
                 </th>{" "}
                 <th className="px-4 py-3">العدد</th>{" "}
                 <th className="px-4 py-3">المورد</th>{" "}
@@ -309,7 +309,7 @@ export default async function BillsPage(props: {
               return <tr key={bill.id} className="hover:bg-blue-50/30 transition-colors cursor-pointer group">
                     {" "}
                     <td className="px-4 py-3">
-                      <input type="checkbox" className="rounded border-gray-300" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="rounded border-gray-300" />
                     </td>{" "}
                     <td className="px-4 py-3 font-bold text-blue-600 text-sm whitespace-nowrap">
                       {" "}

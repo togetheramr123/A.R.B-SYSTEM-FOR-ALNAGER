@@ -247,7 +247,7 @@ export function PutawayForm({
               <label className="text-sm font-bold text-slate-700">
                 التسلسل
               </label>{" "}
-              <input type="number" {...register("sequence", {
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" {...register("sequence", {
               valueAsNumber: true
             })} className="w-full border-b border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent placeholder:text-slate-400" />{" "}
             </div>{" "}

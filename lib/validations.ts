@@ -31,6 +31,14 @@ const requiredString = (label: string) =>
 /** Optional string (nullable) */
 const optionalString = () => z.string().optional().nullable();
 
+/** Robust boolean field that handles nulls, undefined, and string "true"/"false" */
+const flexibleBoolean = (defaultValue: boolean = false) =>
+  z.preprocess((val) => {
+    if (val === 'true' || val === 1 || val === '1' || val === true) return true;
+    if (val === 'false' || val === 0 || val === '0' || val === null || val === undefined || val === false) return false;
+    return Boolean(val);
+  }, z.boolean().default(defaultValue));
+
 // ============================================================
 // 1. PRODUCTS
 // ============================================================
@@ -38,8 +46,8 @@ const optionalString = () => z.string().optional().nullable();
 export const CreateProductSchema = z.object({
   name: requiredString('اسم المنتج'),
   detailedType: z.enum(['consu', 'storable', 'service']).optional().default('consu'),
-  can_sell: z.boolean().optional().default(true),
-  can_purchase: z.boolean().optional().default(true),
+  can_sell: flexibleBoolean(true),
+  can_purchase: flexibleBoolean(true),
   uom: optionalString(),
   purchaseUom: optionalString(),
   salePrice: positiveOptional('سعر البيع'),
@@ -52,7 +60,7 @@ export const CreateProductSchema = z.object({
   categoryId: optionalString(),
   description: optionalString(),
   image: optionalString(),
-  hasSecondaryUnit: z.boolean().optional().default(false),
+  hasSecondaryUnit: flexibleBoolean(false),
   secondaryUom: optionalString(),
   secondaryUomFactor: positiveOptional('معامل التحويل'),
   weight: positiveOptional('الوزن'),
@@ -88,7 +96,7 @@ const PurchaseLineSchema = z.object({
   price: numericField('السعر').min(0, 'السعر لا يمكن أن يكون سالباً'),
   discount: numericField('الخصم').min(0).max(100, 'الخصم لا يمكن أن يتجاوز 100%').optional().default(0),
   taxRate: positiveOptional('نسبة الضريبة'),
-  taxes: z.boolean().optional(),
+  taxes: z.union([z.boolean(), z.number(), z.string(), z.null()]).optional(),
   unitSelection: z.enum(['primary', 'secondary']).optional().default('primary'),
   accountId: optionalString(),
 }).passthrough();
@@ -133,10 +141,10 @@ export const CreatePartnerSchema = z.object({
   mobile: optionalString(),
   type: z.enum(['company', 'person', 'contact', 'invoice', 'delivery', 'private', 'other', 'supplier', 'customer']).optional().default('person'),
   customerType: z.enum(['commercial', 'cash', 'none', '']).optional().default('none'),
-  isCompany: z.boolean().optional().default(false),
-  isCustomer: z.boolean().optional().default(true),
-  isSupplier: z.boolean().optional().default(false),
-  isVendor: z.boolean().optional().default(false),
+  isCompany: flexibleBoolean(false),
+  isCustomer: flexibleBoolean(true),
+  isSupplier: flexibleBoolean(false),
+  isVendor: flexibleBoolean(false),
   street: optionalString(),
   city: optionalString(),
   country: optionalString(),

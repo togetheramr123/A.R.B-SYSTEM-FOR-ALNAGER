@@ -240,7 +240,7 @@ export function ProductForm({
         ? "storable"
         : initialData?.detailedType) || "storable",
     invoicingPolicy: initialData?.invoicingPolicy || "delivered",
-    price: initialData?.salePrice ?? initialData?.price ?? 0.0,
+    price: initialData?.salePrice ?? initialData?.price ?? 1.0,
     cost: initialData?.costPrice ?? initialData?.cost ?? 0.0,
     tax_customer: initialData?.taxes ?? initialData?.tax_customer ?? 14,
     tax_vendor: initialData?.taxVendor ?? initialData?.tax_vendor ?? 0,
@@ -976,9 +976,9 @@ export function ProductForm({
                   }
                   router.refresh();
                   if (returnUrl) {
-                    router.push(returnUrl);
+                    router.replace(returnUrl);
                   } else {
-                    router.push(
+                    router.replace(
                       `/${locale}/inventory/products/${newProduct.id}`,
                     );
                   }
@@ -1847,7 +1847,7 @@ export function ProductForm({
               ) : (
                 <ImageIcon className="w-10 h-10 text-slate-200" />
               )}{" "}
-              <input
+              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                 type="file"
                 className="absolute inset-0 opacity-0 cursor-pointer z-10"
                 onChange={handleImageUpload}
@@ -1870,7 +1870,7 @@ export function ProductForm({
                   {" "}
                   <input
                     {...register("name", { required: true })}
-                    autoComplete="off"
+                    autoComplete="new-password"
                     aria-autocomplete="none"
                     spellCheck="false"
                     className="text-[28px] font-bold bg-transparent outline-none w-full text-slate-900 placeholder-slate-300"
@@ -1901,7 +1901,7 @@ export function ProductForm({
                       name="can_sell"
                       control={control}
                       render={({ field }) => (
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="checkbox"
                           checked={!!field.value}
                           onChange={(e) => {
@@ -1926,7 +1926,7 @@ export function ProductForm({
                       name="can_purchase"
                       control={control}
                       render={({ field }) => (
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="checkbox"
                           checked={!!field.value}
                           onChange={(e) => {
@@ -2090,7 +2090,7 @@ export function ProductForm({
                       name="hasSecondaryUnit"
                       control={control}
                       render={({ field }) => (
-                        <input
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
                           type="checkbox"
                           checked={!!field.value}
                           onChange={(e) => {
@@ -2181,7 +2181,7 @@ export function ProductForm({
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             step="0.01"
                             {...register("secondaryUomFactor")}
@@ -2217,7 +2217,7 @@ export function ProductForm({
                         name="price"
                         control={control}
                         render={({ field }) => (
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="text"
                             inputMode="decimal"
                             value={field.value ?? ""}
@@ -2250,7 +2250,7 @@ export function ProductForm({
                           name="cost"
                           control={control}
                           render={({ field }) => (
-                            <input
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false}
                               type="text"
                               inputMode="decimal"
                               value={field.value ?? ""}
@@ -2355,7 +2355,7 @@ export function ProductForm({
                               name="routeBuy"
                               control={control}
                               render={({ field }) => (
-                                <input
+                                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                   type="checkbox"
                                   id="route_buy"
                                   checked={!!field.value}
@@ -2380,7 +2380,7 @@ export function ProductForm({
                               name="routeMto"
                               control={control}
                               render={({ field }) => (
-                                <input
+                                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                                   type="checkbox"
                                   id="route_mto"
                                   checked={!!field.value}
@@ -2435,7 +2435,7 @@ export function ProductForm({
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             step="0.01"
                             {...register("weight", {
@@ -2461,7 +2461,7 @@ export function ProductForm({
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             step="0.01"
                             {...register("volume", {
@@ -2487,7 +2487,7 @@ export function ProductForm({
                         </label>{" "}
                         <div className="flex items-center gap-2">
                           {" "}
-                          <input
+                          <input autoComplete="off" autoCorrect="off" spellCheck={false}
                             type="number"
                             {...register("saleDelay", {
                               valueAsNumber: true,
@@ -2557,7 +2557,8 @@ export function ProductForm({
             )}{" "}
           </div>{" "}
         </div>{" "}
-        {!isNewRecord && <Chatter model="product" id={initialData.id} />}{" "}
+        {/* Chatter removed per user request */}
+        {/* {!isNewRecord && <Chatter model="product" id={initialData.id} />} */}
 
         <ConfirmDialog
           open={showDeleteConfirm}

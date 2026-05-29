@@ -193,7 +193,7 @@ export function UomManagementDialog({
                 <label className="font-bold text-slate-700">
                   اسم الوحدة
                 </label>{" "}
-                <input {...register("name", {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("name", {
               required: true
             })} className="border-b border-slate-300 focus:border-[#2563EB] outline-none py-1 bg-transparent" placeholder="مثال: دزينة" />{" "}
               </div>{" "}
@@ -224,7 +224,7 @@ export function UomManagementDialog({
                   <label className="font-bold text-slate-700">
                     المعامل (النسبة)
                   </label>{" "}
-                  <input type="number" step="0.0001" {...register("ratio", {
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.0001" {...register("ratio", {
               valueAsNumber: true,
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                 const val = convertArabicToEnglishNumbers(e.target.value);
@@ -240,7 +240,7 @@ export function UomManagementDialog({
                 <label className="font-bold text-slate-700">
                   دقة التقريب
                 </label>{" "}
-                <input type="number" step="0.001" {...register("rounding", {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.001" {...register("rounding", {
               valueAsNumber: true,
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                 const val = convertArabicToEnglishNumbers(e.target.value);

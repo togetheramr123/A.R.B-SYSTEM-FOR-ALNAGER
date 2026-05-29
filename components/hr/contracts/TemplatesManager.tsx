@@ -116,7 +116,7 @@ export function TemplatesManager({ templates, companies }: { templates: any[], c
         <div className="grid grid-cols-2 gap-4 mb-8 print:hidden">
           <div>
             <label className="text-xs font-bold text-gray-500 mb-1 block">اسم القالب</label>
-            <input 
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} 
               value={editingTemplate.name} 
               onChange={e => setEditingTemplate({...editingTemplate, name: e.target.value})} 
               className="w-full border rounded-sm px-3 py-2 text-sm"
@@ -151,7 +151,7 @@ export function TemplatesManager({ templates, companies }: { templates: any[], c
                 <GripVertical className="w-5 h-5" />
               </div>
               <div className="flex-1 space-y-3 print:space-y-1">
-                <input 
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                   value={clause.title} 
                   onChange={e => updateClause(i, "title", e.target.value)} 
                   placeholder="عنوان المادة (مثل: المادة الأولى)"

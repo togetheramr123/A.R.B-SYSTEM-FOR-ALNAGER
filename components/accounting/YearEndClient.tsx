@@ -364,7 +364,7 @@ export function YearEndClient({
             </div>}{" "}
           <div className="flex gap-3">
             {" "}
-            <input type="date" value={lockDate} onChange={e => setLockDate(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={lockDate} onChange={e => setLockDate(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
             <button onClick={handleSetLock} disabled={!lockDate || loading} className="bg-amber-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-amber-700 transition disabled:opacity-50">
               {" "}
               قفل{" "}
@@ -408,7 +408,7 @@ export function YearEndClient({
             </div>}{" "}
           <div className="flex gap-3">
             {" "}
-            <input type="date" value={advisorLock} onChange={e => setAdvisorLock(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={advisorLock} onChange={e => setAdvisorLock(e.target.value)} className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
             <button onClick={handleSetAdvisorLock} disabled={!advisorLock || loading} className="bg-red-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-red-700 transition disabled:opacity-50">
               {" "}
               قفل نهائي{" "}

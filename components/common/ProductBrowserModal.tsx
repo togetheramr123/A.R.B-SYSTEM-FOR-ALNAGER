@@ -179,7 +179,7 @@ if (!isOpen) return null;
         <div className="p-4 border-b border-[#e5e7eb]">
           <div className="relative">
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="بحث بالاسم أو الكود..." className="w-full border border-[#ccc] rounded py-1.5 pr-9 pl-3 text-sm focus:outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] transition" autoFocus />
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="بحث بالاسم أو الكود..." className="w-full border border-[#ccc] rounded py-1.5 pr-9 pl-3 text-sm focus:outline-none focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] transition" autoFocus />
             {search && (
               <button onClick={() => setSearch('')} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                 <X className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ if (!isOpen) return null;
                   return (
                     <tr key={product.id} onClick={() => toggleProduct(product)} className={`cursor-pointer border-b border-[#eee] transition-colors ${isSelected ? 'bg-[#f0f0f0]' : isDuplicate ? 'bg-[#fffbeb] hover:bg-[#fef3c7]' : 'hover:bg-[#f8f9fa]'}`}>
                       <td className="py-2 px-3 align-middle">
-                        <input type="checkbox" checked={isSelected} onChange={() => {}} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84] cursor-pointer" />
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isSelected} onChange={() => {}} className="w-4 h-4 text-[#017E84] rounded border-slate-300 focus:ring-[#017E84] cursor-pointer" />
                       </td>
                       <td className="py-2 px-3 align-middle">
                         <div className="flex flex-col">
@@ -247,14 +247,14 @@ if (!isOpen) return null;
                       <td className="py-2 px-2 align-middle" onClick={e => e.stopPropagation()}>
                         {isSelected && selection ? (
                           <div className="flex items-center justify-center">
-                            <input type="number" value={selection.quantity} onChange={e => updateQuantity(product.id, parseInt(e.target.value) || 1)} className="w-16 text-center border border-[#ccc] rounded py-1 text-sm focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] outline-none" min={1} />
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" value={selection.quantity} onChange={e => updateQuantity(product.id, parseInt(e.target.value) || 1)} className="w-16 text-center border border-[#ccc] rounded py-1 text-sm focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] outline-none" min={1} />
                           </div>
                         ) : <span className="text-slate-300 flex justify-center">—</span>}
                       </td>
                       <td className="py-2 px-2 align-middle" onClick={e => e.stopPropagation()}>
                         {isSelected && selection && product.hasSecondaryUnit ? (
                           <div className="flex items-center justify-center">
-                            <input type="number" value={selection.secondaryQuantity} onChange={e => updateSecondaryQty(product.id, parseInt(e.target.value) || 0)} className="w-16 text-center border border-[#ccc] rounded py-1 text-sm focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] outline-none" min={0} />
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" value={selection.secondaryQuantity} onChange={e => updateSecondaryQty(product.id, parseInt(e.target.value) || 0)} className="w-16 text-center border border-[#ccc] rounded py-1 text-sm focus:border-[#017E84] focus:ring-1 focus:ring-[#017E84] outline-none" min={0} />
                           </div>
                         ) : <span className="text-slate-300 flex justify-center">—</span>}
                       </td>

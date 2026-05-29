@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Check, ChevronsUpDown, Search, ChevronDown, ArrowRight, ExternalLink, Plus, ArrowUpRight } from 'lucide-react';
+import { Check, ChevronsUpDown, Search, ChevronDown, ArrowRight, ExternalLink, Plus, ArrowUpRight, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useRef, useEffect } from 'react';
 import { convertArabicToEnglishNumbers } from '@/lib/utils/numberUtils';
@@ -174,7 +174,7 @@ export function OdooCombobox({
     }
   };
 
-  return <div className={cn("relative w-full", className)} ref={wrapperRef} onFocus={onFocus}> <div className="relative group flex-1 w-full"> <input ref={inputRef} type="text" title={searchTerm} className={cn("w-full bg-transparent py-1 text-right text-[15px] font-bold outline-none transition-all border-b border-transparent hover:border-slate-300 focus:border-slate-800 focus:border-b-2 pl-2 pr-1", "text-[#714B67] placeholder:text-slate-400 cursor-pointer hover:underline focus:no-underline focus:cursor-text", disabled && "cursor-not-allowed opacity-80 hover:border-transparent focus:border-transparent hover:no-underline cursor-not-allowed")} placeholder={placeholder || 'اختر أو ابحث...'} value={searchTerm} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} onClick={handleInputClick} onMouseDown={e => {
+  return <div className={cn("relative w-full", className)} ref={wrapperRef} onFocus={onFocus}> <div className="relative group flex-1 w-full"> <input autoComplete="off" autoCorrect="off" spellCheck={false} ref={inputRef} type="text" title={searchTerm} className={cn("w-full bg-transparent py-1 text-right text-[15px] font-bold outline-none transition-all border-b border-transparent hover:border-slate-300 focus:border-slate-800 focus:border-b-2 pr-1", value ? (showWhatsApp ? "pl-14" : "pl-8") : "pl-2", "text-[#714B67] placeholder:text-slate-400 cursor-pointer hover:underline focus:no-underline focus:cursor-text", disabled && "cursor-not-allowed opacity-80 hover:border-transparent focus:border-transparent hover:no-underline cursor-not-allowed")} placeholder={placeholder || 'اختر أو ابحث...'} value={searchTerm} onChange={handleInputChange} onFocus={handleInputFocus} onBlur={handleInputBlur} onClick={handleInputClick} onMouseDown={e => {
           if (document.activeElement === inputRef.current && value) {
             e.preventDefault();
             if (onExternalLink) {
@@ -183,7 +183,15 @@ export function OdooCombobox({
               router.push(`${detailUrl}/${value}`);
             }
           }
-        }} onKeyDown={handleKeyDown} readOnly={false} disabled={disabled} autoComplete="off" autoCorrect="off" spellCheck="false" /> <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 px-1 py-1"> {value && showWhatsApp && <button type="button" onClick={e => {
+        }} onKeyDown={handleKeyDown} readOnly={false} disabled={disabled} autoComplete="new-password" autoCorrect="off" spellCheck="false" /> <div className="absolute left-0 top-1/2 -translate-y-1/2 flex items-center gap-1.5 bg-white/80 px-1 py-1 rounded"> {value && (detailUrl || onExternalLink) && <button type="button" onClick={e => {
+            e.stopPropagation();
+            e.preventDefault();
+            if (onExternalLink) {
+              onExternalLink(value);
+            } else if (detailUrl) {
+              router.push(`${detailUrl}/${value}`);
+            }
+          }} className="flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-slate-100 rounded w-[22px] h-[22px] transition-colors cursor-pointer" title="الانتقال إلى التفاصيل"> <ArrowLeft className="w-3.5 h-3.5 font-bold" /> </button>} {value && showWhatsApp && <button type="button" onClick={e => {
             e.stopPropagation();
             e.preventDefault();
             window.open('https://web.whatsapp.com', '_blank');

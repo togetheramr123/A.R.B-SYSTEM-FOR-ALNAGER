@@ -517,3 +517,117 @@ export async function createTag(name: string) {
     }
   });
 }
+
+export async function deletePartner(id: string) {
+  const session = await getSession();
+  if (!session) return { error: "غير مصرح" };
+  await ensureAccess('partner', 'write');
+
+  // Safety: Check for linked records
+  const partner = await prisma.partner.findUnique({
+    where: { id },
+    include: {
+      _count: {
+        select: {
+          saleOrders: true,
+          purchaseOrders: true,
+          invoices: true,
+        }
+      }
+    }
+  });
+
+  if (!partner) return { error: "جهة الاتصال غير موجودة" };
+
+  if (partner._count.saleOrders > 0 || partner._count.purchaseOrders > 0 || partner._count.invoices > 0) {
+    return {
+      error: `لا يمكن حذف جهة الاتصال "${partner.name}" لأنها مرتبطة بـ ${partner._count.saleOrders} أمر بيع و ${partner._count.purchaseOrders} أمر شراء و ${partner._count.invoices} فاتورة. يمكنك أرشفتها بدلاً من ذلك.`
+    };
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.resPartnerBank.deleteMany({ where: { partnerId: id } });
+      await tx.purchaseAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
+      await tx.saleAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
+      await tx.partner.delete({ where: { id } });
+    });
+
+    revalidatePath('/[locale]/contacts');
+    return { success: true };
+  } catch (dbError: any) {
+    console.error("Delete Partner Error:", dbError);
+    return { error: "حدث خطأ أثناء الحذف: " + (dbError.message || "خطأ غير معروف") };
+  }
+}
+
+export async function duplicatePartner(id: string) {
+  const session = await getSession();
+  if (!session) return { error: "غير مصرح" };
+  await ensureAccess('partner', 'create');
+
+  const partner = await prisma.partner.findUnique({
+    where: { id },
+  });
+
+  if (!partner) return { error: "جهة الاتصال غير موجودة" };
+
+  const company = await prisma.company.findFirst();
+
+  try {
+    const newPartner = await prisma.partner.create({
+      data: {
+        name: `${partner.name} (نسخة)`,
+        type: partner.type,
+        email: partner.email,
+        phone: partner.phone ? partner.phone + '_copy' : null,
+        mobile: partner.mobile,
+        website: partner.website,
+        vat: partner.vat,
+        street: partner.street,
+        street2: partner.street2,
+        city: partner.city,
+        zip: partner.zip,
+        country: partner.country,
+        isCustomer: partner.isCustomer,
+        isVendor: partner.isVendor,
+        customerType: partner.customerType,
+        ref: partner.ref,
+        lang: partner.lang,
+        companyId: partner.companyId || company?.id,
+        createdById: session.userId,
+        updatedById: session.userId,
+      }
+    });
+
+    revalidatePath('/[locale]/contacts');
+    return { success: true, id: newPartner.id };
+  } catch (dbError: any) {
+    console.error("Duplicate Partner Error:", dbError);
+    return { error: "حدث خطأ أثناء إنشاء النسخة: " + (dbError.message || "خطأ غير معروف") };
+  }
+}
+
+export async function archivePartner(id: string) {
+  const session = await getSession();
+  if (!session) return { error: "غير مصرح" };
+  await ensureAccess('partner', 'write');
+
+  const partner = await prisma.partner.findUnique({ where: { id } });
+  if (!partner) return { error: "جهة الاتصال غير موجودة" };
+
+  try {
+    const newActive = !partner.active;
+    await prisma.partner.update({
+      where: { id },
+      data: { active: newActive }
+    });
+
+    revalidatePath('/[locale]/contacts');
+    revalidatePath(`/[locale]/contacts/${id}`);
+    return { success: true, active: newActive };
+  } catch (dbError: any) {
+    console.error("Archive Partner Error:", dbError);
+    return { error: "حدث خطأ أثناء الأرشفة: " + (dbError.message || "خطأ غير معروف") };
+  }
+}

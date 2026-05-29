@@ -15,6 +15,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Check, Plus, Trash2, FileText, Send, Truck, CreditCard, ArrowRight, CloudUpload, RotateCcw, Loader2, AlertCircle, ChevronRight, ChevronLeft, Settings, ChevronDown, Save, Package, X, ExternalLink, AreaChart, History } from 'lucide-react';
 import { TopPortal } from '@/components/common/TopPortal';
 import { ActionMenu } from '@/components/common/ActionMenu';
+import { Chatter } from '@/components/chatter/Chatter';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useStatusStore } from '@/store/statusStore';
@@ -69,12 +70,37 @@ const StockAvailabilityIcon = ({
 const safeNavigate = (path: string) => {
   window.location.href = path;
 };
+
+// Editable Secondary UOM Cell - simple select from existing UOM options
+const EditableUomCell = ({ uomName, factor, uomOptions, onSave }: { uomName: string; factor: number; uomOptions: { name: string; factor: number }[]; onSave: (name: string, factor: number) => void }) => {
+  const currentKey = `${uomName}|${factor}`;
+  return <select
+    value={currentKey}
+    onChange={e => {
+      const val = e.target.value;
+      if (!val) return;
+      const [name, f] = val.split('|');
+      onSave(name, Number(f));
+    }}
+    className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-800 m-0"
+    title="اختر الوحدة الثانوية"
+  >
+    {uomOptions.map(opt => (
+      <option key={`${opt.name}|${opt.factor}`} value={`${opt.name}|${opt.factor}`}>
+        {opt.name}
+      </option>
+    ))}
+  </select>;
+};
+
 export function PurchaseOrderForm({
   initialData,
-  defaultEditing
+  defaultEditing,
+  canEditUomFactor = false
 }: {
   initialData?: any;
   defaultEditing?: boolean;
+  canEditUomFactor?: boolean;
 }) {
   const router = useRouter();
   const locale = useLocale();
@@ -141,7 +167,7 @@ export function PurchaseOrderForm({
       receivedQty: l.qtyReceived || 0,
       billedQty: l.qtyInvoiced || 0,
       price: l.priceUnit,
-      discount: l.discount || 0,
+      discount: l.discount1 || 0,
       appliedPriceListName: l.appliedPriceListName || '',
       taxes: false,
       subtotal: l.priceSubtotal,
@@ -443,7 +469,7 @@ const onSubmit = async (data: any) => {
           toast.success("تم الحفظ بنجاح");
         }
         pendingActionRef.current = null;
-        router.push(`/${locale}/purchases/${(newOrder as any).id}`);
+        router.replace(`/${locale}/purchases/${(newOrder as any).id}`);
       } else if ((newOrder as any)?.error) {
         const msg = parsePrismaError((newOrder as any).error);
         toast.error(msg);
@@ -592,6 +618,57 @@ const getVendorPhone = () => {
   const vendor = vendorsList.find(v => v.id === vendorId);
   return vendor?.mobile || '';
 };
+// Helper: Build PDF data from form state
+const buildPdfData = () => {
+  const formData = getValues();
+  const vendorId = formData.vendor;
+  const vendor = vendorsList.find((v: any) => v.id === vendorId);
+  const lines = (formData.lines || []).map((l: any) => {
+    const product = productsList.find((p: any) => p.id === l.productId);
+    return {
+      productName: product?.label || l.description || '—',
+      quantity: Number(l.qty) || 0,
+      unitName: l.uom || 'pc',
+      priceUnit: Number(l.price) || 0,
+      discount1: Number(l.discount) || 0,
+      priceSubtotal: Number(l.subtotal) || 0,
+      secondaryQuantity: Number(l.secondaryQty) || 0,
+      secondaryUnit: l.secondaryUom || '',
+    };
+  });
+  return {
+    name: orderName || initialData?.name || 'PO',
+    dateOrder: formData.date || initialData?.dateOrder,
+    partnerName: vendor?.label || initialData?.partner?.name || '—',
+    companyName: initialData?.company?.name || '',
+    lines,
+    amountUntaxed: Number(initialData?.amountUntaxed || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+    amountTax: Number(initialData?.amountTax || 0),
+    amountTotal: Number(initialData?.amountTotal || lines.reduce((s: number, l: any) => s + l.priceSubtotal, 0)),
+  };
+};
+
+const downloadPdf = async () => {
+  const loadingToast = toast.loading("جاري تحميل الملف...");
+  try {
+    const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
+    const pdfData = buildPdfData();
+    const pdfBlob = await generatePurchaseOrderPdf(pdfData);
+    const url = window.URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${orderName || initialData?.name || 'أمر_شراء'}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+    toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
+  } catch (err: any) {
+    console.error('PDF generation error:', err);
+    toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
+  }
+};
+
 const openWhatsApp = async () => {
   const phone = getVendorPhone().replace(/[^0-9+]/g, '');
   if (!phone) {
@@ -600,13 +677,11 @@ const openWhatsApp = async () => {
   }
   setWhatsappLoading(true);
   try {
-    const {
-      generatePdfFromPrintPage,
-      shareViaWhatsApp
-    } = await import('@/lib/whatsappShare');
-    const printUrl = `${window.location.origin}/${locale}/purchases/${initialData.id}/print`;
-    const pdfBlob = await generatePdfFromPrintPage(printUrl);
-    const pdfFileName = initialData?.name || 'أمر_شراء';
+    const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
+    const { shareViaWhatsApp } = await import('@/lib/whatsappShare');
+    const pdfData = buildPdfData();
+    const pdfBlob = await generatePurchaseOrderPdf(pdfData);
+    const pdfFileName = orderName || initialData?.name || 'أمر_شراء';
     await shareViaWhatsApp({
       phone,
       pdfBlob,
@@ -811,7 +886,7 @@ const buildContextActions = () => {
     });
     actions.push({
       label: 'طباعة طلب عرض السعر',
-      onClick: () => window.print(),
+      onClick: downloadPdf,
       style: 'secondary',
       disabled: isSaving
     });
@@ -891,6 +966,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
       router.push(`/${locale}/inventory/operations/receipts?search=${initialData?.name}`);
     }
   }} /> {smartData.billCount > 0 && <OdooSmartButton icon={<FileText className="w-5 h-5" />} count={smartData.billCount} label="فواتير الموردين" href={smartData.billCount === 1 && smartData.firstBillId ? `/${locale}/accounting/bills/${smartData.firstBillId}` : `/${locale}/accounting/bills?search=${initialData?.name}`} />} </> : undefined;
+const showSecondaryUnits = fields.some((field: any) => field.hasSecondaryUnit);
 const columns: any[] = [{
   id: 'product',
   label: 'المنتج',
@@ -944,7 +1020,7 @@ const columns: any[] = [{
   label: 'الوصف',
   defaultVisible: false,
   minWidth: '200px',
-  renderCell: (field: any, index: number, register: any, control: any) => <input {...register(`lines.${index}.description`)} disabled={isLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
+  renderCell: (field: any, index: number, register: any, control: any) => <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`lines.${index}.description`)} disabled={isLocked} readOnly={true} className="w-full h-full p-2 min-w-0 text-xs text-slate-700 bg-transparent outline-none m-0 pointer-events-none" tabIndex={-1} />
 }, {
   id: 'availability',
   label: ' ',
@@ -963,12 +1039,12 @@ const columns: any[] = [{
   label: 'الكمية',
   required: true,
   width: '100px',
-  renderCell: (field: any, index: number, register: any, control: any) => <> <input type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
+  renderCell: (field: any, index: number, register: any, control: any) => <> <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" {...register(`lines.${index}.id`)} /> <Controller name={`lines.${index}.qty`} control={control} render={({
       field: {
         value,
         onChange
       }
-    }) => <input id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={value ?? ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-qty`} type="text" inputMode="decimal" disabled={isQtyLocked} value={value ?? ''} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       setStoreUnsaved(true);
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val === '' ? null : val);
@@ -1023,6 +1099,7 @@ const columns: any[] = [{
 }, {
   id: 'secondaryQty',
   label: 'الكمية الثانوية',
+  hide: !showSecondaryUnits,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
     if (!line.hasSecondaryUnit) return <div className="text-xs text-center text-slate-400 py-2">-</div>;
@@ -1031,7 +1108,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input type="text" inputMode="decimal" disabled={isQtyLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" inputMode="decimal" disabled={isQtyLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
       const secondaryVal = val ? parseFloat(val) : 0;
@@ -1048,10 +1125,41 @@ const columns: any[] = [{
 }, {
   id: 'secondaryUom',
   label: 'الثانوية UOM',
-  renderCell: (field: any, index: number) => {
+  width: '110px',
+  hide: !showSecondaryUnits,
+  renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
-    const label = line.hasSecondaryUnit && line.secondaryUom ? line.secondaryUom : '-';
-    return <div className="text-sm text-center py-2 text-slate-500 h-full w-full">{label}</div>;
+    if (!line.hasSecondaryUnit || !line.secondaryUom) {
+      return <div className="text-sm text-center py-2 text-slate-400 h-full w-full">-</div>;
+    }
+    const currentFactor = Number(line.secondaryUomFactor) || 0;
+    if (!canEditUomFactor) {
+      return <div className="text-sm text-center py-2 text-slate-500 h-full w-full flex items-center justify-center" title={`المتغير: ${currentFactor}`}>{line.secondaryUom}</div>;
+    }
+    // Build unique UOM options from all products that have secondary units
+    const uomMap = new Map<string, { name: string; factor: number }>();
+    productsList.filter((p: any) => p.hasSecondaryUnit && p.secondaryUom).forEach((p: any) => {
+      const key = `${p.secondaryUom}|${p.secondaryUomFactor}`;
+      if (!uomMap.has(key)) uomMap.set(key, { name: p.secondaryUom, factor: Number(p.secondaryUomFactor) || 1 });
+    });
+    // Ensure current value is in the list
+    const currentKey = `${line.secondaryUom}|${currentFactor}`;
+    if (!uomMap.has(currentKey)) uomMap.set(currentKey, { name: line.secondaryUom, factor: currentFactor });
+    const uomOptions = Array.from(uomMap.values());
+    return <EditableUomCell
+      uomName={line.secondaryUom}
+      factor={currentFactor}
+      uomOptions={uomOptions}
+      onSave={(newName: string, newFactor: number) => {
+        setValue(`lines.${index}.secondaryUom`, newName, { shouldDirty: true });
+        setValue(`lines.${index}.secondaryUomFactor`, newFactor, { shouldDirty: true });
+        const secondaryQty = Number(line.secondaryQty) || 0;
+        if (newFactor > 0 && secondaryQty > 0) {
+          setValue(`lines.${index}.qty`, parseFloat((secondaryQty * newFactor).toFixed(3)), { shouldValidate: true, shouldDirty: true });
+        }
+        setStoreUnsaved(true);
+      }}
+    />;
   }
 }, {
   id: 'price',
@@ -1062,7 +1170,7 @@ const columns: any[] = [{
       value,
       onChange
     }
-  }) => <input id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isFormLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+  }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-price`} type="text" inputMode="decimal" disabled={isFormLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
     const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
     onChange(val);
   }} onFocus={e => e.target.select()} onKeyDown={e => handleKeyDown(e, index, 'price')} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-800 font-medium m-0" />} />
@@ -1075,7 +1183,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
     }} onFocus={e => e.target.select()} onKeyDown={e => handleKeyDown(e, index, 'discount')} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-600 font-medium m-0" placeholder="0" />} /> </div>
@@ -1089,7 +1197,7 @@ const columns: any[] = [{
         value,
         onChange
       }
-    }) => <input id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+    }) => <input autoComplete="off" autoCorrect="off" spellCheck={false} id={`line-${index}-discount2`} type="text" inputMode="decimal" disabled={isLocked} value={value} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
       const val = convertArabicToEnglishNumbers(e.target.value).replace(/[^0-9.]/g, '');
       onChange(val);
     }} onFocus={e => e.target.select()} className="w-full h-full p-2 min-w-0 bg-transparent outline-none text-sm text-center text-slate-600 font-medium m-0" placeholder="0" />} /> </div>
@@ -1191,7 +1299,7 @@ const columns: any[] = [{
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={() => window.print()} onDuplicate={async () => {
+            <ActionMenu onPrint={downloadPdf} onDuplicate={async () => {
               if (!initialData?.id) return;
               try {
                 const newOrder = await duplicatePurchaseOrder(initialData.id);
@@ -1271,14 +1379,14 @@ const columns: any[] = [{
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">الموعد النهائي للطلب</label>
-                <input type="date" lang="en" dir="ltr" {...register('date', {
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('date', {
                   onChange: () => setTimeout(fetchPricesForAllLines, 0)
                 })} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('date') ? 'text-transparent focus:text-inherit' : ''}`} />
               </div>
 
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">الوصول المتوقع</label>
-                <input type="date" lang="en" dir="ltr" {...register('receiptDate')} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('receiptDate') ? 'text-transparent focus:text-inherit' : ''}`} />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" lang="en" dir="ltr" {...register('receiptDate')} disabled={isLocked} className={`w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent ${!watch('receiptDate') ? 'text-transparent focus:text-inherit' : ''}`} />
               </div>
             </div>
 
@@ -1286,7 +1394,7 @@ const columns: any[] = [{
             <div className="space-y-3">
               <div className="grid grid-cols-[140px_1fr] items-center">
                 <label className="text-sm font-bold text-slate-700">مرجع المورّد</label>
-                <input {...register('ref')} disabled={isLocked} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register('ref')} disabled={isLocked} className="w-full border-b border-transparent hover:border-slate-300 focus:border-[#017E84] outline-none py-1 text-sm bg-transparent" />
               </div>
 
               <div className="grid grid-cols-[140px_1fr] items-center">
@@ -1465,11 +1573,11 @@ const columns: any[] = [{
                   <label className="text-sm font-bold text-slate-800 pt-1">سياسة استلام الفواتير</label>
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="ordered" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="ordered" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
                       <span className="text-sm text-slate-700">على الكميات المطلوبة</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" value="received" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
+                      <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="received" {...register('invoicePolicy')} disabled={isLocked} className="text-slate-700 focus:ring-slate-600" />
                       <span className="text-sm text-slate-700">على الكميات المستلمة</span>
                     </label>
                   </div>
@@ -1605,6 +1713,13 @@ const columns: any[] = [{
         secondaryUomFactor: p.secondaryUomFactor,
         hasSecondaryUnit: p.hasSecondaryUnit
       }))} categories={productCategories} existingProductIds={lines.filter((l: any) => l.productId).map((l: any) => l.productId)} onConfirm={handleProductBrowserConfirm} />
+
+      {/* Chatter / Tracking */}
+      {initialData?.id && (
+        <div className="mt-8 border-t border-slate-200 pt-8">
+          <Chatter model="purchaseOrder" id={initialData.id} />
+        </div>
+      )}
     </>
   );
 }

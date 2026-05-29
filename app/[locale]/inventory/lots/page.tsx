@@ -86,7 +86,7 @@ export default function LotsPage() {
             <div className="flex-1 min-w-[200px] relative">
               {" "}
               <Search className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />{" "}
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="بحث بالرقم أو المرجع..." className="w-full pr-10 pl-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} value={search} onChange={e => setSearch(e.target.value)} placeholder="بحث بالرقم أو المرجع..." className="w-full pr-10 pl-4 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none" />{" "}
             </div>{" "}
             <div className="min-w-[200px] relative">
               {" "}
@@ -124,7 +124,7 @@ export default function LotsPage() {
                 <label className="block text-sm font-bold text-slate-700 mb-1">
                   رقم اللوت / السيريال <span className="text-red-500">*</span>
                 </label>{" "}
-                <input value={newLot.name} onChange={e => setNewLot({
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} value={newLot.name} onChange={e => setNewLot({
               ...newLot,
               name: e.target.value
             })} placeholder="مثال: LOT-2026-001" className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none" />{" "}
@@ -150,7 +150,7 @@ export default function LotsPage() {
                 <label className="block text-sm font-bold text-slate-700 mb-1">
                   المرجع الداخلي
                 </label>{" "}
-                <input value={newLot.ref} onChange={e => setNewLot({
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} value={newLot.ref} onChange={e => setNewLot({
               ...newLot,
               ref: e.target.value
             })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none" />{" "}
@@ -160,7 +160,7 @@ export default function LotsPage() {
                 <label className="block text-sm font-bold text-slate-700 mb-1">
                   تاريخ الانتهاء
                 </label>{" "}
-                <input type="date" value={newLot.expirationDate} onChange={e => setNewLot({
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={newLot.expirationDate} onChange={e => setNewLot({
               ...newLot,
               expirationDate: e.target.value
             })} className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 outline-none" />{" "}

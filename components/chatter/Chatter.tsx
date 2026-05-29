@@ -212,7 +212,7 @@ export function Chatter({
 
               <div className="absolute left-3 bottom-3 flex items-center gap-2">
                 {" "}
-                <input type="file" multiple className="hidden" ref={fileInputRef} onChange={handleFileChange} />
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="file" multiple className="hidden" ref={fileInputRef} onChange={handleFileChange} />
                 <button onClick={() => fileInputRef.current?.click()} className="text-slate-400 hover:text-slate-600 p-1" title="إرفاق ملف">
                   {" "}
                   <Paperclip className="w-5 h-5" />{" "}

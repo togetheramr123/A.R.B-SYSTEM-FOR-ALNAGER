@@ -97,7 +97,7 @@ export function AuditLogClient({
         <div className="relative flex-1 max-w-sm">
           {" "}
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-          <input type="text" placeholder="بحث بالاسم أو المستخدم..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pr-10 pl-4 py-2 border border-slate-300 rounded-lg text-sm" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" placeholder="بحث بالاسم أو المستخدم..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="w-full pr-10 pl-4 py-2 border border-slate-300 rounded-lg text-sm" />{" "}
         </div>{" "}
         <select value={modelFilter} onChange={e => setModelFilter(e.target.value)} className="border border-slate-300 rounded-lg px-4 py-2 text-sm bg-white">
           {" "}

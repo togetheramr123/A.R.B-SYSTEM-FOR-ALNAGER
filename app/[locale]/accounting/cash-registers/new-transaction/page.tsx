@@ -115,7 +115,7 @@ export default function NewCashTransactionPage() {
             <label className="block text-sm font-bold text-gray-700 mb-1.5">
               المبلغ *
             </label>{" "}
-            <input type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" value={form.amount} onChange={e => setForm(f => ({
             ...f,
             amount: e.target.value
           }))} placeholder="0.00" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-lg font-bold font-numbers focus:ring-2 focus:ring-[#017E84] outline-none" required />{" "}
@@ -125,7 +125,7 @@ export default function NewCashTransactionPage() {
             <label className="block text-sm font-bold text-gray-700 mb-1.5">
               البيان *
             </label>{" "}
-            <input type="text" value={form.description} onChange={e => setForm(f => ({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={form.description} onChange={e => setForm(f => ({
             ...f,
             description: e.target.value
           }))} placeholder={isReceipt ? "مثال: عميل نقدي أو اسم العميل" : "مثال: مصاريف نقل"} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" required />{" "}
@@ -151,7 +151,7 @@ export default function NewCashTransactionPage() {
             <label className="block text-sm font-bold text-gray-700 mb-1.5">
               رقم المستند المرجعي
             </label>{" "}
-            <input type="text" value={form.ref} onChange={e => setForm(f => ({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" value={form.ref} onChange={e => setForm(f => ({
             ...f,
             ref: e.target.value
           }))} placeholder="مثال: 1/Sal/12115" className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm font-numbers focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}
@@ -161,7 +161,7 @@ export default function NewCashTransactionPage() {
             <label className="block text-sm font-bold text-gray-700 mb-1.5">
               التاريخ
             </label>{" "}
-            <input type="date" value={form.date} onChange={e => setForm(f => ({
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={form.date} onChange={e => setForm(f => ({
             ...f,
             date: e.target.value
           }))} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#017E84] outline-none" />{" "}

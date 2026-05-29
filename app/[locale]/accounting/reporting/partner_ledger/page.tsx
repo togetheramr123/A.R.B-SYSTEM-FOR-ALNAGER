@@ -270,7 +270,7 @@ export default function PartnerLedgerPage() {
               )}{" "}
             </div>{" "}
             <div className="p-2 border-b border-slate-100 sticky top-[37px] bg-white z-10">
-              <input
+              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                 type="text"
                 placeholder="بحث..."
                 value={searchQuery}
@@ -303,7 +303,7 @@ export default function PartnerLedgerPage() {
                     className="flex items-center gap-2 px-3 py-1.5 hover:bg-slate-50 cursor-pointer"
                   >
                     {" "}
-                    <input
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false}
                       type="checkbox"
                       checked={isSelected}
                       onChange={() =>
@@ -379,7 +379,7 @@ export default function PartnerLedgerPage() {
           <div className="h-6 w-px bg-slate-300 mx-1 shrink-0"></div> {/* Date Range */}{" "}
           <div className="flex items-center gap-3 bg-white border border-slate-300 rounded px-3 h-[34px] shrink-0" dir="ltr">
             {" "}
-            <input
+            <input autoComplete="off" autoCorrect="off" spellCheck={false}
               type="date"
               value={filters.startDate}
               onChange={(e) =>
@@ -389,7 +389,7 @@ export default function PartnerLedgerPage() {
               title="تاريخ البداية"
             />{" "}
             <span className="text-slate-400 font-bold px-1">-</span>{" "}
-            <input
+            <input autoComplete="off" autoCorrect="off" spellCheck={false}
               type="date"
               value={filters.endDate}
               onChange={(e) =>
@@ -454,7 +454,7 @@ export default function PartnerLedgerPage() {
                 {" "}
                 <label className="flex items-center gap-2 p-1.5 hover:bg-slate-50 cursor-pointer">
                   {" "}
-                  <input
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false}
                     type="checkbox"
                     checked={filters.includeDetails}
                     onChange={(e) =>
@@ -469,7 +469,7 @@ export default function PartnerLedgerPage() {
               </label>{" "}
               <label className="flex items-center gap-2 p-1.5 hover:bg-slate-50 cursor-pointer">
                 {" "}
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="checkbox"
                   checked={filters.showInitialBalance}
                   onChange={(e) =>

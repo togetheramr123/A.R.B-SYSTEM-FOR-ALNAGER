@@ -143,7 +143,7 @@ export function ContractEditor({ contract, templates, locale, isReadonly = false
           <div className="mt-8 border-t border-gray-100 pt-6">
             <label className="text-xs font-bold text-gray-500 block mb-3">إرفاق نسخة العقد الموقعة</label>
             <div className="border-2 border-dashed border-gray-300 rounded-sm p-4 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
-              <input 
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                 type="file" 
                 accept="application/pdf" 
                 className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
@@ -238,7 +238,7 @@ export function ContractEditor({ contract, templates, locale, isReadonly = false
                   {isReadonly ? (
                     <span>{clause.title}</span>
                   ) : (
-                    <input 
+                    <input autoComplete="off" autoCorrect="off" spellCheck={false} 
                       value={clause.title}
                       onChange={e => updateClause(i, "title", e.target.value)}
                       className="w-full bg-transparent border-none outline-none focus:bg-yellow-50 print:focus:bg-transparent print:p-0 print:m-0"

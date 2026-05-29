@@ -218,14 +218,14 @@ function CreateRegisterModal({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               اسم الخزينة *
             </label>{" "}
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="مثال: خزينة المبيعات / أحمد" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] focus:border-transparent outline-none" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} value={name} onChange={e => setName(e.target.value)} placeholder="مثال: خزينة المبيعات / أحمد" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] focus:border-transparent outline-none" />{" "}
           </div>{" "}
           <div>
             {" "}
             <label className="block text-sm font-medium text-gray-700 mb-1">
               الكود
             </label>{" "}
-            <input value={code} onChange={e => setCode(e.target.value)} placeholder="تلقائي إذا فارغ" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] focus:border-transparent outline-none" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} value={code} onChange={e => setCode(e.target.value)} placeholder="تلقائي إذا فارغ" className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#017E84] focus:border-transparent outline-none" />{" "}
           </div>{" "}
           <div>
             {" "}
@@ -242,7 +242,7 @@ function CreateRegisterModal({
           </div>{" "}
           <label className="flex items-center gap-2 cursor-pointer">
             {" "}
-            <input type="checkbox" checked={isMain} onChange={e => setIsMain(e.target.checked)} className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={isMain} onChange={e => setIsMain(e.target.checked)} className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />{" "}
             <span className="text-sm text-gray-700 font-medium">
               خزينة الحسابات الرئيسية
             </span>{" "}

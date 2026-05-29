@@ -43,7 +43,7 @@ export function WarehouseForm() {
             {" "}
             {tInv("warehouseName")}{" "}
           </label>{" "}
-          <input {...register("name")} className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="مثال: المستودع الرئيسي" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("name")} className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="مثال: المستودع الرئيسي" />{" "}
         </div>{" "}
         <div>
           {" "}
@@ -51,7 +51,7 @@ export function WarehouseForm() {
             {" "}
             {tInv("warehouseCode")}{" "}
           </label>{" "}
-          <input {...register("code")} className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase" placeholder="WH-MAIN" />{" "}
+          <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("code")} className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all uppercase" placeholder="WH-MAIN" />{" "}
           <p className="text-xs text-slate-500 mt-1">
             يستخدم هذا الكود في أرقام الفواتير والحركات (مثال: WH/IN/001)
           </p>{" "}

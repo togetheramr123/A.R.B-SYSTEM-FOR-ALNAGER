@@ -128,7 +128,7 @@ export function PurchasesTableClient({
         <div className="absolute left-0 top-full mt-2 bg-white border border-gray-200 rounded shadow-sm z-50 py-2 w-56" onClick={e => e.stopPropagation()}>
           {allColumns.map(c => (
             <label key={c.id} className="flex items-center gap-2 px-4 py-1.5 hover:bg-gray-50 cursor-pointer text-[13px] text-gray-700">
-              <input type="checkbox" checked={visibleCols[c.id]} onChange={() => setVisibleCols(p => ({ ...p, [c.id]: !p[c.id] }))}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={visibleCols[c.id]} onChange={() => setVisibleCols(p => ({ ...p, [c.id]: !p[c.id] }))}
                 className="rounded border-gray-300 text-[#017E84] focus:ring-[#017E84]" />
               {c.label}
             </label>

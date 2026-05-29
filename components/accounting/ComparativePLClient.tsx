@@ -83,14 +83,14 @@ export function ComparativePLClient({
                 <label className="text-xs text-slate-500 mb-1 block">
                   من
                 </label>{" "}
-                <input type="date" value={currentFrom} onChange={e => setCurrentFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={currentFrom} onChange={e => setCurrentFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
               </div>{" "}
               <div className="flex-1">
                 {" "}
                 <label className="text-xs text-slate-500 mb-1 block">
                   إلى
                 </label>{" "}
-                <input type="date" value={currentTo} onChange={e => setCurrentTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={currentTo} onChange={e => setCurrentTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
               </div>{" "}
             </div>{" "}
           </div>{" "}
@@ -106,14 +106,14 @@ export function ComparativePLClient({
                 <label className="text-xs text-slate-500 mb-1 block">
                   من
                 </label>{" "}
-                <input type="date" value={previousFrom} onChange={e => setPreviousFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={previousFrom} onChange={e => setPreviousFrom(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
               </div>{" "}
               <div className="flex-1">
                 {" "}
                 <label className="text-xs text-slate-500 mb-1 block">
                   إلى
                 </label>{" "}
-                <input type="date" value={previousTo} onChange={e => setPreviousTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" value={previousTo} onChange={e => setPreviousTo(e.target.value)} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" />{" "}
               </div>{" "}
             </div>{" "}
           </div>{" "}

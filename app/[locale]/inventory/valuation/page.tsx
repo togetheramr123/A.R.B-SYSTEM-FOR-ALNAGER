@@ -239,7 +239,7 @@ export default async function StockValuationPage(props: {
           <div className="relative">
             {" "}
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-            <input name="search" defaultValue={search || ""} placeholder="بحث منتج..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white" />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} name="search" defaultValue={search || ""} placeholder="بحث منتج..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white" />{" "}
           </div>{" "}
         </form>{" "}
       </div>{" "}

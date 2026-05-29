@@ -203,12 +203,12 @@ function OtherInfoTab({
               {" "}
               <span className="flex items-center gap-1">
                 {" "}
-                <input type="checkbox" checked={order.onlineSignature} disabled className="accent-sky-600" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={order.onlineSignature} disabled className="accent-sky-600" />{" "}
                 التوقيع{" "}
               </span>{" "}
               <span className="flex items-center gap-1">
                 {" "}
-                <input type="checkbox" checked={order.onlinePayment} disabled className="accent-sky-600" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" checked={order.onlinePayment} disabled className="accent-sky-600" />{" "}
                 الدفع{" "}
               </span>{" "}
             </div>{" "}

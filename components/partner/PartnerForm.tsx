@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, FileText, User, Building, Banknote, CloudUpload, RotateCcw, Trash2, ShoppingCart, Receipt, CreditCard, Plus, ExternalLink, ChevronLeft, ChevronRight, Printer, Settings, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { updatePartner, createPartner, getAccountingOptions } from "@/app/actions/partner";
+import { updatePartner, createPartner, getAccountingOptions, deletePartner, duplicatePartner, archivePartner } from "@/app/actions/partner";
 import OdooFormShell from "@/components/common/OdooFormShell";
 import { useBreadcrumbStore } from "@/hooks/useBreadcrumbStore";
 import { useStatusStore } from "@/store/statusStore";
@@ -20,7 +20,6 @@ import { Chatter } from "@/components/chatter/Chatter";
 import Image from "next/image";
 import { toast } from "sonner";
 import { getPartnerFormPermissions } from "@/app/actions/contacts";
-import { MacStatusBar } from "@/components/common/MacStatusBar";
 import { TopPortal } from "@/components/common/TopPortal";
 interface PartnerFormProps {
   initialData?: any;
@@ -192,7 +191,7 @@ export default function PartnerForm({
           onSuccess(res.id);
         } else if (!isModal) {
           // Navigate to the newly created partner page, or returnUrl if specified
-          router.push(effectiveReturnUrl || `/${locale}/contacts/${res.id}`);
+          router.replace(effectiveReturnUrl || `/${locale}/contacts/${res.id}`);
         }
       }
     } catch (err: any) {
@@ -308,44 +307,32 @@ export default function PartnerForm({
             <Settings className="w-4 h-4 text-slate-500" /> إجراء{" "}
             <ChevronDown className="w-3 h-3 text-slate-400" />{" "}
           </button>{" "}
-          {actionOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-56 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
+        {actionOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-56 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
               {" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.info("الأرشيف غير مفعل حالياً");
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            const res = await archivePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success(res.active ? "تم إلغاء الأرشفة" : "تمت الأرشفة بنجاح"); router.refresh(); }
           }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                 الأرشيف
               </button>{" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.info("جاري إنشاء نسخة...");
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            const res = await duplicatePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success("تم إنشاء نسخة مطابقة بنجاح"); router.push(`/${locale}/contacts/${res.id}`); }
           }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
                 إنشاء نسخة مطابقة
               </button>{" "}
-              <button type="button" onClick={() => {
+              <button type="button" onClick={async () => {
             setActionOpen(false);
-            toast.error("غير مصرح بالحذف");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
+            if (!initialData?.id) { toast.error("يجب حفظ جهة الاتصال أولاً"); return; }
+            if (!confirm(`هل أنت متأكد من حذف "${initialData?.name}"؟ هذا الإجراء لا يمكن التراجع عنه.`)) return;
+            const res = await deletePartner(initialData.id);
+            if (res?.error) { toast.error(res.error); } else { toast.success("تم الحذف بنجاح"); router.push(`/${locale}/contacts`); }
+          }} className="w-full text-start px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                 حذف
-              </button>{" "}
-              <div className="h-px w-full bg-slate-200 my-1" />{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                إرسال رسالة نصية قصيرة
-              </button>{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                بحث الخصوصية
-              </button>{" "}
-              <button type="button" onClick={() => {
-            setActionOpen(false);
-            toast.info("جاري الإعداد...");
-          }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100">
-                منح صلاحية الوصول إلى البوابة
               </button>{" "}
             </div>}{" "}
         </div>{" "}
@@ -426,12 +413,12 @@ export default function PartnerForm({
               {" "}
               <label className="flex items-center gap-1.5 cursor-pointer group">
                 {" "}
-                <input type="radio" value="person" {...register("type")} className="peer appearance-none w-3.5 h-3.5 border border-slate-400 rounded-full checked:border-[#017E84] checked:bg-[#017E84] transition-all cursor-pointer ring-offset-1 checked:ring-2 checked:ring-indigo-200" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="person" {...register("type")} className="peer appearance-none w-3.5 h-3.5 border border-slate-400 rounded-full checked:border-[#017E84] checked:bg-[#017E84] transition-all cursor-pointer ring-offset-1 checked:ring-2 checked:ring-indigo-200" />{" "}
                 <span className="text-[12px] text-slate-700">فرد</span>{" "}
               </label>{" "}
               <label className="flex items-center gap-1.5 cursor-pointer group">
                 {" "}
-                <input type="radio" value="company" {...register("type")} className="peer appearance-none w-3.5 h-3.5 border border-slate-400 rounded-full checked:border-[#017E84] checked:bg-[#017E84] transition-all cursor-pointer ring-offset-1 checked:ring-2 checked:ring-indigo-200" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="radio" value="company" {...register("type")} className="peer appearance-none w-3.5 h-3.5 border border-slate-400 rounded-full checked:border-[#017E84] checked:bg-[#017E84] transition-all cursor-pointer ring-offset-1 checked:ring-2 checked:ring-indigo-200" />{" "}
                 <span className="text-[12px] text-slate-700">الشركة</span>{" "}
               </label>{" "}
             </div>{" "}
@@ -468,7 +455,7 @@ export default function PartnerForm({
                 <Plus className="w-6 h-6 text-white" />
               )}
             </div>
-            <input
+            <input autoComplete="off" autoCorrect="off" spellCheck={false}
               ref={fileInputRef}
               type="file"
               accept="image/*"
@@ -511,8 +498,8 @@ export default function PartnerForm({
               </label>{" "}
               <div className="space-y-0.5">
                 {" "}
-                <input {...register("street")} placeholder="سطر العنوان الأول.." className={inputClass} />{" "}
-                <input {...register("street2")} placeholder="سطر العنوان الثاني.." className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("street")} placeholder="سطر العنوان الأول.." className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("street2")} placeholder="سطر العنوان الثاني.." className={inputClass} />{" "}
               </div>{" "}
             </div>{" "}
             <div className="grid grid-cols-[130px_1fr] items-center gap-1 mt-3">
@@ -536,7 +523,7 @@ export default function PartnerForm({
               </label>{" "}
               <div className="flex items-center gap-2">
                 {" "}
-                <input {...register("phone")} className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("phone")} className={inputClass} />{" "}
                 <button type="button" title="استخدام نفس الرقم للواتساب" onClick={() => setValue("mobile", watch("phone"), {
                 shouldDirty: true
               })} className="text-[10px] bg-[#017E84]/10 text-[#017E84] hover:bg-[#017E84] hover:text-white px-2 py-0.5 rounded transition-colors whitespace-nowrap">
@@ -552,7 +539,7 @@ export default function PartnerForm({
               </label>{" "}
               <div className="w-full flex items-center border-b border-transparent focus-within:border-indigo-400 hover:border-slate-300 transition-colors">
                 {" "}
-                <input {...register("mobile")} className="w-full outline-none py-0.5 text-[12px] text-slate-800 bg-transparent" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("mobile")} className="w-full outline-none py-0.5 text-[12px] text-slate-800 bg-transparent" />{" "}
                 {watch("mobile") && <button type="button" title="إرسال رسالة واتساب" onClick={() => {
                 const mobile = watch("mobile");
                 if (mobile) window.open(`https://wa.me/${mobile.replace(/[^0-9+]/g, "")}`, "_blank");
@@ -705,7 +692,7 @@ export default function PartnerForm({
               </h3>{" "}
               <Field label="مندوب المبيعات">
                 {" "}
-                <input {...register("userId")} placeholder="ابحث عن مستخدم..." className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("userId")} placeholder="ابحث عن مستخدم..." className={inputClass} />{" "}
               </Field>{" "}
               <Field label="شروط السداد">
                 {" "}
@@ -741,7 +728,7 @@ export default function PartnerForm({
               </Field>{" "}
               <Field label="طريقة التوصيل">
                 {" "}
-                <input placeholder="—" className={inputClass} readOnly />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} placeholder="—" className={inputClass} readOnly />{" "}
               </Field>{" "}
             </div>{" "}
             {/* Purchases Section */}{" "}
@@ -770,7 +757,7 @@ export default function PartnerForm({
                 {" "}
                 <div className="flex items-center gap-2">
                   {" "}
-                  <input type="checkbox" className="w-4 h-4 accent-indigo-600" />{" "}
+                  <input autoComplete="off" autoCorrect="off" spellCheck={false} type="checkbox" className="w-4 h-4 accent-indigo-600" />{" "}
                   <span className="text-[12px] text-slate-500">
                     إرسال تذكير تلقائي
                   </span>{" "}
@@ -788,7 +775,7 @@ export default function PartnerForm({
               </h3>{" "}
               <Field label="الوضع المالي">
                 {" "}
-                <input placeholder="—" className={inputClass} readOnly />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} placeholder="—" className={inputClass} readOnly />{" "}
               </Field>{" "}
             </div>{" "}
             <div className="space-y-4">
@@ -798,11 +785,11 @@ export default function PartnerForm({
               </h3>{" "}
               <Field label="مُعرّف الشركة">
                 {" "}
-                <input {...register("ref")} placeholder="المرجع" className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("ref")} placeholder="المرجع" className={inputClass} />{" "}
               </Field>{" "}
               <Field label="مجال العمل">
                 {" "}
-                <input {...register("industry")} placeholder="مثل: تجارة أدوات صحية" className={inputClass} />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register("industry")} placeholder="مثل: تجارة أدوات صحية" className={inputClass} />{" "}
               </Field>{" "}
             </div>{" "}
           </div>{" "}
@@ -900,11 +887,11 @@ export default function PartnerForm({
                           {" "}
                           <td className="py-1 px-1">
                             {" "}
-                            <input {...register(`bankAccounts.${index}.bankName`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="البنك..." />{" "}
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`bankAccounts.${index}.bankName`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="البنك..." />{" "}
                           </td>{" "}
                           <td className="py-1 px-1">
                             {" "}
-                            <input {...register(`bankAccounts.${index}.accNumber`, {
+                            <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`bankAccounts.${index}.accNumber`, {
                         required: true
                       })} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" placeholder="رقم الحساب..." />{" "}
                           </td>{" "}
@@ -1060,39 +1047,39 @@ export default function PartnerForm({
                       {" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`saleAgreements.${i}.group`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="المجموعة..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`saleAgreements.${i}.group`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="المجموعة..." />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`saleAgreements.${i}.discount1`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`saleAgreements.${i}.discount1`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`saleAgreements.${i}.discount2`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`saleAgreements.${i}.discount2`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`saleAgreements.${i}.discount3`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`saleAgreements.${i}.discount3`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`saleAgreements.${i}.addition`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`saleAgreements.${i}.addition`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="date" {...register(`saleAgreements.${i}.startDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register(`saleAgreements.${i}.startDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="date" {...register(`saleAgreements.${i}.endDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register(`saleAgreements.${i}.endDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`saleAgreements.${i}.season`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="اللسنة..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`saleAgreements.${i}.season`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="اللسنة..." />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`saleAgreements.${i}.branch`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="الفرع..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`saleAgreements.${i}.branch`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="الفرع..." />{" "}
                       </td>{" "}
                       <td className="py-2 px-1 text-center">
                         {" "}
@@ -1165,39 +1152,39 @@ export default function PartnerForm({
                       {" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`purchaseAgreements.${i}.group`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="المجموعة..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`purchaseAgreements.${i}.group`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="المجموعة..." />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount1`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount1`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount2`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount2`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount3`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`purchaseAgreements.${i}.discount3`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="number" step="0.01" {...register(`purchaseAgreements.${i}.addition`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" step="0.01" {...register(`purchaseAgreements.${i}.addition`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="date" {...register(`purchaseAgreements.${i}.startDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register(`purchaseAgreements.${i}.startDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input type="date" {...register(`purchaseAgreements.${i}.endDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} type="date" {...register(`purchaseAgreements.${i}.endDate`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800 text-left font-numbers" dir="ltr" />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`purchaseAgreements.${i}.season`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="اللسنة..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`purchaseAgreements.${i}.season`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="اللسنة..." />{" "}
                       </td>{" "}
                       <td className="py-1 px-1">
                         {" "}
-                        <input {...register(`purchaseAgreements.${i}.branch`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="الفرع..." />{" "}
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false} {...register(`purchaseAgreements.${i}.branch`)} className="w-full bg-transparent px-2 py-1 outline-none text-slate-800" placeholder="الفرع..." />{" "}
                       </td>{" "}
                       <td className="py-2 px-1 text-center">
                         {" "}
@@ -1245,7 +1232,6 @@ export default function PartnerForm({
   }
   return <>
       {" "}
-      <MacStatusBar />{" "}
       {!isModal && <TopPortal>
           <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
             {isDirty && (

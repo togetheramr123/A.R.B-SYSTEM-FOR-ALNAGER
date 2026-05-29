@@ -1858,7 +1858,7 @@ export async function updateProduct(id: string, data: any) {
         id
       }
     });
-    prisma.productAttributeLine.deleteMany({
+    await prisma.productAttributeLine.deleteMany({
       where: {
         productId: id
       }

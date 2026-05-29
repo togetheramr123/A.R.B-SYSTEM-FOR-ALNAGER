@@ -124,11 +124,11 @@ export default async function CreditNotesPage(props: {
           {" "}
           <form className="flex items-center gap-2" method="GET">
             {" "}
-            <input type="hidden" name="type" value={activeType} />{" "}
+            <input autoComplete="off" autoCorrect="off" spellCheck={false} type="hidden" name="type" value={activeType} />{" "}
             <div className="relative">
               {" "}
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />{" "}
-              <input name="search" defaultValue={search || ""} placeholder="بحث..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-300 rounded-md w-64 focus:outline-none focus:ring-1 focus:ring-sky-500" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} name="search" defaultValue={search || ""} placeholder="بحث..." className="pl-3 pr-9 py-1.5 text-sm border border-slate-300 rounded-md w-64 focus:outline-none focus:ring-1 focus:ring-sky-500" />{" "}
             </div>{" "}
           </form>{" "}
           <Link href={`/${locale}/accounting/invoices/new?type=${activeType}`} className="flex items-center gap-1 px-3 py-1.5 bg-sky-600 text-white text-sm rounded-md hover:bg-sky-700 transition-colors">

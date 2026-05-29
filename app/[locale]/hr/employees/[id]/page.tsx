@@ -4,6 +4,7 @@ import Link from "next/link";
 import { User, Mail, Phone, Building2, Briefcase, FileSignature, Receipt, ArrowRight, Calendar, Banknote, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { serializeDecimal } from "@/lib/serialize";
+import { Chatter } from "@/components/chatter/Chatter";
 export default async function EmployeeDetailPage(props: {
   params: Promise<{
     locale: string;
@@ -297,5 +298,10 @@ export default async function EmployeeDetailPage(props: {
           </table>{" "}
         </div>{" "}
       </div>{" "}
+      <div className="bg-white rounded-sm shadow-sm border border-gray-100 overflow-hidden mt-6">
+        <div className="p-6">
+          <Chatter model="employee" id={employee.id} />
+        </div>
+      </div>
     </div>;
 }

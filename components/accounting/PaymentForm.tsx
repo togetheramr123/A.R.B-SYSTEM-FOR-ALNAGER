@@ -162,7 +162,7 @@ export function PaymentForm({
           <div className="space-y-6">
             <div className="flex gap-4 mb-4">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="radio"
                   value="inbound"
                   {...register('paymentType')}
@@ -173,7 +173,7 @@ export function PaymentForm({
                 <span className="text-sm font-bold">استلام (قبض)</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="radio"
                   value="outbound"
                   {...register('paymentType')}
@@ -211,7 +211,7 @@ export function PaymentForm({
             <div>
               <label className="block text-sm font-bold text-slate-700">المبلغ</label>
               <div className="flex items-center">
-                <input
+                <input autoComplete="off" autoCorrect="off" spellCheck={false}
                   type="number"
                   step="0.01"
                   {...register('amount', {
@@ -235,7 +235,7 @@ export function PaymentForm({
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-slate-700">التاريخ</label>
-              <input
+              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                 type="date"
                 {...register('date')}
                 disabled={isPosted}
@@ -258,7 +258,7 @@ export function PaymentForm({
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700">بيان / مرجع</label>
-              <input
+              <input autoComplete="off" autoCorrect="off" spellCheck={false}
                 type="text"
                 {...register('ref')}
                 disabled={isPosted}

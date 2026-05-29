@@ -81,7 +81,7 @@ export function EmployeeForm({
                 {" "}
                 <User className="w-3.5 h-3.5" /> الاسم الكامل *{" "}
               </label>{" "}
-              <input value={form.name} onChange={e => updateField("name", e.target.value)} placeholder="ادخل اسم الموظف..." className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" autoFocus />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} value={form.name} onChange={e => updateField("name", e.target.value)} placeholder="ادخل اسم الموظف..." className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" autoFocus />{" "}
             </div>{" "}
             <div>
               {" "}
@@ -89,7 +89,7 @@ export function EmployeeForm({
                 {" "}
                 <Briefcase className="w-3.5 h-3.5" /> المسمى الوظيفي{" "}
               </label>{" "}
-              <input value={form.jobTitle} onChange={e => updateField("jobTitle", e.target.value)} placeholder="مثال: محاسب" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} value={form.jobTitle} onChange={e => updateField("jobTitle", e.target.value)} placeholder="مثال: محاسب" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" />{" "}
             </div>{" "}
             <div>
               {" "}
@@ -111,7 +111,7 @@ export function EmployeeForm({
                 {" "}
                 <Mail className="w-3.5 h-3.5" /> البريد الإلكتروني{" "}
               </label>{" "}
-              <input type="email" value={form.email} onChange={e => updateField("email", e.target.value)} placeholder="example@company.com" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" dir="ltr" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="email" value={form.email} onChange={e => updateField("email", e.target.value)} placeholder="example@company.com" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" dir="ltr" />{" "}
             </div>{" "}
             <div>
               {" "}
@@ -119,7 +119,7 @@ export function EmployeeForm({
                 {" "}
                 <Phone className="w-3.5 h-3.5" /> رقم الهاتف{" "}
               </label>{" "}
-              <input type="tel" value={form.phone} onChange={e => updateField("phone", e.target.value)} placeholder="01xxxxxxxxx" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" dir="ltr" />{" "}
+              <input autoComplete="off" autoCorrect="off" spellCheck={false} type="tel" value={form.phone} onChange={e => updateField("phone", e.target.value)} placeholder="01xxxxxxxxx" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all" dir="ltr" />{" "}
             </div>{" "}
             <div className="md:col-span-2">
               {" "}
@@ -130,7 +130,7 @@ export function EmployeeForm({
               </label>{" "}
               <div className="relative">
                 {" "}
-                <input type="number" value={form.wage} onChange={e => updateField("wage", e.target.value)} placeholder="0.00" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all pl-16" dir="ltr" />{" "}
+                <input autoComplete="off" autoCorrect="off" spellCheck={false} type="number" value={form.wage} onChange={e => updateField("wage", e.target.value)} placeholder="0.00" className="w-full border border-gray-200 rounded-sm px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-200 outline-none transition-all pl-16" dir="ltr" />{" "}
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-gray-400">
                   EGP
                 </span>{" "}

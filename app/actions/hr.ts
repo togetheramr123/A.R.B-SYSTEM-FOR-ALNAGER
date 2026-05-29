@@ -118,18 +118,18 @@ export async function createEmployee(data: any) {
   const employee = await prisma.employee.create({
     data: {
       name: data.name,
-      email: data.email || null,
-      phone: data.phone || null,
+      email: data.workEmail || null,
+      phone: data.workPhone || null,
       jobTitle: data.jobTitle || null,
       departmentId: data.departmentId || null
     }
   });
-  if (data.wage) {
+  if (data.salary) {
     await prisma.contract.create({
       data: {
         name: `عقد - ${data.name}`,
         employeeId: employee.id,
-        wage: parseFloat(data.wage),
+        wage: parseFloat(data.salary),
         startDate: new Date(),
         state: 'open'
       }
@@ -149,8 +149,8 @@ export async function updateEmployee(id: string, data: any) {
     },
     data: {
       name: data.name || undefined,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
+      email: data.workEmail || undefined,
+      phone: data.workPhone || undefined,
       jobTitle: data.jobTitle || undefined,
       departmentId: data.departmentId || undefined
     }
@@ -186,7 +186,7 @@ export async function createContract(data: any) {
     data: {
       name: data.name || `عقد - ${data.employeeName}`,
       employeeId: data.employeeId,
-      wage: parseFloat(data.wage),
+      wage: parseFloat(data.salary),
       startDate: new Date(data.startDate || Date.now()),
       endDate: data.endDate ? new Date(data.endDate) : null,
       state: 'open'
