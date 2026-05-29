@@ -118,7 +118,7 @@ export default function PurchasePrintTemplate({
                   <td className="py-3 px-2 border-l border-slate-400 text-right">{line.product?.name || "-"}</td>
                   <td className="py-3 px-2 border-l border-slate-400 text-right">{line.name !== line.product?.name ? line.name : ""}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{qty.toFixed(1)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{line.product?.uom?.name || "قطعه"}</td>
+                  <td className="py-3 px-2 border-l border-slate-400">{line.product?.uom || "قطعه"}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{price.toFixed(2)}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{design === "2" ? `${discPercentage.toFixed(0)}%` : discountValue.toFixed(2)}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{subtotal.toFixed(2)}</td>

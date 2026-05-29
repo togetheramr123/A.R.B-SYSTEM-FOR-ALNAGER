@@ -33,11 +33,7 @@ export default async function PurchasePrintPage(props: {
       company: true,
       lines: {
         include: {
-          product: {
-            include: {
-              uom: true
-            }
-          }
+          product: true
         }
       }
     }
