@@ -91,15 +91,14 @@ export default function PurchasePrintTemplate({
         <table className="w-full text-sm text-center">
           <thead className="bg-slate-50 border-b-2 border-slate-800 font-bold text-slate-900">
             <tr>
-              <th className="py-2 px-2 border-l border-slate-400 w-12">م.</th>
+              <th className="py-2 px-2 border-l border-slate-400 w-10">م.</th>
               <th className="py-2 px-2 border-l border-slate-400">اسم الصنف</th>
-              <th className="py-2 px-2 border-l border-slate-400">الوصف</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-24">الكمية</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-20">الوحدة</th>
+              <th className="py-2 px-2 border-l border-slate-400 w-20">الكمية</th>
+              <th className="py-2 px-2 border-l border-slate-400 w-16">الوحدة</th>
               <th className="py-2 px-2 border-l border-slate-400 w-24">سعر الوحدة</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-24">{design === "2" ? "الخصم %" : "قيمة الخصم"}</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-28">الاجمالي</th>
-              <th className="py-2 px-2 w-32">ك. ثانوية</th>
+              <th className="py-2 px-2 border-l border-slate-400 w-20">{design === "2" ? "الخصم %" : "قيمة الخصم"}</th>
+              <th className="py-2 px-2 border-l border-slate-400 w-24">الاجمالي</th>
+              <th className="py-2 px-2 w-28">الكمية الثانوية</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-300">
@@ -115,8 +114,7 @@ export default function PurchasePrintTemplate({
               return (
                 <tr key={line.id}>
                   <td className="py-3 px-2 border-l border-slate-400">{index + 1}</td>
-                  <td className="py-3 px-2 border-l border-slate-400 text-right">{line.product?.name || "-"}</td>
-                  <td className="py-3 px-2 border-l border-slate-400 text-right">{line.name !== line.product?.name ? line.name : ""}</td>
+                  <td className="py-3 px-2 border-l border-slate-400 text-right text-[13px] font-semibold">{line.product?.name || line.name || "-"}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{qty.toFixed(1)}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{line.product?.uom || "قطعه"}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{price.toFixed(2)}</td>
