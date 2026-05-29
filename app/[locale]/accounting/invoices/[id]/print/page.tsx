@@ -10,6 +10,7 @@ export default async function InvoicePrintPage(props: {
   }>;
   searchParams: Promise<{
     mode?: "simple" | "detailed";
+    design?: "1" | "2";
   }>;
 }) {
   const {
@@ -17,7 +18,8 @@ export default async function InvoicePrintPage(props: {
     id
   } = await props.params;
   const {
-    mode
+    mode,
+    design
   } = await props.searchParams;
   const session = await getSession();
   if (!session) redirect(`/${locale}/login`);
@@ -33,6 +35,7 @@ export default async function InvoicePrintPage(props: {
   });
   if (!invoice) notFound();
   const currentMode = mode === "simple" ? "simple" : "detailed";
+  const currentDesign = design === "2" ? "2" : "1";
   return <div className="bg-slate-100 min-h-screen p-8 text-black print:p-0 flex justify-center">
       {" "}
       {/* Print Styles */}{" "}
@@ -48,15 +51,28 @@ export default async function InvoicePrintPage(props: {
             <span className="text-2xl">🖨️</span>{" "}
           </button>
           <script dangerouslySetInnerHTML={{ __html: `document.getElementById('print-btn')?.addEventListener('click', function() { window.print(); });` }} />{" "}
-          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2">
+          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2 text-center">
             {" "}
-            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=detailed`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "detailed" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
+            <div className="text-xs font-bold text-slate-400 mb-1 border-b pb-1">الوضع</div>
+            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=detailed&design=${currentDesign}`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "detailed" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
               {" "}
-              تفصيلي (Detailed){" "}
+              تفصيلي{" "}
             </Link>{" "}
-            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=simple`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "simple" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
+            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=simple&design=${currentDesign}`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "simple" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
               {" "}
-              بسيط (Simple){" "}
+              بسيط{" "}
+            </Link>{" "}
+          </div>{" "}
+          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2 text-center">
+            {" "}
+            <div className="text-xs font-bold text-slate-400 mb-1 border-b pb-1">التصميم</div>
+            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=${currentMode}&design=1`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "1" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
+              {" "}
+              تصميم 1 (قيمة){" "}
+            </Link>{" "}
+            <Link href={`/${locale}/accounting/invoices/${id}/print?mode=${currentMode}&design=2`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "2" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
+              {" "}
+              تصميم 2 (نسبة){" "}
             </Link>{" "}
           </div>{" "}
           <Link href={`/${locale}/accounting/invoices/${id}`} className="bg-slate-600 text-white p-4 rounded-full shadow-sm hover:bg-slate-700 transition flex items-center justify-center transform hover:scale-110" title="Back">
@@ -67,7 +83,7 @@ export default async function InvoicePrintPage(props: {
         {/* Document Container */}{" "}
         <div className="bg-white shadow-sm print-page box-border overflow-hidden relative">
           {" "}
-          <InvoicePrintTemplate invoice={invoice} locale={locale} mode={currentMode} />{" "}
+          <InvoicePrintTemplate invoice={invoice} locale={locale} mode={currentMode} design={currentDesign} />{" "}
         </div>{" "}
       </div>{" "}
     </div>;

@@ -3,17 +3,17 @@
 import React from "react";
 import { tafqeet } from "@/lib/utils/tafqeet";
 
-interface QuotationPrintTemplateProps {
+interface PurchasePrintTemplateProps {
   order: any;
   locale: string;
   design?: "1" | "2";
 }
 
-export default function QuotationPrintTemplate({
+export default function PurchasePrintTemplate({
   order,
   locale: _locale,
   design = "1"
-}: QuotationPrintTemplateProps) {
+}: PurchasePrintTemplateProps) {
   
   const formatDate = (date: Date | string) => {
     if (!date) return "";
@@ -25,8 +25,8 @@ export default function QuotationPrintTemplate({
   };
 
   const isQuotation = order.state === "draft" || order.state === "sent";
-  const orderTypeLabel = isQuotation ? "عرض سعر" : "أمر بيع";
-  const salesperson = order.user?.name || "عبدالعزيز"; 
+  const orderTypeLabel = isQuotation ? "طلب عرض سعر" : "أمر شراء";
+  const buyer = order.user?.name || "عبدالعزيز"; 
 
   const amountUntaxed = Number(order.amountUntaxed) || 0;
   const amountTax = Number(order.amountTax) || 0;
@@ -66,7 +66,7 @@ export default function QuotationPrintTemplate({
       {/* Meta Info Row 1 */}
       <div className="flex justify-between items-center mb-8 text-sm font-bold text-slate-800">
         <div>
-          <span>نوع المستند : دفتر / المبيعات</span>
+          <span>نوع المستند : المشتريات</span>
         </div>
         <div className="text-center">
           <span>تحريرا في : {formatDate(order.dateOrder)}</span>
@@ -79,10 +79,10 @@ export default function QuotationPrintTemplate({
       {/* Meta Info Row 2 */}
       <div className="flex justify-between items-center mb-6 text-lg font-bold text-slate-900">
         <div>
-          <span>مسئول البيع : {salesperson}</span>
+          <span>المشتري : {buyer}</span>
         </div>
         <div>
-          <span>أسم العميل : {order.partner?.name || "-"}</span>
+          <span>أسم المورد : {order.partner?.name || "-"}</span>
         </div>
       </div>
 
