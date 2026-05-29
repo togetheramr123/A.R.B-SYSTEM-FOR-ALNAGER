@@ -115,16 +115,16 @@ export default function PurchasePrintTemplate({
                 <tr key={line.id}>
                   <td className="py-3 px-2 border-l border-slate-400">{index + 1}</td>
                   <td className="py-3 px-2 border-l border-slate-400 text-right text-[13px] font-semibold">{line.product?.name || line.name || "-"}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{qty.toFixed(1)}</td>
+                  <td className="py-3 px-2 border-l border-slate-400">{qty.toFixed(0)}</td>
                   <td className="py-3 px-2 border-l border-slate-400">{line.product?.uom || "قطعه"}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{price.toFixed(2)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{design === "2" ? `${discPercentage.toFixed(0)}%` : discountValue.toFixed(2)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{subtotal.toFixed(2)}</td>
+                  <td className="py-3 px-2 border-l border-slate-400">{price.toFixed(0)}</td>
+                  <td className="py-3 px-2 border-l border-slate-400">{design === "2" ? `${discPercentage.toFixed(0)}%` : discountValue.toFixed(0)}</td>
+                  <td className="py-3 px-2 border-l border-slate-400">{subtotal.toFixed(0)}</td>
                   <td className="py-3 px-2 font-semibold">
                     {secondaryQty > 0 ? (
-                       `${secondaryUomName} / ${secondaryQty.toFixed(1)}`
+                       `${secondaryUomName} / ${secondaryQty.toFixed(0)}`
                     ) : (
-                      "0.0"
+                      "0"
                     )}
                   </td>
                 </tr>
@@ -140,25 +140,25 @@ export default function PurchasePrintTemplate({
           <tbody className="divide-y divide-slate-400">
             <tr>
               <td className="py-3 w-3/4 text-right pr-6">الإجمالي قبل الخصم</td>
-              <td className="py-3 w-1/4 border-r border-slate-400 text-left pl-6">{totalBeforeDiscount.toFixed(2)}</td>
+              <td className="py-3 w-1/4 border-r border-slate-400 text-left pl-6">{totalBeforeDiscount.toFixed(0)}</td>
             </tr>
             <tr>
               <td className="py-3 text-right pr-6">الخصم</td>
-              <td className="py-3 border-r border-slate-400 text-left pl-6">{totalDiscount.toFixed(2)}</td>
+              <td className="py-3 border-r border-slate-400 text-left pl-6">{totalDiscount.toFixed(0)}</td>
             </tr>
             {design === "2" && (
               <tr>
                 <td className="py-3 text-right pr-6">السعر بعد الخصم</td>
-                <td className="py-3 border-r border-slate-400 text-left pl-6">{amountUntaxed.toFixed(2)}</td>
+                <td className="py-3 border-r border-slate-400 text-left pl-6">{amountUntaxed.toFixed(0)}</td>
               </tr>
             )}
             <tr>
               <td className="py-3 text-right pr-6">الضريبة</td>
-              <td className="py-3 border-r border-slate-400 text-left pl-6">{amountTax.toFixed(2)}</td>
+              <td className="py-3 border-r border-slate-400 text-left pl-6">{amountTax.toFixed(0)}</td>
             </tr>
             <tr>
               <td className="py-3 text-right pr-6 text-lg">الصافي بعد الخصم</td>
-              <td className="py-3 border-r border-slate-400 text-lg text-left pl-6">{amountTotal.toFixed(2)}</td>
+              <td className="py-3 border-r border-slate-400 text-lg text-left pl-6">{amountTotal.toFixed(0)}</td>
             </tr>
           </tbody>
         </table>
@@ -166,7 +166,7 @@ export default function PurchasePrintTemplate({
 
       {/* Tafqeet Section */}
       <div className="text-right mb-12">
-        <h3 className="text-xl font-bold text-slate-900 mb-2">اجمالي {orderTypeLabel} : {amountTotal.toFixed(2)} فقط لا غير</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-2">اجمالي {orderTypeLabel} : {Math.round(amountTotal)} فقط لا غير</h3>
         <p className="text-lg font-bold text-slate-800">{tafqeet(amountTotal)}</p>
       </div>
       
