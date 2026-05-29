@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation';
 import { convertArabicToEnglishNumbers } from '@/lib/utils/numberUtils';
 import { parsePrismaError } from '@/lib/utils/errorHandler';
 import { TopPortal } from '@/components/common/TopPortal';
-import { ActionMenu } from '@/components/common/ActionMenu';
+import { ActionMenu, PrintMenu } from '@/components/common/ActionMenu';
 import { EditableDynamicTable } from '../common/EditableDynamicTable';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -1655,7 +1655,11 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
             </button>
 
             {/* Action Menu Component is used here */}
-            <ActionMenu onPrint={downloadSalePdf} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
+            <PrintMenu options={[
+              { label: 'تصميم 1 (قيمة)', onClick: () => downloadSalePdf('1') },
+              { label: 'تصميم 2 (نسبة)', onClick: () => downloadSalePdf('2') },
+            ]} />
+            <ActionMenu onPrint={() => downloadSalePdf('1')} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
           </div>
         </TopPortal>
 

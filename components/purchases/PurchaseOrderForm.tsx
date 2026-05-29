@@ -14,7 +14,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { useTranslations, useLocale } from 'next-intl';
 import { Check, Plus, Trash2, FileText, Send, Truck, CreditCard, ArrowRight, CloudUpload, RotateCcw, Loader2, AlertCircle, ChevronRight, ChevronLeft, Settings, ChevronDown, Save, Package, X, ExternalLink, AreaChart, History } from 'lucide-react';
 import { TopPortal } from '@/components/common/TopPortal';
-import { ActionMenu } from '@/components/common/ActionMenu';
+import { ActionMenu, PrintMenu } from '@/components/common/ActionMenu';
 import { Chatter } from '@/components/chatter/Chatter';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -901,35 +901,6 @@ const buildContextActions = () => {
       style: 'primary',
       disabled: isSaving
     });
-    actions.push({
-      label: '🖨️ طباعة - تصميم 1 (قيمة)',
-      onClick: () => downloadPdf('1'),
-      style: 'secondary',
-      disabled: isSaving
-    });
-    actions.push({
-      label: '🖨️ طباعة - تصميم 2 (نسبة)',
-      onClick: () => downloadPdf('2'),
-      style: 'secondary',
-      disabled: isSaving
-    });
-    actions.push({
-      label: 'إنشاء نسخة مطابقة',
-      onClick: async () => {
-        if (!initialData?.id) return;
-        try {
-          const result = await duplicatePurchaseOrder(initialData.id);
-          if ((result as any)?.id) {
-            toast.success('تم إنشاء نسخة مطابقة');
-            router.push(`/${locale}/purchases/${(result as any).id}`);
-          }
-        } catch (e: any) {
-          toast.error(e.message || 'خطأ في النسخ');
-        }
-      },
-      style: 'secondary',
-      disabled: isSaving
-    });
   }
   if (status === 'purchase') {
     const isFullyReceived = initialData?.lines?.length > 0 && initialData.lines.every((l: any) => parseFloat(l.qtyReceived || 0) >= parseFloat(l.quantity || 1));
@@ -1333,6 +1304,10 @@ const columns: any[] = [{
             </button>
 
             {/* Action Menu Component is used here */}
+            <PrintMenu options={[
+              { label: 'تصميم 1 (قيمة)', onClick: () => downloadPdf('1') },
+              { label: 'تصميم 2 (نسبة)', onClick: () => downloadPdf('2') },
+            ]} />
             <ActionMenu onPrint={downloadPdf} onDuplicate={async () => {
               if (!initialData?.id) return;
               try {
