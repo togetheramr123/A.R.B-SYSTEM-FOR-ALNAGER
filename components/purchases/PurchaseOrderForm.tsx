@@ -649,24 +649,11 @@ const buildPdfData = () => {
 };
 
 const downloadPdf = async () => {
-  const loadingToast = toast.loading("جاري تحميل الملف...");
-  try {
-    const { generatePurchaseOrderPdf } = await import('@/lib/pdfGenerator');
-    const pdfData = buildPdfData();
-    const pdfBlob = await generatePurchaseOrderPdf(pdfData);
-    const url = window.URL.createObjectURL(pdfBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${orderName || initialData?.name || 'أمر_شراء'}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.URL.revokeObjectURL(url);
-    toast.success('تم تحميل الملف بنجاح', { id: loadingToast });
-  } catch (err: any) {
-    console.error('PDF generation error:', err);
-    toast.error('فشل في تجهيز ملف الطباعة: ' + (err?.message || String(err)), { id: loadingToast });
+  if (!initialData?.id) {
+    toast.error('يرجى حفظ الأمر أولاً قبل الطباعة');
+    return;
   }
+  window.open(`/${locale}/purchases/${initialData.id}/print`, '_blank');
 };
 
 const openWhatsApp = async () => {
@@ -1099,10 +1086,9 @@ const columns: any[] = [{
 }, {
   id: 'secondaryQty',
   label: 'الكمية الثانوية',
-  hide: !showSecondaryUnits,
+  defaultVisible: false,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
-    if (!line.hasSecondaryUnit) return <div className="text-xs text-center text-slate-400 py-2">-</div>;
     return <Controller name={`lines.${index}.secondaryQty`} control={control} render={({
       field: {
         value,
@@ -1126,12 +1112,9 @@ const columns: any[] = [{
   id: 'secondaryUom',
   label: 'الثانوية UOM',
   width: '110px',
-  hide: !showSecondaryUnits,
+  defaultVisible: false,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
-    if (!line.hasSecondaryUnit || !line.secondaryUom) {
-      return <div className="text-sm text-center py-2 text-slate-400 h-full w-full">-</div>;
-    }
     const currentFactor = Number(line.secondaryUomFactor) || 0;
     if (!canEditUomFactor) {
       return <div className="text-sm text-center py-2 text-slate-500 h-full w-full flex items-center justify-center" title={`المتغير: ${currentFactor}`}>{line.secondaryUom}</div>;

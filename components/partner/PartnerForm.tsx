@@ -1234,7 +1234,7 @@ export default function PartnerForm({
       {" "}
       {!isModal && <TopPortal>
           <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
-            {isDirty && (
+            {(!isEdit || isDirty) && (
               <>
                 <button type="button" onClick={() => handleSubmit(onSubmit)()} disabled={loading} className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
                   {loading ? <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <CloudUpload className="w-4 h-4" />}
