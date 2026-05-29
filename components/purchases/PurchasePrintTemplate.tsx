@@ -110,7 +110,7 @@ export default function PurchasePrintTemplate({
               const discountValue = (qty * price * discPercentage) / 100;
               const subtotal = Number(line.priceSubtotal) || 0;
               const secondaryQty = Number(line.secondaryQuantity) || 0;
-              const secondaryUomName = line.product?.secondaryUom?.name || "";
+              const secondaryUomName = line.product?.secondaryUom || "";
 
               return (
                 <tr key={line.id}>

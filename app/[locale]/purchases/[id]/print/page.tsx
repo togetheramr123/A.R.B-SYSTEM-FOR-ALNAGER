@@ -35,8 +35,7 @@ export default async function PurchasePrintPage(props: {
         include: {
           product: {
             include: {
-              uom: true,
-              secondaryUom: true
+              uom: true
             }
           }
         }
