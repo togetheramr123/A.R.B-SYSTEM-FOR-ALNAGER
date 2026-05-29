@@ -1086,7 +1086,6 @@ const columns: any[] = [{
 }, {
   id: 'secondaryQty',
   label: 'الكمية الثانوية',
-  defaultVisible: false,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
     return <Controller name={`lines.${index}.secondaryQty`} control={control} render={({
@@ -1112,7 +1111,6 @@ const columns: any[] = [{
   id: 'secondaryUom',
   label: 'الثانوية UOM',
   width: '110px',
-  defaultVisible: false,
   renderCell: (field: any, index: number, register: any, control: any) => {
     const line = lines[index] || {};
     const currentFactor = Number(line.secondaryUomFactor) || 0;
