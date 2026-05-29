@@ -5,9 +5,6 @@ import type { NextConfig } from 'next';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-    devIndicators: {
-        buildActivityPosition: 'bottom-right',
-    },
     output: 'standalone',
     logging: {
         fetches: {
