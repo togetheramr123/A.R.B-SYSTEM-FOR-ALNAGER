@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { NarrowSidebar } from "@/components/NarrowSidebar";
 import { OdooBreadcrumbs as Breadcrumbs } from "@/components/ui/OdooBreadcrumbs";
 import { useTranslations } from 'next-intl';
-import { Cairo, Inter } from "next/font/google";
+
 import { getNotifications } from "@/app/actions/notifications";
 import { Toaster } from 'sonner';
 import AIChatbot from '@/components/common/AIChatbot';
@@ -19,14 +19,7 @@ import prisma from '@/lib/prisma';
 import { NotificationBlocker } from '@/components/layout/NotificationBlocker';
 import { ArabicNumeralsConverter } from '@/components/ArabicNumeralsConverter';
 import { ShiftTimerProvider } from '@/components/ShiftTimerProvider';
-const cairo = Cairo({
-  subsets: ["arabic"],
-  variable: "--font-cairo"
-});
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter"
-});
+
 export const metadata: Metadata = {
   title: "سيستم ايه ار بى 2026",
   description: "Advanced ERP System 2026"
@@ -61,6 +54,11 @@ export default async function RootLayout(props: {
   }
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
       <body className={cn("bg-gray-50/80 text-gray-900 font-sans antialiased", locale === 'ar' ? 'font-arabic' : 'font-sans')}>
         <NextIntlClientProvider messages={messages}>
           <NotificationBlocker />
