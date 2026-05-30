@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import { FormLoadingOverlay } from "@/components/common/FormLoadingOverlay";
 
 import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { useTranslations, useLocale } from 'next-intl';
@@ -237,12 +238,16 @@ export function SaleOrderForm({
   const [quickCreateProductOpen, setQuickCreateProductOpen] = useState(false);
   const [quickCreateProductName, setQuickCreateProductName] = useState<string | null>(null);
   const [quickCreateProductLineIndex, setQuickCreateProductLineIndex] = useState<number | null>(null);
+  const [isFormReady, setIsFormReady] = useState(false);
   useEffect(() => {
+    const promises: Promise<any>[] = [
+      getTaxesByScope('sale').then(setDbTaxes),
+      getPaymentTerms().then(setDbPaymentTerms)
+    ];
     if (initialData?.id) {
-      getSaleOrderSmartData(initialData.id).then(setSmartData);
+      promises.push(getSaleOrderSmartData(initialData.id).then(setSmartData));
     }
-    getTaxesByScope('sale').then(setDbTaxes);
-    getPaymentTerms().then(setDbPaymentTerms);
+    Promise.all(promises).finally(() => setIsFormReady(true));
   }, [initialData?.id]);
   const STATUS_STEPS = [{
     value: 'draft',
@@ -1608,7 +1613,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
     }
   }} /> {smartData.invoiceCount > 0 && <OdooSmartButton icon={<FileText className="w-5 h-5" />} count={smartData.invoiceCount} label="الفواتير" href={smartData.invoiceCount === 1 && smartData.firstInvoiceId ? `/${locale}/accounting/invoices/${smartData.firstInvoiceId}` : `/${locale}/accounting/invoices?search=${initialData?.name}`} />} {smartData.paidCount > 0 && <OdooSmartButton icon={<CreditCard className="w-5 h-5" />} count={smartData.paidCount} label="المدفوعات" href={`/${locale}/accounting/payments?search=${initialData?.name}`} />} </> : undefined;
   return (
-    <>
+    <FormLoadingOverlay isLoading={!isFormReady}>
       <OdooFormShell statusSteps={STATUS_STEPS} currentStatus={status} contextActions={buildContextActions()} smartButtons={smartButtonsElement} titleLabel={status === 'draft' || status === 'sent' ? 'عرض سعر' : 'أمر بيع'} titleValue={orderName} extraHeaderElements={showNotifyButton && <NotifyButton resourceModel="SaleOrder" resourceId={draftId || initialData?.id} resourceName={orderName} />} chatterId={draftId || initialData?.id} chatterModel="saleOrder" error={pageError} isLoading={isSaving} createdBy={initialData?.createdBy?.name} createdAt={initialData?.createdAt} updatedBy={initialData?.updatedBy?.name} updatedAt={initialData?.updatedAt}>
         {/* Top Portal for breadcrumb & action menu */}
         <TopPortal>
@@ -2534,6 +2539,6 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
           </div>
         </div>
       </div>
-    </>
+    </FormLoadingOverlay>
   );
 }

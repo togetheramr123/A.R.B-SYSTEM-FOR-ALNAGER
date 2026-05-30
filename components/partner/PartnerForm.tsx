@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { FormLoadingOverlay } from "@/components/common/FormLoadingOverlay";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -147,9 +148,12 @@ export default function PartnerForm({
       useBreadcrumbStore.getState().updateCurrentLabel(currentName);
     }
   }, [currentName, pathname, isModal]);
+  const [isFormReady, setIsFormReady] = useState(false);
   useEffect(() => {
-    getAccountingOptions().then(setAccountingOptions);
-    getPartnerFormPermissions().then(setPermissions);
+    Promise.all([
+      getAccountingOptions().then(setAccountingOptions),
+      getPartnerFormPermissions().then(setPermissions)
+    ]).finally(() => setIsFormReady(true));
   }, []);
   const backgroundSave = useCallback(async () => {
     if (!isDirty || isModal) return; // Skip background save in modal mode
@@ -1219,7 +1223,7 @@ export default function PartnerForm({
   if (isModal) {
     return formContent;
   }
-  return <>
+  return <FormLoadingOverlay isLoading={!isFormReady}>
       {" "}
       {!isModal && <TopPortal>
           <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
@@ -1247,5 +1251,5 @@ export default function PartnerForm({
         {" "}
         {formContent}{" "}
       </OdooFormShell>{" "}
-    </>;
+    </FormLoadingOverlay>;
 }

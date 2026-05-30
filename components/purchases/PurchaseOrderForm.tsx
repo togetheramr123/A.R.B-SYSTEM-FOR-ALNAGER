@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import { FormLoadingOverlay } from "@/components/common/FormLoadingOverlay";
 
 import { createPurchaseOrder, updatePurchaseOrder, confirmPurchaseOrder, cancelPurchaseOrder, setToDraftPurchaseOrder, createBillFromOrder, sendToInventory, duplicatePurchaseOrder, restorePurchaseOrderAndInventory } from '@/app/actions/purchases';
 import { getProductPrice } from '@/app/actions/pricing';
@@ -122,13 +123,14 @@ export function PurchaseOrderForm({
     firstReceiptId: null,
     firstBillId: null
   });
+  const [isFormReady, setIsFormReady] = useState(false);
   useEffect(() => {
     if (initialData?.id) {
       getPurchaseOrderSmartData(initialData.id).then(setSmartData);
     }
   }, [initialData?.id]);
   useEffect(() => {
-    getAllPriceLists().then(setPriceLists);
+    getAllPriceLists().then(setPriceLists).finally(() => setIsFormReady(true));
   }, []);
   const [activeTab, setActiveTab] = useState('products');
   const [isSaving, setIsSaving] = useState(false);
@@ -1257,7 +1259,7 @@ const columns: any[] = [{
   }
 }];
   return (
-    <>
+    <FormLoadingOverlay isLoading={!isFormReady}>
       <OdooFormShell statusSteps={STATUS_STEPS} currentStatus={status} onStatusClick={status === 'cancel' ? handleStatusClick : undefined} statusClickable={status === 'cancel'} contextActions={buildContextActions()} smartButtons={smartButtonsElement} titleLabel={status === 'draft' || status === 'sent' ? 'طلب عرض سعر' : 'أمر شراء'} titleValue={orderName} extraHeaderElements={showNotifyButton && <NotifyButton resourceModel="PurchaseOrder" resourceId={draftId || initialData?.id} resourceName={orderName} />} chatterId={draftId || initialData?.id} chatterModel="purchaseOrder" error={pageError} isLoading={isSaving} createdBy={initialData?.createdBy?.name} createdAt={initialData?.createdAt} updatedBy={initialData?.updatedBy?.name} updatedAt={initialData?.updatedAt}>
         {/* Top Portal for breadcrumb & action menu */}
         <TopPortal>
@@ -1744,6 +1746,6 @@ const columns: any[] = [{
           <Chatter model="purchaseOrder" id={initialData.id} />
         </div>
       )}
-    </>
+    </FormLoadingOverlay>
   );
 }
