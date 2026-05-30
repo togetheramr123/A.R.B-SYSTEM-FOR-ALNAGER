@@ -875,8 +875,8 @@ model ProductCategory {
   priceLists     PriceList[]     @relation("PriceListCategory")
 
   // --- Accounting & Valuation ---
-  costingMethod String @default("standard") // standard, fifo, avco
-  valuation     String @default("manual_periodic") // manual_periodic, real_time
+  costingMethod String @default("avco") // standard, fifo, avco
+  valuation     String @default("real_time") // manual_periodic, real_time
 
   propertyAccountIncomeId  String?
   propertyAccountExpenseId String?
