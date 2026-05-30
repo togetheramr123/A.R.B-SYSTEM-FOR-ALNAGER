@@ -1,10 +1,8 @@
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { serializeDecimal } from "@/lib/serialize";
 import PurchasePrintTemplate from "@/components/purchases/PurchasePrintTemplate";
-import Link from "next/link";
 
 export default async function PurchasePrintPage(props: {
   params: Promise<{
@@ -31,6 +29,7 @@ export default async function PurchasePrintPage(props: {
     include: {
       partner: true,
       company: true,
+      user: true,
       lines: {
         include: {
           product: true
@@ -42,43 +41,24 @@ export default async function PurchasePrintPage(props: {
   if (!order) notFound();
 
   return (
-    <div className="bg-slate-100 min-h-screen p-8 text-black print:p-0 flex justify-center">
+    <>
       <style>{`
         @media print {
           @page { size: A4; margin: 0; }
-          body { -webkit-print-color-adjust: exact; background: white; }
-          .no-print { display: none !important; }
-          .print-page { margin: 0 !important; width: 100% !important; min-height: 29.7cm; box-shadow: none !important; }
+          body { margin: 0; padding: 0; background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          nav, header, .sidebar, .no-print, [class*="fixed bottom"], [class*="z-[9999]"] { display: none !important; }
+          main { margin: 0 !important; padding: 0 !important; }
+        }
+        @media screen {
+          .print-wrapper { display: flex; justify-content: center; min-height: 100vh; background: #f1f5f9; padding: 20px; }
+          .print-paper { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         }
       `}</style>
-      <div className="w-[21cm] min-h-[29.7cm] flex flex-col relative print:w-full">
-        {/* Control Bar (No Print) */}
-        <div className="fixed top-8 right-8 flex flex-col gap-4 no-print z-50">
-          <button id="print-btn" className="bg-indigo-600 text-white p-4 rounded-full shadow-sm hover:bg-indigo-700 transition flex items-center justify-center transform hover:scale-110" title="طباعة">
-            <span className="text-2xl">🖨️</span>
-          </button>
-          <script dangerouslySetInnerHTML={{ __html: `document.getElementById('print-btn')?.addEventListener('click', function() { window.print(); });` }} />
-          
-          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2 text-center">
-            <div className="text-xs font-bold text-slate-400 mb-1 border-b pb-1">التصميم</div>
-            <Link href={`/${locale}/purchases/${id}/print?design=1`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "1" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              تصميم 1 (قيمة)
-            </Link>
-            <Link href={`/${locale}/purchases/${id}/print?design=2`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "2" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              تصميم 2 (نسبة)
-            </Link>
-          </div>
-          
-          <Link href={`/${locale}/purchases/${id}`} className="bg-slate-600 text-white p-4 rounded-full shadow-sm hover:bg-slate-700 transition flex items-center justify-center transform hover:scale-110" title="رجوع">
-            <span className="text-2xl">↩️</span>
-          </Link>
-        </div>
-        
-        {/* Document Container */}
-        <div className="bg-white shadow-sm print-page box-border overflow-hidden relative">
+      <div className="print-wrapper">
+        <div className="print-paper">
           <PurchasePrintTemplate order={serializeDecimal(order)} locale={locale} design={currentDesign} />
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -315,3 +315,15 @@ tr.premium-row {
     border: none !important;
   }
 }
+
+/* Hide chat widget and all floating elements in print */
+@media print {
+  #floating-chat-widget,
+  .floating-chat-widget,
+  [class*="fixed bottom"],
+  [class*="fixed left"],
+  [class*="z-[9999]"],
+  [class*="z-[100]"] {
+    display: none !important;
+  }
+}
