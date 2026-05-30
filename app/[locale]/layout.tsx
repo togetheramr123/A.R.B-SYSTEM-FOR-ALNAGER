@@ -18,6 +18,7 @@ import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NotificationBlocker } from '@/components/layout/NotificationBlocker';
 import { ArabicNumeralsConverter } from '@/components/ArabicNumeralsConverter';
+import { AutocompleteBlocker } from '@/components/AutocompleteBlocker';
 import { ShiftTimerProvider } from '@/components/ShiftTimerProvider';
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default async function RootLayout(props: {
           <AppLayout locale={locale} notifications={notifications} userProfile={userProfile} userRole={userRole}>
             <ShiftTimerProvider role={session?.role}>
               <ArabicNumeralsConverter />
+              <AutocompleteBlocker />
               {children}
               <AIChatbot />
             </ShiftTimerProvider>
