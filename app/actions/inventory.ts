@@ -224,7 +224,7 @@ export async function createInternalTransfer(prevState: any, formData: FormData)
   } catch (error) {
     console.error('Transfer error:', error);
     return {
-      error: 'Failed to create transfer'
+      error: error instanceof Error ? error.message : 'Failed to create transfer'
     };
   }
   redirect(`/${session.locale || 'ar'}/inventory/transfers`);
