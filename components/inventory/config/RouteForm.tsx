@@ -4,7 +4,8 @@ import { useState, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createRoute, updateRoute } from "@/app/actions/inventoryConfig";
 import { toast } from "sonner";
-import { Save, AlertCircle, RefreshCw } from "lucide-react";
+import { Save, AlertCircle, RefreshCw, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 import { useStatusStore } from "@/store/statusStore";
 import { useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -65,7 +66,17 @@ export function RouteForm({
     });
     return () => clearStatus();
   }, [saving, isDirty, router, locale]);
-  return <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSave} disabled={saving}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[400px]">
       {" "}
       {/* Form Body */}{" "}
       <div className="p-6 md:p-8 flex-1 grid md:grid-cols-2 gap-x-12 gap-y-8">
@@ -124,5 +135,6 @@ export function RouteForm({
         (Rules). بعد إنشاء المسار، تأكد من إضافة القواعد المنظمة له عبر شاشة
         규칙 الحركة لتوجيه المنتجات بشكل صحيح.{" "}
       </div>{" "}
-    </div>;
+    </div>
+    </>;
 }

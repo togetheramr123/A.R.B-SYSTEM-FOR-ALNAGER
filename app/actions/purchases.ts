@@ -8,6 +8,7 @@ import { ensureAccess } from '@/lib/access';
 import { fail } from '@/lib/actionResult';
 import { CreatePurchaseOrderSchema, validateSafe } from '@/lib/validations';
 import { logTrackingChanges, TrackingChange } from '@/app/actions/chatter';
+import { logAuditAction } from '@/app/actions/audit';
 export async function createPurchaseOrder(data: any) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -134,6 +135,15 @@ export async function createPurchaseOrder(data: any) {
         purchaseOrderId: purchaseOrder.id
       }
     });
+
+    await logAuditAction({
+      action: 'create',
+      model: 'purchaseOrder',
+      recordId: purchaseOrder.id,
+      recordName: purchaseOrder.name,
+      newValues: { name: purchaseOrder.name, status: 'draft', partnerId: partner?.id || null, amountTotal: amountUntaxed.plus(amountTax).toString() },
+    });
+
     return purchaseOrder;
   });
 }
@@ -182,6 +192,15 @@ export async function createDraftPurchaseOrder() {
         purchaseOrderId: purchaseOrder.id
       }
     });
+
+    await logAuditAction({
+      action: 'create',
+      model: 'purchaseOrder',
+      recordId: purchaseOrder.id,
+      recordName: purchaseOrder.name,
+      newValues: { name: purchaseOrder.name, status: 'draft' },
+    });
+
     return purchaseOrder;
   });
 }
@@ -386,6 +405,16 @@ export async function updatePurchaseOrder(orderId: string, data: any) {
   if (changes.length > 0) {
     await logTrackingChanges('purchaseOrder', orderId, changes);
   }
+
+  await logAuditAction({
+    action: 'update',
+    model: 'purchaseOrder',
+    recordId: orderId,
+    recordName: purchaseOrder.name,
+    oldValues: { amountTotal: current?.amountTotal?.toString(), dateOrder: current?.dateOrder?.toISOString() },
+    newValues: { amountTotal: amountTotal.toString(), dateOrder: new Date(data.date).toISOString() },
+  });
+
   return purchaseOrder;
 }
 export async function confirmPurchaseOrder(orderId: string) {
@@ -609,6 +638,15 @@ export async function confirmPurchaseOrder(orderId: string) {
         newValue: 'تأكيد أمر الشراء'
       }]);
 
+      await logAuditAction({
+        action: 'confirm',
+        model: 'purchaseOrder',
+        recordId: orderId,
+        recordName: purchaseOrder.name,
+        oldValues: { status: current.status },
+        newValues: { status: 'purchase' },
+      });
+
       return {
         success: true
       };
@@ -669,6 +707,15 @@ export async function cancelPurchaseOrder(orderId: string) {
     oldValue: order.status === 'draft' ? 'مسودة' : (order.status === 'purchase' ? 'أمر شراء' : 'غير معروف'),
     newValue: 'ملغي'
   }]);
+
+  await logAuditAction({
+    action: 'cancel',
+    model: 'purchaseOrder',
+    recordId: orderId,
+    recordName: order.name,
+    oldValues: { status: order.status },
+    newValues: { status: 'cancel' },
+  });
 
   return {
     success: true

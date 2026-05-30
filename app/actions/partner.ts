@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth';
 import { revalidatePath } from 'next/cache';
 import { ensureAccess } from '@/lib/access';
 import { CreatePartnerSchema, UpdatePartnerSchema, validateSafe } from '@/lib/validations';
+import { logAuditAction } from '@/app/actions/audit';
 export async function getAllPartners() {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -357,6 +358,15 @@ export async function updatePartner(id: string, data: any) {
         updatedById: session.userId
       } as any
     });
+
+    await logAuditAction({
+      action: 'update',
+      model: 'partner',
+      recordId: id,
+      recordName: cleanData.name || '',
+      newValues: { name: cleanData.name, phone: cleanData.phone, email: cleanData.email },
+    });
+
     revalidatePath('/[locale]/contacts');
     revalidatePath(`/[locale]/contacts/${id}`);
     return {
@@ -483,6 +493,14 @@ export async function createPartner(data: any) {
         updatedById: session.userId
       } as any
     });
+    await logAuditAction({
+      action: 'create',
+      model: 'partner',
+      recordId: partner.id,
+      recordName: cleanData.name || '',
+      newValues: { name: cleanData.name, isCustomer: cleanData.isCustomer, isVendor: cleanData.isVendor },
+    });
+
     revalidatePath('/[locale]/contacts');
     return {
       id: partner.id
@@ -553,6 +571,14 @@ export async function deletePartner(id: string) {
       await tx.partner.delete({ where: { id } });
     });
 
+    await logAuditAction({
+      action: 'delete',
+      model: 'partner',
+      recordId: id,
+      recordName: partner.name,
+      oldValues: { name: partner.name },
+    });
+
     revalidatePath('/[locale]/contacts');
     return { success: true };
   } catch (dbError: any) {
@@ -600,6 +626,14 @@ export async function duplicatePartner(id: string) {
       }
     });
 
+    await logAuditAction({
+      action: 'create',
+      model: 'partner',
+      recordId: newPartner.id,
+      recordName: newPartner.name,
+      newValues: { name: newPartner.name, duplicatedFrom: id },
+    });
+
     revalidatePath('/[locale]/contacts');
     return { success: true, id: newPartner.id };
   } catch (dbError: any) {
@@ -621,6 +655,15 @@ export async function archivePartner(id: string) {
     await prisma.partner.update({
       where: { id },
       data: { active: newActive }
+    });
+
+    await logAuditAction({
+      action: 'update',
+      model: 'partner',
+      recordId: id,
+      recordName: partner.name,
+      oldValues: { active: partner.active },
+      newValues: { active: newActive },
     });
 
     revalidatePath('/[locale]/contacts');

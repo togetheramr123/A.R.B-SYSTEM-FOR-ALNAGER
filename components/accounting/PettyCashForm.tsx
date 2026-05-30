@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createPettyCashExpense } from "@/app/actions/petty-cash";
 import { toast } from "sonner";
-import { Receipt, Save, RotateCcw, Banknote, CalendarDays, FileText, Wallet } from "lucide-react";
+import { Receipt, Save, RotateCcw, Banknote, CalendarDays, FileText, Wallet, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 type Props = {
   expenseAccounts: {
     id: string;
@@ -67,7 +68,17 @@ export function PettyCashForm({
       setLoading(false);
     }
   };
-  return <div className="bg-white border border-slate-300 shadow-sm rounded-lg max-w-2xl w-full">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={() => { const form = document.querySelector('form'); if (form) form.requestSubmit(); }} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <div className="bg-white border border-slate-300 shadow-sm rounded-lg max-w-2xl w-full">
       {" "}
       {/* Header */}{" "}
       <div className="border-b border-slate-200 p-4 flex items-center gap-3 bg-slate-50 rounded-t-lg">
@@ -199,5 +210,6 @@ export function PettyCashForm({
           </button>{" "}
         </div>{" "}
       </form>{" "}
-    </div>;
+    </div>
+    </>;
 }

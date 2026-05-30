@@ -6,6 +6,7 @@ import { getCompanyId } from '@/lib/getCompanyId';
 import { getSession } from '@/lib/auth';
 import { Decimal } from '@prisma/client/runtime/library';
 import { ensureAccess } from '@/lib/access';
+import { logAuditAction } from "@/app/actions/audit";
 export async function getAsset(id: string) {
   var session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -67,6 +68,13 @@ export async function createAsset(data: any) {
       companyId: (await getCompanyId())!
     }
   });
+  await logAuditAction({
+    action: "create",
+    model: "asset",
+    recordId: asset.id,
+    recordName: asset.name,
+    newValues: { name: data.name, originalValue: data.originalValue, categoryId: data.categoryId },
+  });
   revalidatePath('/accounting/assets');
   return asset;
 }
@@ -85,6 +93,13 @@ export async function updateAsset(id: string, data: any) {
       categoryId: data.categoryId,
       duration: parseInt(data.duration) || 5
     }
+  });
+  await logAuditAction({
+    action: "update",
+    model: "asset",
+    recordId: asset.id,
+    recordName: asset.name,
+    newValues: { name: data.name, originalValue: data.originalValue, salvageValue: data.salvageValue },
   });
   revalidatePath(`/accounting/assets/${id}`);
   return asset;
@@ -145,6 +160,13 @@ export async function computeDepreciation(assetId: string) {
       }
     });
   }
+  await logAuditAction({
+    action: "depreciate",
+    model: "asset",
+    recordId: assetId,
+    recordName: asset.name,
+    newValues: { state: 'open', linesGenerated: lines.length },
+  });
   revalidatePath(`/accounting/assets/${assetId}`);
 }
 export async function postAssetLine(lineId: string) {
@@ -210,6 +232,13 @@ export async function postAssetLine(lineId: string) {
       bookValue: line.remaining
     }
   });
+  await logAuditAction({
+    action: "validate",
+    model: "asset",
+    recordId: asset.id,
+    recordName: asset.name,
+    newValues: { lineId, bookValue: Number(line.remaining), entryId: entry.id },
+  });
   revalidatePath(`/accounting/assets/${asset.id}`);
 }
 export async function getAssetCategory(id: string) {
@@ -246,6 +275,13 @@ export async function createAssetCategory(data: any) {
       companyId: (await getCompanyId())!
     }
   });
+  await logAuditAction({
+    action: "create",
+    model: "assetCategory",
+    recordId: category.id,
+    recordName: category.name,
+    newValues: { name: data.name, method: data.method || 'linear', duration: data.duration },
+  });
   revalidatePath('/accounting/configuration/asset_categories');
   return category;
 }
@@ -265,6 +301,13 @@ export async function updateAssetCategory(id: string, data: any) {
       journalId: data.journalId
     }
   });
+  await logAuditAction({
+    action: "update",
+    model: "assetCategory",
+    recordId: category.id,
+    recordName: category.name,
+    newValues: { name: data.name, method: data.method, duration: data.duration },
+  });
   revalidatePath('/accounting/configuration/asset_categories');
   return category;
 }
@@ -274,6 +317,12 @@ export async function deleteAssetCategory(id: string) {
     where: {
       id
     }
+  });
+  await logAuditAction({
+    action: "delete",
+    model: "assetCategory",
+    recordId: id,
+    recordName: "",
   });
   revalidatePath('/accounting/configuration/asset_categories');
 }

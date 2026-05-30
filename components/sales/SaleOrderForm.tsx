@@ -1659,7 +1659,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
               { label: 'تصميم 1 (قيمة)', onClick: () => downloadSalePdf('1') },
               { label: 'تصميم 2 (نسبة)', onClick: () => downloadSalePdf('2') },
             ]} />
-            <ActionMenu onPrint={() => downloadSalePdf('1')} onDuplicate={() => toast.info('جاري الدعم للتكرار')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
+            <ActionMenu onPrint={() => downloadSalePdf('1')} onDuplicate={() => toast.info('ميزة تكرار أمر البيع قيد التطوير حالياً')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
           </div>
         </TopPortal>
 

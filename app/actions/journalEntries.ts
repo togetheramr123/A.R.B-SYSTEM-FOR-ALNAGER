@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
 import { CreateJournalEntrySchema, validateSafe } from '@/lib/validations';
 import { fail } from '@/lib/actionResult';
+import { logAuditAction } from "@/app/actions/audit";
 export async function getJournalEntries(opts?: {
   search?: string;
 }) {
@@ -146,6 +147,14 @@ export async function createJournalEntry(data: any) {
       });
     }
     
+    await logAuditAction({
+      action: "create",
+      model: "journalEntry",
+      recordId: entry.id,
+      recordName: entry.name === '/' ? '' : entry.name,
+      newValues: { journalId: data.journalId, date: data.date, ref: data.ref },
+    });
+
     revalidatePath('/[locale]/accounting/journal-entries');
     return {
       success: true,
@@ -200,6 +209,15 @@ export async function updateJournalEntry(id: string, data: any) {
         }
       }
     })]);
+    await logAuditAction({
+      action: "update",
+      model: "journalEntry",
+      recordId: id,
+      recordName: existing?.name || "",
+      oldValues: { date: existing?.date, journalId: existing?.journalId, ref: existing?.ref },
+      newValues: { date: data.date, journalId: data.journalId, ref: data.ref },
+    });
+
     revalidatePath('/[locale]/accounting/journal-entries');
     revalidatePath(`/[locale]/accounting/journal-entries/${id}`);
     return {
@@ -253,6 +271,16 @@ export async function postJournalEntry(id: string) {
         state: 'posted'
       }
     });
+
+    await logAuditAction({
+      action: "confirm",
+      model: "journalEntry",
+      recordId: id,
+      recordName: entry.name,
+      newValues: { state: "posted" },
+      oldValues: { state: entry.state },
+    });
+
     revalidatePath('/[locale]/accounting/journal-entries');
     revalidatePath(`/[locale]/accounting/journal-entries/${id}`);
     return {
@@ -292,6 +320,15 @@ export async function deleteJournalEntry(id: string) {
         id
       }
     });
+
+    await logAuditAction({
+      action: "delete",
+      model: "journalEntry",
+      recordId: id,
+      recordName: entry?.name || "",
+      oldValues: { state: entry?.state, name: entry?.name },
+    });
+
     revalidatePath('/[locale]/accounting/journal-entries');
     return {
       success: true

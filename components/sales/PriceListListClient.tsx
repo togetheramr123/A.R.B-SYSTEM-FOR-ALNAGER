@@ -217,7 +217,7 @@ export function PriceListListClient({
                 {" "}
                 جديد{" "}
               </Link>{" "}
-              <button className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2.5 py-1.5 rounded transition-colors" title="استيراد">
+              <button onClick={() => toast.info('سيتم إضافة ميزة الاستيراد قريباً', { style: { direction: 'rtl' } })} className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2.5 py-1.5 rounded transition-colors" title="استيراد">
                 {" "}
                 <Upload className="w-4 h-4" />{" "}
               </button>{" "}
@@ -258,7 +258,7 @@ export function PriceListListClient({
                       {currentFilter === "purchase" && <Check className="w-3.5 h-3.5 text-[#017E84]" />}{" "}
                     </button>{" "}
                     <div className="border-t border-gray-100 my-1"></div>{" "}
-                    <button className="w-full text-right px-4 py-1.5 text-[13px] text-gray-500 hover:bg-gray-100 transition-colors">
+                    <button onClick={() => toast.info('ميزة الفلتر المخصص قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] text-gray-500 hover:bg-gray-100 transition-colors">
                       {" "}
                       إضافة عامل تصفية مخصص ⁺{" "}
                     </button>{" "}
@@ -292,7 +292,7 @@ export function PriceListListClient({
                         {groupByKey === g.id && <Check className="w-3.5 h-3.5 text-[#017E84]" />}{" "}
                       </button>)}{" "}
                     <div className="border-t border-gray-100 my-1"></div>{" "}
-                    <button className="w-full text-right px-4 py-1.5 text-[13px] text-gray-500 hover:bg-gray-100 transition-colors">
+                    <button onClick={() => toast.info('ميزة المجموعة المخصصة قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] text-gray-500 hover:bg-gray-100 transition-colors">
                       {" "}
                       إضافة مجموعة مخصصة ⁺{" "}
                     </button>{" "}
@@ -527,7 +527,7 @@ export function PriceListListClient({
               {" "}
               <FileText className="w-4 h-4 text-gray-300" /> طباعة{" "}
             </button>{" "}
-            <button className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
+             <button onClick={() => toast.info('ميزة الأرشفة قيد التطوير')} className="flex items-center gap-1.5 hover:bg-white/10 text-white px-3 py-1.5 rounded-full text-[12px] font-semibold transition-colors">
               {" "}
               <Archive className="w-4 h-4 text-amber-400" /> أرشفة{" "}
             </button>{" "}

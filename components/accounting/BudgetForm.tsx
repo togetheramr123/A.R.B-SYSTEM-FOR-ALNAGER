@@ -11,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Trash, Calculator, Check, ArrowRight, CornerUpLeft } from "lucide-react";
+import { Plus, Trash, Calculator, Check, ArrowRight, CornerUpLeft, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 import { updateBudget, createBudget, createBudgetLine, updateBudgetLine, deleteBudgetLine, computeBudget } from "@/app/actions/budgets";
 import { toast } from "sonner";
 import { convertArabicToEnglishNumbers } from "@/lib/utils/numberUtils";
@@ -110,7 +111,17 @@ export function BudgetForm({
       toast.error("فشل حذف البند");
     }
   };
-  return <Sheet>
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSubmit(onSubmit)} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <Sheet>
       {" "}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
         {" "}
@@ -294,7 +305,8 @@ export function BudgetForm({
       from: watch("dateFrom"),
       to: watch("dateTo")
     }} />{" "}
-    </Sheet>;
+    </Sheet>
+    </>;
 }
 function LineDialog({
   open,

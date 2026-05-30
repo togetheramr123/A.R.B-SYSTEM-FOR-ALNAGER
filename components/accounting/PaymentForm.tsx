@@ -11,6 +11,7 @@ import { convertArabicToEnglishNumbers } from '@/lib/utils/numberUtils';
 import { useStatusStore } from '@/store/statusStore';
 import { Chatter } from '@/components/chatter/Chatter';
 import { AttachmentPanel } from '@/components/common/AttachmentPanel';
+import { TopPortal } from '@/components/common/TopPortal';
 
 type Props = {
   initialData: any;
@@ -127,23 +128,22 @@ export function PaymentForm({
     }
   };
   return (
+    <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        {!isPosted && initialData?.id && (
+          <button
+            onClick={handleConfirm}
+            disabled={loading}
+            className="bg-[#017E84] text-white px-3 py-1.5 rounded-sm hover:bg-indigo-700 text-sm font-medium flex items-center gap-2"
+          >
+            <Check className="w-4 h-4" /> تأكيد
+          </button>
+        )}
+      </div>
+    </TopPortal>
     <div className="bg-white border border-slate-300 shadow-sm w-full rounded-sm min-h-[600px] relative">
-      <div className="border-b border-slate-200 p-3 flex justify-between items-center bg-white sticky top-0 z-10">
-        <div className="flex gap-2 items-center">
-          {!isPosted && (
-            <>
-              {initialData?.id && (
-                <button
-                  onClick={handleConfirm}
-                  disabled={loading}
-                  className="bg-[#017E84] text-white px-3 py-1.5 rounded-sm hover:bg-indigo-700 text-sm font-medium flex items-center gap-2"
-                >
-                  <Check className="w-4 h-4" /> تأكيد
-                </button>
-              )}
-            </>
-          )}
-        </div>
+      <div className="border-b border-slate-200 p-3 flex justify-end items-center bg-white sticky top-0 z-10">
         <div className="flex bg-white border border-slate-300 rounded-sm overflow-hidden text-xs font-bold">
           <div className={`px-3 py-1.5 ${state === 'draft' ? 'bg-[#017E84] text-white' : 'bg-slate-50 text-slate-500'}`}>مسودة</div>
           <div className={`px-3 py-1.5 ${state === 'posted' ? 'bg-[#017E84] text-white' : 'bg-slate-50 text-slate-500 border-r'}`}>مرحل</div>
@@ -284,5 +284,6 @@ export function PaymentForm({
       )}
       
     </div>
+    </>
   );
 }

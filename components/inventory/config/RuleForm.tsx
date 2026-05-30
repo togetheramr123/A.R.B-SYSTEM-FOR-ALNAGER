@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { createRule, updateRule } from "@/app/actions/inventoryConfig";
 import { toast } from "sonner";
-import { Save, RefreshCw, AlertCircle } from "lucide-react";
+import { Save, RefreshCw, AlertCircle, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useStatusStore } from "@/store/statusStore";
@@ -78,7 +79,17 @@ export function RuleForm({
     });
     return () => clearStatus();
   }, [saving, isDirty, router, locale]);
-  return <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSave} disabled={saving}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
       {" "}
       <div className="p-6 md:p-8 flex-1 grid md:grid-cols-2 gap-x-12 gap-y-6">
         {" "}
@@ -204,5 +215,6 @@ export function RuleForm({
           </div>{" "}
         </div>{" "}
       </div>{" "}
-    </div>;
+    </div>
+    </>;
 }

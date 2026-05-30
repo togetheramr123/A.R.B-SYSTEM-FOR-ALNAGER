@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 import { getSession } from '@/lib/auth';
 import { getCompanyId } from '@/lib/getCompanyId';
 import { Decimal } from '@prisma/client/runtime/library';
+import { logAuditAction } from "@/app/actions/audit";
 export async function getAllCashRegisters() {
   var session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -162,6 +163,15 @@ export async function createCashRegister(data: {
       }
     });
   }
+
+  await logAuditAction({
+    action: "create",
+    model: "cashRegister",
+    recordId: register.id,
+    recordName: register.name,
+    newValues: { name: data.name, code, userId: data.userId, isMain: data.isMain },
+  });
+
   try {
     revalidatePath('/accounting/cash-registers');
   } catch (error) { console.error("Silent error caught in app/actions/cash-register.ts:", error); }
@@ -186,6 +196,15 @@ export async function updateUserCashPermissions(userId: string, permissions: {
     },
     data: permissions
   });
+
+  await logAuditAction({
+    action: "update",
+    model: "cashRegister",
+    recordId: userId,
+    recordName: "",
+    newValues: permissions,
+  });
+
   try {
     revalidatePath('/settings');
   } catch (error) { console.error("Silent error caught in app/actions/cash-register.ts:", error); }
@@ -360,6 +379,15 @@ export async function createCashTransaction(data: {
         }
       }
     }
+
+    await logAuditAction({
+      action: "create",
+      model: "cashRegister",
+      recordId: transaction.id,
+      recordName: transaction.name,
+      newValues: { type: data.type, amount: data.amount, description: data.description, registerId },
+    });
+
     return transaction;
   });
 }
@@ -626,6 +654,15 @@ export async function performSettlement(registerId: string, performedById?: stri
         }
       }
     }
+
+    await logAuditAction({
+      action: "create",
+      model: "cashRegister",
+      recordId: settlement.id,
+      recordName: settlement.name,
+      newValues: { registerId, totalReceipts: totalReceipts.toNumber(), totalDisbursements: totalDisbursements.toNumber(), netAmount: netAmount.toNumber() },
+    });
+
     return {
       success: true,
       settlement

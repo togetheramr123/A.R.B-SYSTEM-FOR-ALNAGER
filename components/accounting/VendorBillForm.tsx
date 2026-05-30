@@ -9,6 +9,7 @@ import { useState } from "react";
 import { EditableDynamicTable, Column } from "@/components/common/EditableDynamicTable";
 import Link from "next/link";
 import { convertArabicToEnglishNumbers } from "@/lib/utils/numberUtils";
+import { TopPortal } from '@/components/common/TopPortal';
 export function VendorBillForm() {
   const t = useTranslations("Accounting"); // and Purchases
   const locale = useLocale(); // Default to 'posted' to match USER request, normally would start as 'draft'
@@ -148,81 +149,29 @@ export function VendorBillForm() {
           </div>;
     }
   }];
-  return <div className="bg-slate-50 min-h-screen pb-20 font-sans">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        {/* Draft Actions */}
+        {status === "draft" && <button onClick={postBill} className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
+            <Check className="w-4 h-4" /> تأكيد
+          </button>}
+        {/* Posted Actions */}
+        {status === "posted" && <>
+            <button onClick={registerPayment} className="bg-[#008784] hover:bg-[#00706d] text-white px-4 py-1.5 rounded-sm text-sm font-bold transition-colors shadow-sm flex items-center gap-2">
+              تسجيل الدفع
+            </button>
+            <button className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-sm text-sm font-medium transition-colors">
+              إضافة إشعار دائن
+            </button>
+            <button onClick={resetToDraft} className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-sm text-sm font-medium transition-colors">
+              إعادة التعيين كمسودة
+            </button>
+          </>}
+      </div>
+    </TopPortal>
+    <div className="bg-slate-50 min-h-screen pb-20 font-sans">
       {" "}
-      {/* Top Breadcrumb / Nav */}{" "}
-      <div className="bg-white px-4 py-2 border-b border-slate-200 flex justify-between items-center text-sm">
-        {" "}
-        <div className="flex items-center gap-2 text-slate-500">
-          {" "}
-          <Link href={`/${locale}/purchases`} className="hover:text-indigo-700">
-            طلبات عروض الأسعار
-          </Link>{" "}
-          <span>/</span>{" "}
-          <Link href="#" className="hover:text-indigo-700">
-            P01043 (الى / الصندوق / 0017)
-          </Link>{" "}
-          <span>/</span>{" "}
-          <span className="text-slate-800 font-bold">
-            BILL/2026/01/0006
-          </span>{" "}
-        </div>{" "}
-        <div className="flex gap-2 text-slate-700">
-          {" "}
-          <button className="flex items-center gap-1 hover:bg-slate-100 px-2 py-1 rounded">
-            {" "}
-            <Printer className="w-4 h-4" /> <span>طباعة</span>{" "}
-          </button>{" "}
-          <button className="flex items-center gap-1 hover:bg-slate-100 px-2 py-1 rounded">
-            {" "}
-            <span>إجراء</span>{" "}
-          </button>{" "}
-        </div>{" "}
-      </div>{" "}
-      {/* Action Bar (Sticky) */}{" "}
-      <div className="bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-20">
-        {" "}
-        <div className="flex gap-2">
-          {" "}
-          {/* Draft Actions */}{" "}
-          {status === "draft" && <button onClick={postBill} className="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors shadow-sm flex items-center gap-2">
-              {" "}
-              <Check className="w-4 h-4" /> تأكيد{" "}
-            </button>}{" "}
-          {/* Posted Actions */}{" "}
-          {status === "posted" && <>
-              {" "}
-              <button onClick={registerPayment} className="bg-[#008784] hover:bg-[#00706d] text-white px-4 py-1.5 rounded-sm text-sm font-bold transition-colors shadow-sm flex items-center gap-2">
-                {" "}
-                تسجيل الدفع{" "}
-              </button>{" "}
-              <button className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-sm text-sm font-medium transition-colors">
-                {" "}
-                إضافة إشعار دائن{" "}
-              </button>{" "}
-              <button onClick={resetToDraft} className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-3 py-1.5 rounded-sm text-sm font-medium transition-colors">
-                {" "}
-                إعادة التعيين كمسودة{" "}
-              </button>{" "}
-            </>}{" "}
-        </div>{" "}
-        {/* Status Ribbon (Pipeline) */}{" "}
-        <div className="flex items-center bg-white border border-slate-300 rounded-sm">
-          {" "}
-          {["draft", "posted", "paid"].map((step, index, arr) => {
-          const isActive = status === step; // Determine visual state // If status is 'posted', draft is completed (past), posted is active (current), paid is future
-          let stateClass = "text-slate-500 bg-slate-50"; // default future
-          if (isActive) stateClass = "bg-[#008784] text-white"; // Active // Simple logic for "past" items (if posted, draft is past)
-          if (status === "posted" && step === "draft") stateClass = "text-[#008784] bg-white";
-          if (status === "paid") stateClass = "text-[#008784] bg-white";
-          if (status === "paid" && step === "paid") stateClass = "bg-[#008784] text-white";
-          return <div key={step} className={` flex items-center h-8 px-4 text-sm font-medium border-l border-slate-300 last:border-l-0 ${stateClass} `}>
-                {" "}
-                {step === "draft" ? "مسودة" : step === "posted" ? "تم الترحيل" : "مدفوعة"}{" "}
-              </div>;
-        })}{" "}
-        </div>{" "}
-      </div>{" "}
       {/* Alert Banner for Outstanding Debits */}{" "}
       {status === "posted" && <div className="bg-[#e5f6f6] border-b border-[#008784]/20 px-6 py-3 flex items-start gap-3">
           {" "}
@@ -456,5 +405,6 @@ export function VendorBillForm() {
           </div>{" "}
         </div>{" "}
       </div>{" "}
-    </div>;
+    </div>
+    </>;
 }

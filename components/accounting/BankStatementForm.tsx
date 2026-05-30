@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash, Check, ArrowRight, CornerUpLeft, Search } from "lucide-react";
+import { Plus, Trash, Check, ArrowRight, CornerUpLeft, Search, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 import { createBankStatement, updateBankStatement, addBankStatementLine } from "@/app/actions/bank-reconciliation";
 import { Chatter } from "@/components/chatter/Chatter";
 import { toast } from "sonner";
@@ -76,7 +77,17 @@ export function BankStatementForm({
       toast.error("فشل في إضافة السطر");
     }
   };
-  return <Sheet>
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSubmit(onSubmit)} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <Sheet>
       {" "}
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
         {" "}
@@ -259,5 +270,6 @@ export function BankStatementForm({
           {initialData?.id && <div className="mt-8 pt-8 border-t"><Chatter model="bankStatement" id={initialData.id} /></div>}
         </div>{" "}
       </form>{" "}
-    </Sheet>;
+    </Sheet>
+    </>;
 }

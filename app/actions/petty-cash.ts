@@ -4,7 +4,8 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth";
 import { ensureAccess } from "@/lib/access";
-import { getCompanyId } from "@/lib/getCompanyId"; /** * Create a Petty Cash / Miscellaneous Expense entry. * This creates both a Payment record and its Journal Entry in one step. */
+import { getCompanyId } from "@/lib/getCompanyId";
+import { logAuditAction } from "@/app/actions/audit"; /** * Create a Petty Cash / Miscellaneous Expense entry. * This creates both a Payment record and its Journal Entry in one step. */
 export async function createPettyCashExpense(data: {
   description: string;
   amount: number;
@@ -76,6 +77,15 @@ export async function createPettyCashExpense(data: {
         }
       }
     });
+
+    await logAuditAction({
+      action: "create",
+      model: "pettyCash",
+      recordId: payment.id,
+      recordName: payment.name,
+      newValues: { amount: data.amount, description: data.description, journalId: data.journalId, expenseAccountId: data.expenseAccountId },
+    });
+
     try {
       revalidatePath("/accounting/payments");
     } catch (error) { console.error("Silent error caught in app/actions/petty-cash.ts:", error); }

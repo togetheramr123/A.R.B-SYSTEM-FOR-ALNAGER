@@ -1,5 +1,6 @@
 'use client';
 import React from "react";
+import { toast } from 'sonner';
 import { validatePicking } from '@/app/actions/inventory';
 import { createReturnPicking } from '@/app/actions/returns';
 import { useTranslations, useLocale } from 'next-intl';
@@ -34,6 +35,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
   const [isLocked, setIsLocked] = useState<boolean>(picking.status === 'done');
   const [backorderData, setBackorderData] = useState<any>(null);
   const [immediateTransferData, setImmediateTransferData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'operations' | 'info' | 'notes'>('operations');
 
   const { register, control, handleSubmit, watch, setValue, reset, formState: { isDirty } } = useForm({
     defaultValues: {
@@ -287,7 +289,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
             { label: 'تصميم 1 (مع هوية الشركة)', onClick: () => window.open(`/${locale}/inventory/operations/${picking.pickingType === 'INCOMING' ? 'receipts' : 'delivery'}/${picking.id}/print?design=1`, '_blank') },
             { label: 'تصميم 2 (بدون هوية)', onClick: () => window.open(`/${locale}/inventory/operations/${picking.pickingType === 'INCOMING' ? 'receipts' : 'delivery'}/${picking.id}/print?design=2`, '_blank') },
           ]} />
-          <ActionMenu onDuplicate={() => {}} onDelete={() => {}} />
+          <ActionMenu onDuplicate={() => toast.info('ميزة التكرار قيد التطوير')} onDelete={() => toast.error('الحذف غير مصرح به لهذه الوثيقة')} />
         </div>
       </TopPortal>
 
@@ -342,10 +344,11 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
 
       <div className="o_notebook mt-4">
         <div className="flex gap-6 border-b border-gray-200">
-          <button type="button" className="pb-2 text-sm font-bold text-teal-700 border-b-2 border-teal-700 -mb-px">العمليات</button>
-          <button type="button" className="pb-2 text-sm font-bold text-gray-500 hover:text-gray-800 border-b-2 border-transparent">معلومات إضافية</button>
-          <button type="button" className="pb-2 text-sm font-bold text-gray-500 hover:text-gray-800 border-b-2 border-transparent">ملاحظة</button>
+          <button type="button" onClick={() => setActiveTab('operations')} className={`pb-2 text-sm font-bold -mb-px ${activeTab === 'operations' ? 'text-teal-700 border-b-2 border-teal-700' : 'text-gray-500 hover:text-gray-800 border-b-2 border-transparent'}`}>العمليات</button>
+          <button type="button" onClick={() => setActiveTab('info')} className={`pb-2 text-sm font-bold -mb-px ${activeTab === 'info' ? 'text-teal-700 border-b-2 border-teal-700' : 'text-gray-500 hover:text-gray-800 border-b-2 border-transparent'}`}>معلومات إضافية</button>
+          <button type="button" onClick={() => setActiveTab('notes')} className={`pb-2 text-sm font-bold -mb-px ${activeTab === 'notes' ? 'text-teal-700 border-b-2 border-teal-700' : 'text-gray-500 hover:text-gray-800 border-b-2 border-transparent'}`}>ملاحظة</button>
         </div>
+        {activeTab === 'operations' && (
         <div className="pt-4">
           <EditableDynamicTable
             tableId="picking_operations"
@@ -354,9 +357,20 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
             register={register}
             readOnly={status === 'done' || readOnly}
             control={control}
-            onRemove={() => {}}
+            onRemove={(id) => toast.info('ميزة الحذف قيد التطوير')}
           />
         </div>
+        )}
+        {activeTab === 'info' && (
+        <div className="pt-4 text-sm text-slate-500">
+          <p>لا توجد معلومات إضافية حالياً.</p>
+        </div>
+        )}
+        {activeTab === 'notes' && (
+        <div className="pt-4 text-sm text-slate-500">
+          <p>لا توجد ملاحظات حالياً.</p>
+        </div>
+        )}
       </div>
 
       {/* Attachments */}

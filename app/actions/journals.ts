@@ -1,5 +1,6 @@
 "use server";
 import { ensureAccess } from '@/lib/access';
+import { logAuditAction } from "@/app/actions/audit";
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
@@ -50,6 +51,13 @@ export async function createJournal(data: any) {
       companyId: await getCompanyId()
     }
   });
+  await logAuditAction({
+    action: "create",
+    model: "journal",
+    recordId: journal.id,
+    recordName: journal.name,
+    newValues: { name: journal.name, code: journal.code, type: journal.type },
+  });
   revalidatePath('/accounting/configuration/journals');
   return journal;
 }
@@ -58,7 +66,7 @@ export async function updateJournal(id: string, data: any) {
   if (!session) throw new Error("غير مصرح");
   await ensureAccess("base", "write");
 
-  await prisma.journal.update({
+  const journal = await prisma.journal.update({
     where: {
       id
     },
@@ -68,6 +76,13 @@ export async function updateJournal(id: string, data: any) {
       type: data.type,
       defaultAccountId: data.defaultAccountId || null
     }
+  });
+  await logAuditAction({
+    action: "update",
+    model: "journal",
+    recordId: id,
+    recordName: data.name,
+    newValues: { name: data.name, code: data.code, type: data.type },
   });
   revalidatePath('/accounting/configuration/journals');
   revalidatePath(`/accounting/configuration/journals/${id}`);
@@ -81,6 +96,12 @@ export async function deleteJournal(id: string) {
     where: {
       id
     }
+  });
+  await logAuditAction({
+    action: "delete",
+    model: "journal",
+    recordId: id,
+    recordName: "",
   });
   revalidatePath('/accounting/configuration/journals');
 }

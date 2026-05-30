@@ -5,6 +5,7 @@ import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { getCompanyId } from '@/lib/getCompanyId';
+import { logAuditAction } from "@/app/actions/audit";
 
 export async function getAllContractTemplates() {
   var session = await getSession();
@@ -55,6 +56,15 @@ export async function createContractTemplate(data: any) {
       }
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "contract",
+    recordId: template.id,
+    recordName: template.name,
+    newValues: { name: data.name, clausesCount: data.clauses?.length },
+  });
+
   revalidatePath('/hr/contracts/templates');
   return template;
 }
@@ -84,6 +94,15 @@ export async function updateContractTemplate(id: string, data: any) {
       }
     }
   });
+
+  await logAuditAction({
+    action: "update",
+    model: "contract",
+    recordId: id,
+    recordName: template.name,
+    newValues: { name: data.name, clausesCount: data.clauses?.length },
+  });
+
   revalidatePath('/hr/contracts/templates');
   return template;
 }
@@ -161,6 +180,14 @@ export async function saveContractClauses(id: string, clauses: any[], templateId
         }))
       }
     }
+  });
+
+  await logAuditAction({
+    action: "update",
+    model: "contract",
+    recordId: id,
+    recordName: "",
+    newValues: { clausesCount: clauses.length, templateId },
   });
   
   revalidatePath(`/hr/contracts`);

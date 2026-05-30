@@ -6,6 +6,7 @@ import { getCompanyId } from '@/lib/getCompanyId';
 import { Decimal } from '@prisma/client/runtime/library';
 import { getSession } from '@/lib/auth';
 import { ensureAccess } from '@/lib/access';
+import { logAuditAction } from "@/app/actions/audit";
 export async function getBudgets() {
   var session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -51,6 +52,15 @@ export async function createBudget(data: any) {
       companyId: await getCompanyId()
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "budget",
+    recordId: budget.id,
+    recordName: budget.name,
+    newValues: { name: data.name, dateFrom: data.dateFrom, dateTo: data.dateTo },
+  });
+
   revalidatePath('/accounting/reporting/budgets');
   return budget;
 }
@@ -70,6 +80,15 @@ export async function updateBudget(id: string, data: any) {
       state: data.state
     }
   });
+
+  await logAuditAction({
+    action: "update",
+    model: "budget",
+    recordId: id,
+    recordName: budget.name,
+    newValues: { name: data.name, dateFrom: data.dateFrom, dateTo: data.dateTo, state: data.state },
+  });
+
   revalidatePath('/accounting/reporting/budgets');
   revalidatePath(`/accounting/reporting/budgets/${id}`);
   return budget;
@@ -83,11 +102,19 @@ export async function deleteBudget(id: string) {
       id
     }
   });
+
+  await logAuditAction({
+    action: "delete",
+    model: "budget",
+    recordId: id,
+    recordName: "",
+  });
+
   revalidatePath('/accounting/reporting/budgets');
 }
 export async function createBudgetLine(budgetId: string, data: any) {
   await ensureAccess('budget', 'write');
-  await prisma.budgetLine.create({
+  const line = await prisma.budgetLine.create({
     data: {
       budgetId,
       analyticAccountId: data.analyticAccountId,
@@ -97,6 +124,15 @@ export async function createBudgetLine(budgetId: string, data: any) {
       plannedAmount: new Decimal(data.plannedAmount || 0)
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "budget",
+    recordId: line.id,
+    recordName: `Line for budget ${budgetId}`,
+    newValues: { budgetId, plannedAmount: data.plannedAmount },
+  });
+
   revalidatePath(`/accounting/reporting/budgets/${budgetId}`);
 }
 export async function updateBudgetLine(id: string, data: any) {
@@ -113,6 +149,14 @@ export async function updateBudgetLine(id: string, data: any) {
       plannedAmount: new Decimal(data.plannedAmount || 0)
     }
   });
+
+  await logAuditAction({
+    action: "update",
+    model: "budget",
+    recordId: id,
+    recordName: `Budget line`,
+    newValues: { plannedAmount: data.plannedAmount, dateFrom: data.dateFrom, dateTo: data.dateTo },
+  });
 }
 export async function deleteBudgetLine(id: string) {
   await ensureAccess('budget', 'write');
@@ -120,6 +164,13 @@ export async function deleteBudgetLine(id: string) {
     where: {
       id
     }
+  });
+
+  await logAuditAction({
+    action: "delete",
+    model: "budget",
+    recordId: id,
+    recordName: "Budget line",
   });
 }
 export async function computeBudget(budgetId: string) {

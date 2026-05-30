@@ -4,6 +4,7 @@ import { ensureAccess } from '@/lib/access';
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { logAuditAction } from "@/app/actions/audit";
 export async function getTickets() {
   var session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -119,6 +120,14 @@ export async function addTicketMessage(ticketId: string, body: string, isInterna
         updatedAt: new Date()
       }
     });
+    await logAuditAction({
+      action: "create",
+      model: "crmLead",
+      recordId: message.id,
+      recordName: `Message on ticket ${ticketId}`,
+      newValues: { ticketId, isInternal },
+    });
+
     revalidatePath(`/[locale]/crm/tickets/${ticketId}`);
     return {
       success: true,
@@ -148,6 +157,15 @@ export async function updateTicketStatus(ticketId: string, status: string) {
         status
       }
     });
+
+    await logAuditAction({
+      action: "update",
+      model: "crmLead",
+      recordId: ticketId,
+      recordName: "",
+      newValues: { status },
+    });
+
     revalidatePath(`/[locale]/crm/tickets/${ticketId}`);
     revalidatePath(`/[locale]/crm/tickets`);
     return {

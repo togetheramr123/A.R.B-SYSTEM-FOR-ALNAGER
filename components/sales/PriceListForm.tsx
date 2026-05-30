@@ -6,6 +6,7 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { createPriceList, updatePriceList, deletePriceListItem, deletePriceList } from '@/app/actions/pricelists';
 import { RotateCcw, Settings2, CloudUpload, Search, Filter, X, Download, PackageOpen, UserPlus, Users, Trash2, ChevronDown, Percent } from 'lucide-react';
+import { TopPortal } from '@/components/common/TopPortal';
 import { OdooCombobox } from '@/components/ui/OdooCombobox';
 import { cn } from '@/lib/utils';
 import { Chatter } from '@/components/chatter/Chatter';
@@ -213,6 +214,16 @@ export function PriceListForm({
   };
 
   return (
+    <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSubmit(onSubmit)} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
     <div className="bg-[#f0f2f5] min-h-screen font-sans" dir="rtl">
       {/* ─── Sticky Header Bar ─── */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between sticky top-0 z-40 shadow-sm">
@@ -771,5 +782,6 @@ export function PriceListForm({
         </div>
       </div>
     </div>
+    </>
   );
 }

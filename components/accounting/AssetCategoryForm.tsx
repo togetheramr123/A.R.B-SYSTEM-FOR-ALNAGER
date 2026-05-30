@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { OdooCombobox } from "@/components/ui/OdooCombobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Trash2, LayoutGrid, CloudUpload } from "lucide-react";
+import { TopPortal } from '@/components/common/TopPortal';
 import Link from "next/link";
 import { convertArabicToEnglishNumbers } from "@/lib/utils/numberUtils";
 interface AssetCategoryFormProps {
@@ -80,7 +81,17 @@ export function AssetCategoryForm({
       setLoading(false);
     }
   };
-  return <div className="bg-slate-50 min-h-screen pb-10">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSubmit(onSubmit)} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <div className="bg-slate-50 min-h-screen pb-10">
       {" "}
       {/* Header */}{" "}
       <div className="bg-white border-b border-slate-200 px-4 py-3 flex justify-between items-center sticky top-0 z-10 shadow-sm h-16">
@@ -250,5 +261,6 @@ export function AssetCategoryForm({
           </div>{" "}
         </div>{" "}
       </div>{" "}
-    </div>;
+    </div>
+    </>;
 }

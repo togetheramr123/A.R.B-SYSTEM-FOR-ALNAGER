@@ -3,6 +3,7 @@ import { ensureAccess } from '@/lib/access';
 
 import prisma from '@/lib/prisma';
 import { getSession } from '@/lib/auth';
+import { logAuditAction } from "@/app/actions/audit";
 type PartnerBalance = {
   partnerId: string;
   balance: number;
@@ -128,6 +129,15 @@ export async function saveOpeningBalances(data: {
       }
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "openingBalance",
+    recordId: entry.id,
+    recordName: entry.name,
+    newValues: { partnersCount: partners.length, registersCount: registers.length },
+  });
+
   return entry;
 }
 export async function getOpeningBalancesData() {

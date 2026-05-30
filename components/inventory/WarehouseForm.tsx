@@ -3,6 +3,8 @@
 import { useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { CloudUpload } from 'lucide-react';
+import { TopPortal } from '@/components/common/TopPortal';
 import { useStatusStore } from "@/store/statusStore";
 import { useEffect } from "react";
 export function WarehouseForm() {
@@ -33,7 +35,17 @@ export function WarehouseForm() {
     });
     return () => clearStatus();
   }, [isSubmitting, isDirty, handleSubmit]);
-  return <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-sm shadow-sm border border-slate-100 max-w-2xl">
+  return <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-sm shadow-sm border border-slate-100 max-w-2xl">
       {" "}
       <div className="grid grid-cols-1 gap-6">
         {" "}
@@ -65,5 +77,6 @@ export function WarehouseForm() {
           <textarea {...register("address")} rows={3} className="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" />{" "}
         </div>{" "}
       </div>{" "}
-    </form>;
+    </form>
+    </>;
 }

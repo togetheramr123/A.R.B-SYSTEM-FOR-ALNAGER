@@ -1,5 +1,6 @@
 "use server";
 import { ensureAccess } from '@/lib/access';
+import { logAuditAction } from "@/app/actions/audit";
 
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
@@ -117,6 +118,13 @@ export async function createAccount(data: any) {
         companyId: data.companyId || (await getCompanyId())
       }
     });
+    await logAuditAction({
+      action: "create",
+      model: "account",
+      recordId: account.id,
+      recordName: account.name,
+      newValues: { code: account.code, name: account.name, type: account.type },
+    });
     revalidatePath('/accounting/chart-of-accounts');
     return account;
   } catch (e: any) {
@@ -138,7 +146,7 @@ export async function updateAccount(id: string, data: any) {
   const journalConnections = data.allowedJournals ? data.allowedJournals.map((jId: string) => ({
     id: jId
   })) : [];
-  await prisma.account.update({
+  const account = await prisma.account.update({
     where: {
       id
     },
@@ -158,6 +166,13 @@ export async function updateAccount(id: string, data: any) {
       }
     }
   });
+  await logAuditAction({
+    action: "update",
+    model: "account",
+    recordId: id,
+    recordName: data.name,
+    newValues: { code: data.code, name: data.name, type: data.type },
+  });
   revalidatePath('/accounting/chart-of-accounts');
   revalidatePath(`/accounting/chart-of-accounts/${id}`);
 }
@@ -170,6 +185,12 @@ export async function deleteAccount(id: string) {
     where: {
       id
     }
+  });
+  await logAuditAction({
+    action: "delete",
+    model: "account",
+    recordId: id,
+    recordName: "",
   });
   revalidatePath('/accounting/chart-of-accounts');
 }

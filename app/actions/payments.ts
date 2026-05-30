@@ -6,6 +6,7 @@ import { getCompanyId } from "@/lib/getCompanyId";
 import { getSession } from "@/lib/auth";
 import { logTrackingChanges } from "@/app/actions/chatter";
 import { ensureAccess } from "@/lib/access";
+import { logAuditAction } from "@/app/actions/audit";
 import { CreatePaymentSchema } from "@/lib/schemas";
 import { ok, fail } from "@/lib/actionResult";
 export async function getPayment(id: string) {
@@ -94,6 +95,14 @@ export async function createPayment(data: any) {
         companyId: data.companyId || (await getCompanyId())
       }
     });
+    await logAuditAction({
+      action: 'create',
+      model: 'payment',
+      recordId: payment.id,
+      recordName: payment.name,
+      newValues: { name: payment.name, paymentType: data.paymentType, amount: data.amount, state: 'draft' },
+    });
+
     try {
       revalidatePath("/accounting/payments");
     } catch (error) { console.error("Silent error caught in app/actions/payments.ts:", error); }
@@ -207,6 +216,15 @@ export async function confirmPayment(id: string) {
       oldValue: 'مسودة',
       newValue: 'مرحل'
     }]);
+
+    await logAuditAction({
+      action: 'confirm',
+      model: 'payment',
+      recordId: id,
+      recordName: payment.name,
+      oldValues: { state: 'draft' },
+      newValues: { state: 'posted' },
+    });
 
   });
   try {

@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createScrapOrder, validateScrap } from '@/app/actions/inventory';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CloudUpload } from 'lucide-react';
+import { TopPortal } from '@/components/common/TopPortal';
 import { convertArabicToEnglishNumbers } from '@/lib/utils/numberUtils';
 interface Props {
   products: {
@@ -50,6 +51,16 @@ export default function ScrapOrderForm({
     }
   }
   return (
+    <>
+    <TopPortal>
+      <div className="flex items-center gap-1.5 shrink-0 rtl:flex-row-reverse" dir="rtl">
+        <button onClick={() => { const form = document.querySelector('form'); if (form) form.requestSubmit(); }} disabled={loading}
+          className="bg-[#017E84] text-white px-3 py-1 rounded-sm text-sm font-bold hover:bg-[#006A6F] transition-colors flex items-center gap-2 h-8">
+          <CloudUpload className="w-4 h-4" />
+          حفظ
+        </button>
+      </div>
+    </TopPortal>
     <form action={handleSubmit} className="space-y-4">
       {error && (
         <div className="bg-red-50 text-red-600 p-3 rounded text-sm font-medium">
@@ -108,5 +119,6 @@ export default function ScrapOrderForm({
         </button>
       </div>
     </form>
+    </>
   );
 }

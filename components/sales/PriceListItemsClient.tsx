@@ -5,6 +5,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, Download, Filter, Star, List, Settings2, Search } from "lucide-react";
+import { toast } from "sonner";
 interface PriceList {
   id: string;
   name: string;
@@ -135,7 +136,7 @@ export function PriceListItemsClient({
             {" "}
             جديد{" "}
           </button>{" "}
-          <button className="p-1 text-gray-600 hover:bg-gray-100 rounded" title="تصدير">
+          <button onClick={() => toast.info('ميزة التصدير قيد التطوير')} className="p-1 text-gray-600 hover:bg-gray-100 rounded" title="تصدير">
             {" "}
             <Download className="w-4 h-4" />{" "}
           </button>{" "}
@@ -158,11 +159,11 @@ export function PriceListItemsClient({
             </button>{" "}
             {showFilters && <div className="absolute top-10 right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-sm py-1 z-50">
                 {" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('ميزة فلتر الأرشيف قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   مؤرشف
                 </button>{" "}
                 <div className="border-t border-gray-100 my-1"></div>{" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('ميزة الفلتر المخصص قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   إضافة عامل تصفية مخصص
                 </button>{" "}
               </div>}{" "}
@@ -176,17 +177,17 @@ export function PriceListItemsClient({
             </button>{" "}
             {showGroupBy && <div className="absolute top-10 right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-sm py-1 z-50">
                 {" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('هذه الميزة قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   المنتج
                 </button>{" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('هذه الميزة قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   المتغير
                 </button>{" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('هذه الميزة قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   قائمة الأسعار
                 </button>{" "}
                 <div className="border-t border-gray-100 my-1"></div>{" "}
-                <button className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
+                <button onClick={() => toast.info('هذه الميزة قيد التطوير')} className="w-full text-right px-4 py-1.5 text-[13px] hover:bg-gray-100">
                   إضافة مجموعة مخصصة
                 </button>{" "}
               </div>}{" "}

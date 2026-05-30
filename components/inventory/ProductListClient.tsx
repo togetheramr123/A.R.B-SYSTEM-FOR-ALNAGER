@@ -402,7 +402,7 @@ export function ProductListClient({
                 {" "}
                 جديد{" "}
               </Link>{" "}
-              <button className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2.5 py-1.5 rounded transition-colors" title="استيراد">
+              <button onClick={() => toast.info('سيتم إضافة ميزة الاستيراد قريباً', { style: { direction: 'rtl' } })} className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 px-2.5 py-1.5 rounded transition-colors" title="استيراد">
                 {" "}
                 <Upload className="w-4 h-4" />{" "}
               </button>{" "}
@@ -444,11 +444,11 @@ export function ProductListClient({
                       {currentFilter === "negative_forecast" && <Check className="w-4 h-4 text-[#017E84]" />}
                     </button>
                     <div className="border-t border-gray-200 my-1" />
-                    <button className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
+                    <button onClick={() => toast.info('ميزة المفضلات قيد التطوير')} className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
                       <span>المفضلات</span>
                     </button>
                     <div className="border-t border-gray-200 my-1" />
-                    <button className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
+                    <button onClick={() => toast.info('ميزة التحذيرات قيد التطوير')} className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
                       <span>تحذيرات</span>
                     </button>
                     <div className="border-t border-gray-200 my-1" />
@@ -457,7 +457,7 @@ export function ProductListClient({
                       {currentFilter === "archived" && <Check className="w-4 h-4 text-[#017E84]" />}
                     </button>
                     <div className="border-t border-gray-200 my-1" />
-                    <button className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
+                    <button onClick={() => toast.info('ميزة الفلتر المخصص قيد التطوير')} className="w-full px-4 py-1.5 hover:bg-gray-100 transition-colors flex justify-between items-center text-gray-700">
                       <span>إضافة عامل تصفية مخصص</span>
                       <ChevronLeft className="w-4 h-4 text-gray-400" />
                     </button>

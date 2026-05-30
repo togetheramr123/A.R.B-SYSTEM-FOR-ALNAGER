@@ -10,6 +10,7 @@ import { CreateSaleOrderSchema, validateSafe } from '@/lib/validations';
 import { getNextSequence } from '@/lib/sequence';
 import { reserveStock, releaseReservedStock } from '@/lib/utils/inventoryReservation';
 import { logTrackingChanges, TrackingChange } from '@/app/actions/chatter';
+import { logAuditAction } from '@/app/actions/audit';
 export async function createSaleOrder(data: any) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -102,6 +103,14 @@ export async function createSaleOrder(data: any) {
       }
     });
 
+    await logAuditAction({
+      action: 'create',
+      model: 'saleOrder',
+      recordId: saleOrder.id,
+      recordName: saleOrder.name,
+      newValues: { name: saleOrder.name, status: 'draft', partnerId: partner?.id || null, amountTotal: amountTotal.toString() },
+    });
+
     try {
       revalidatePath('/[locale]/sales');
     } catch (error) { console.error("Silent error caught in app/actions/sales.ts:", error); }
@@ -154,6 +163,15 @@ export async function createDraftSaleOrder() {
         saleOrderId: saleOrder.id
       }
     });
+
+    await logAuditAction({
+      action: 'create',
+      model: 'saleOrder',
+      recordId: saleOrder.id,
+      recordName: saleOrder.name,
+      newValues: { name: saleOrder.name, status: 'draft' },
+    });
+
     return saleOrder;
   });
 }
@@ -356,6 +374,16 @@ export async function updateSaleOrder(orderId: string, data: any) {
   if (changes.length > 0) {
     await logTrackingChanges('saleOrder', orderId, changes);
   }
+
+  await logAuditAction({
+    action: 'update',
+    model: 'saleOrder',
+    recordId: orderId,
+    recordName: saleOrder.name,
+    oldValues: { amountTotal: current?.amountTotal?.toString(), dateOrder: current?.dateOrder?.toISOString() },
+    newValues: { amountTotal: amountTotal.toString(), dateOrder: new Date(data.date).toISOString() },
+  });
+
   return {
     success: true
   };
@@ -710,6 +738,15 @@ export async function confirmSaleOrder(orderId: string) {
         oldValue: saleOrder.status === 'draft' ? 'مسودة' : 'مرسل',
         newValue: 'تأكيد أمر البيع'
       }]);
+
+      await logAuditAction({
+        action: 'confirm',
+        model: 'saleOrder',
+        recordId: orderId,
+        recordName: saleOrder.name,
+        oldValues: { status: saleOrder.status },
+        newValues: { status: 'sale' },
+      });
 
       return {
         success: true
@@ -1272,6 +1309,15 @@ export async function cancelSaleOrder(orderId: string) {
     oldValue: order.status === 'draft' ? 'مسودة' : (order.status === 'sale' ? 'أمر بيع' : 'غير معروف'),
     newValue: 'ملغي'
   }]);
+
+  await logAuditAction({
+    action: 'cancel',
+    model: 'saleOrder',
+    recordId: orderId,
+    recordName: order.name,
+    oldValues: { status: order.status },
+    newValues: { status: 'cancel' },
+  });
 
   return {
     success: true

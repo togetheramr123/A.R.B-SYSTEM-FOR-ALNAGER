@@ -4,6 +4,7 @@ import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { getCompanyId } from '@/lib/getCompanyId';
+import { logAuditAction } from "@/app/actions/audit";
 export async function getAllDepartments() {
   var session = await getSession();
   if (!session) throw new Error("غير مصرح");
@@ -60,6 +61,15 @@ export async function createDepartment(data: {
       managerId: data.managerId || null
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "employee",
+    recordId: dept.id,
+    recordName: dept.name,
+    newValues: { name: data.name, managerId: data.managerId },
+  });
+
   revalidatePath('/hr/departments');
   return dept;
 }
@@ -135,6 +145,15 @@ export async function createEmployee(data: any) {
       }
     });
   }
+
+  await logAuditAction({
+    action: "create",
+    model: "employee",
+    recordId: employee.id,
+    recordName: employee.name,
+    newValues: { name: data.name, jobTitle: data.jobTitle, departmentId: data.departmentId },
+  });
+
   revalidatePath('/hr/employees');
   return employee;
 }
@@ -155,6 +174,15 @@ export async function updateEmployee(id: string, data: any) {
       departmentId: data.departmentId || undefined
     }
   });
+
+  await logAuditAction({
+    action: "update",
+    model: "employee",
+    recordId: id,
+    recordName: employee.name,
+    newValues: { name: data.name, jobTitle: data.jobTitle, departmentId: data.departmentId },
+  });
+
   revalidatePath(`/hr/employees/${id}`);
   revalidatePath('/hr/employees');
   return employee;
@@ -192,6 +220,15 @@ export async function createContract(data: any) {
       state: 'open'
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "employee",
+    recordId: contract.id,
+    recordName: contract.name,
+    newValues: { employeeId: data.employeeId, wage: data.salary, startDate: data.startDate },
+  });
+
   revalidatePath('/hr/contracts');
   revalidatePath(`/hr/employees/${data.employeeId}`);
   return contract;
@@ -234,7 +271,7 @@ export async function createPayslip(data: any) {
       id: data.employeeId
     }
   });
-  return await prisma.payslip.create({
+  const payslip = await prisma.payslip.create({
     data: {
       name: `كشف راتب - ${employee?.name || ''} - ${start.toLocaleDateString('ar-EG', {
         month: 'short',
@@ -249,6 +286,16 @@ export async function createPayslip(data: any) {
       state: 'draft'
     }
   });
+
+  await logAuditAction({
+    action: "create",
+    model: "employee",
+    recordId: payslip.id,
+    recordName: payslip.name,
+    newValues: { employeeId: data.employeeId, wage, dateFrom: data.dateFrom, dateTo: data.dateTo },
+  });
+
+  return payslip;
 }
 export async function confirmPayslip(id: string) {
   var session = await getSession();
@@ -335,6 +382,16 @@ export async function confirmPayslip(id: string) {
       journalEntryId: entry.id
     }
   });
+
+  await logAuditAction({
+    action: "confirm",
+    model: "employee",
+    recordId: id,
+    recordName: payslip.name,
+    newValues: { state: "done", journalEntryId: entry.id },
+    oldValues: { state: "draft" },
+  });
+
   revalidatePath('/hr/payslips');
 }
 export async function getHRStats() {

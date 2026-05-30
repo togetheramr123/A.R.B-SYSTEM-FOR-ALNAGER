@@ -5,6 +5,7 @@ import { getCompanyPrisma } from '@/lib/prismaCompany';
 import { getSession } from '@/lib/auth';
 import { validateAccess } from '@/lib/security';
 import { logTrackingChanges } from "@/app/actions/chatter";
+import { logAuditAction } from "@/app/actions/audit";
 import { ensureAccess } from '@/lib/access';
 import { customAlphabet } from "nanoid";
 const safeReturn = (data: any) => JSON.parse(JSON.stringify(data));
@@ -212,6 +213,13 @@ export async function createInternalTransfer(prevState: any, formData: FormData)
     for (const moveId of moveIds) {
       await generateStockMoveEntry(moveId);
     }
+    await logAuditAction({
+      action: "create",
+      model: "picking",
+      recordId: moveIds[0] || "",
+      recordName: "Internal Transfer",
+      newValues: { sourceLocationId, destLocationId, productsCount: productIds.length },
+    });
     revalidatePath('/[locale]/inventory/transfers');
   } catch (error) {
     console.error('Transfer error:', error);
@@ -1267,6 +1275,13 @@ export async function createProduct(data: any) {
     if (product && (product as any).attributeLines && (product as any).attributeLines.length > 0) {
       await generateVariants(product.id);
     }
+    await logAuditAction({
+      action: "create",
+      model: "product",
+      recordId: product.id,
+      recordName: product.name,
+      newValues: { name: data.name, type: data.detailedType, salePrice: data.salePrice, costPrice: data.costPrice },
+    });
     revalidatePath('/', 'layout');
     return safeReturn(product);
   } catch (e) {
@@ -1296,6 +1311,13 @@ export async function createCategory(data: any) {
         propertyAccountIncomeId: data.propertyAccountIncomeId || null,
         propertyAccountExpenseId: data.propertyAccountExpenseId || null
       }
+    });
+    await logAuditAction({
+      action: "create",
+      model: "productCategory",
+      recordId: category.id,
+      recordName: category.name,
+      newValues: { name: data.name, costingMethod: data.costingMethod },
     });
     try {
       revalidatePath('/', 'layout');
@@ -1327,6 +1349,13 @@ export async function updateCategory(id: string, data: any) {
         propertyAccountIncomeId: data.propertyAccountIncomeId || null,
         propertyAccountExpenseId: data.propertyAccountExpenseId || null
       }
+    });
+    await logAuditAction({
+      action: "update",
+      model: "productCategory",
+      recordId: category.id,
+      recordName: category.name,
+      newValues: { name: data.name, costingMethod: data.costingMethod },
     });
     try {
       revalidatePath('/', 'layout');
@@ -1475,6 +1504,12 @@ export async function deleteProduct(id: string) {
         }
       });
     });
+    await logAuditAction({
+      action: "delete",
+      model: "product",
+      recordId: id,
+      recordName: "",
+    });
     revalidatePath('/', 'layout');
     return {
       success: true
@@ -1503,6 +1538,13 @@ export async function archiveProduct(id: string, active: boolean) {
       data: {
         active
       }
+    });
+    await logAuditAction({
+      action: active ? "update" : "update",
+      model: "product",
+      recordId: id,
+      recordName: "",
+      newValues: { active, action: active ? "unarchive" : "archive" },
     });
     revalidatePath('/', 'layout');
     revalidatePath(`/[locale]/inventory/products/${id}`);
@@ -1538,6 +1580,13 @@ export async function duplicateProduct(id: string) {
         name: `${data.name} (نسخة)`,
         active: true
       }
+    });
+    await logAuditAction({
+      action: "create",
+      model: "product",
+      recordId: newProduct.id,
+      recordName: newProduct.name,
+      newValues: { duplicatedFrom: id },
     });
     revalidatePath('/', 'layout');
     return newProduct;
@@ -2021,6 +2070,13 @@ if (originalProduct) {
     });
   }
 }
+    await logAuditAction({
+      action: "update",
+      model: "product",
+      recordId: product.id,
+      recordName: product.name,
+      newValues: { name: data.name, salePrice: data.salePrice, costPrice: data.costPrice },
+    });
     revalidatePath('/', 'layout');
     return product;
   } catch (e) {
@@ -2251,6 +2307,13 @@ export async function createUom(data: any) {
         active: true
       }
     });
+    await logAuditAction({
+      action: "create",
+      model: "uom",
+      recordId: uom.id,
+      recordName: uom.name,
+      newValues: { name: data.name, type: data.type, ratio: data.ratio },
+    });
     revalidatePath('/[locale]/inventory/configuration/uom');
     return {
       ...uom,
@@ -2279,6 +2342,13 @@ export async function updateUom(id: string, data: any) {
         active: data.active
       }
     });
+    await logAuditAction({
+      action: "update",
+      model: "uom",
+      recordId: uom.id,
+      recordName: uom.name,
+      newValues: { name: data.name, type: data.type, ratio: data.ratio },
+    });
     revalidatePath('/[locale]/inventory/configuration/uom');
     return {
       ...uom,
@@ -2298,6 +2368,12 @@ export async function deleteUom(id: string) {
       where: {
         id
       }
+    });
+    await logAuditAction({
+      action: "delete",
+      model: "uom",
+      recordId: id,
+      recordName: "",
     });
     revalidatePath('/[locale]/inventory/configuration/uom');
     return {
@@ -2392,6 +2468,13 @@ export async function createScrapOrder(prevState: any, formData: FormData) {
         companyId: session.companyId
       }
     });
+    await logAuditAction({
+      action: "create",
+      model: "stockScrap",
+      recordId: scrap.id,
+      recordName: scrap.name,
+      newValues: { productId, quantity, sourceLocationId, scrapLocationId },
+    });
     try {
       revalidatePath(`/${session.locale}/inventory/scrap`);
     } catch (error) { console.error("Silent error caught in app/actions/inventory.ts:", error); }
@@ -2463,6 +2546,13 @@ export async function validateScrap(scrapId: string) {
         moveId: move.id
       }
     });
+    await logAuditAction({
+      action: "validate",
+      model: "stockScrap",
+      recordId: scrapId,
+      recordName: scrap.name,
+      newValues: { state: 'done', moveId: move.id },
+    });
     try {
       revalidatePath(`/${session.locale}/inventory/scrap`);
     } catch (error) { console.error("Silent error caught in app/actions/inventory.ts:", error); }
@@ -2532,6 +2622,13 @@ export async function returnPicking(pickingId: string) {
         }
       });
       return returnPicking;
+    });
+    await logAuditAction({
+      action: "create",
+      model: "picking",
+      recordId: newPicking.id,
+      recordName: `Return of ${pickingId}`,
+      newValues: { returnOfPickingId: pickingId },
     });
     try {
       revalidatePath('/[locale]/inventory/operations');
@@ -2809,6 +2906,13 @@ export async function createLot(data: {
         companyId: session.companyId
       }
     });
+    await logAuditAction({
+      action: "create",
+      model: "stockLot",
+      recordId: lot.id,
+      recordName: lot.name,
+      newValues: { name: data.name, productId: data.productId },
+    });
     try {
       revalidatePath('/[locale]/inventory/lots');
     } catch (error) { console.error("Silent error caught in app/actions/inventory.ts:", error); }
@@ -2844,6 +2948,13 @@ export async function updateLot(id: string, data: {
         note: data.note ?? undefined
       }
     });
+    await logAuditAction({
+      action: "update",
+      model: "stockLot",
+      recordId: lot.id,
+      recordName: lot.name,
+      newValues: { name: data.name, ref: data.ref },
+    });
     try {
       revalidatePath('/[locale]/inventory/lots');
     } catch (error) { console.error("Silent error caught in app/actions/inventory.ts:", error); }
@@ -2871,6 +2982,12 @@ export async function deleteLot(id: string) {
       where: {
         id
       }
+    });
+    await logAuditAction({
+      action: "delete",
+      model: "stockLot",
+      recordId: id,
+      recordName: "",
     });
     try {
       revalidatePath('/[locale]/inventory/lots');
