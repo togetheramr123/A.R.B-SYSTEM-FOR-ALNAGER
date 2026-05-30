@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { notFound, redirect } from "next/navigation";
 import InvoicePrintTemplate from "@/components/accounting/InvoicePrintTemplate";
-import Link from "next/link";
+
 export default async function BillPrintPage(props: {
   params: Promise<{
     locale: string;
@@ -13,76 +13,39 @@ export default async function BillPrintPage(props: {
     design?: "1" | "2";
   }>;
 }) {
-  const {
-    locale,
-    id
-  } = await props.params;
-  const {
-    mode,
-    design
-  } = await props.searchParams;
+  const { locale, id } = await props.params;
+  const { mode, design } = await props.searchParams;
   const session = await getSession();
   if (!session) redirect(`/${locale}/login`);
+
   const invoice = await prisma.invoice.findUnique({
-    where: {
-      id
-    },
+    where: { id },
     include: {
       partner: true,
       company: true,
-      lines: true
-    }
+      lines: true,
+    },
   });
   if (!invoice) notFound();
+
   const currentMode = mode === "simple" ? "simple" : "detailed";
   const currentDesign = design === "2" ? "2" : "1";
-  return <div className="bg-slate-100 min-h-screen p-8 text-black print:p-0 flex justify-center">
-      {" "}
-      <style>{` @media print { @page { size: A4; margin: 0; } body { -webkit-print-color-adjust: exact; background: white; } .no-print { display: none !important; } .print-page { margin: 0 !important; width: 100% !important; min-height: 29.7cm; box-shadow: none !important; } } `}</style>{" "}
-      <div className="w-[21cm] min-h-[29.7cm] flex flex-col relative print:w-full">
-        {" "}
-        {/* Control Bar (No Print) */}{" "}
-        <div className="fixed top-8 right-8 flex flex-col gap-4 no-print z-50">
-          {" "}
-          <button
-        id="print-btn" className="bg-indigo-600 text-white p-4 rounded-full shadow-sm hover:bg-indigo-700 transition flex items-center justify-center transform hover:scale-110" title="طباعة">
-            {" "}
-            <span className="text-2xl">🖨️</span>{" "}
-          </button>
-          <script dangerouslySetInnerHTML={{ __html: `document.getElementById('print-btn')?.addEventListener('click', function() { window.print(); });` }} />{" "}
-          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2 text-center">
-            {" "}
-            <div className="text-xs font-bold text-slate-400 mb-1 border-b pb-1">الوضع</div>
-            <Link href={`/${locale}/accounting/bills/${id}/print?mode=detailed&design=${currentDesign}`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "detailed" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              {" "}
-              تفصيلي{" "}
-            </Link>{" "}
-            <Link href={`/${locale}/accounting/bills/${id}/print?mode=simple&design=${currentDesign}`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentMode === "simple" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              {" "}
-              بسيط{" "}
-            </Link>{" "}
-          </div>{" "}
-          <div className="bg-white rounded-lg shadow-sm p-2 flex flex-col gap-2 text-center">
-            {" "}
-            <div className="text-xs font-bold text-slate-400 mb-1 border-b pb-1">التصميم</div>
-            <Link href={`/${locale}/accounting/bills/${id}/print?mode=${currentMode}&design=1`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "1" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              {" "}
-              تصميم 1 (قيمة){" "}
-            </Link>{" "}
-            <Link href={`/${locale}/accounting/bills/${id}/print?mode=${currentMode}&design=2`} className={`px-4 py-2 rounded text-sm font-bold transition ${currentDesign === "2" ? "bg-indigo-100 text-indigo-700" : "text-slate-600 hover:bg-slate-50"}`}>
-              {" "}
-              تصميم 2 (نسبة){" "}
-            </Link>{" "}
-          </div>{" "}
-          <Link href={`/${locale}/accounting/bills/${id}`} className="bg-slate-600 text-white p-4 rounded-full shadow-sm hover:bg-slate-700 transition flex items-center justify-center transform hover:scale-110" title="رجوع">
-            {" "}
-            <span className="text-2xl">↩️</span>{" "}
-          </Link>{" "}
-        </div>{" "}
-        <div className="bg-white shadow-sm print-page box-border overflow-hidden relative">
-          {" "}
-          <InvoicePrintTemplate invoice={invoice} locale={locale} mode={currentMode} design={currentDesign} />{" "}
-        </div>{" "}
-      </div>{" "}
-    </div>;
+
+  return (
+    <>
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 0; }
+          body { -webkit-print-color-adjust: exact; background: white; }
+        }
+        html, body { margin: 0; padding: 0; background: white; }
+      `}</style>
+      <InvoicePrintTemplate
+        invoice={invoice}
+        locale={locale}
+        mode={currentMode}
+        design={currentDesign}
+      />
+    </>
+  );
 }

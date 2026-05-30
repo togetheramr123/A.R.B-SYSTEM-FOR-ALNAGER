@@ -255,7 +255,7 @@ export function OdooAutocomplete({
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
       {/* Modern input wrapper with glassmorphism and focus effects */}
-      <div className={`relative group flex items-center w-full h-full bg-slate-50 hover:bg-slate-100 transition-all duration-200 rounded-md border ${error ? 'border-red-400 focus-within:ring-red-500' : 'border-slate-200 focus-within:border-teal-500 focus-within:ring-teal-500 focus-within:bg-white focus-within:shadow-sm'} focus-within:ring-1 overflow-hidden px-2.5`}>
+      <div className={`relative group flex items-center w-full h-full bg-slate-50 hover:bg-slate-100 transition-all duration-200 rounded-sm border ${error ? 'border-red-400 focus-within:ring-red-500' : 'border-slate-200 focus-within:border-teal-500 focus-within:ring-teal-500 focus-within:bg-white focus-within:shadow-sm'} focus-within:ring-1 overflow-hidden px-2.5`}>
         {/* Hidden input to completely fool Chrome autocomplete */}
         <input autoComplete="off" autoCorrect="off" spellCheck={false} type="text" style={{display: 'none'}} />
         <input autoComplete="off" autoCorrect="off" spellCheck={false} type="password" style={{display: 'none'}} />
@@ -335,7 +335,7 @@ export function OdooAutocomplete({
         <Portal>
           <div
             ref={dropdownRef}
-            className="odoo-autocomplete-dropdown absolute z-[10000] bg-white flex flex-col rounded-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+            className="odoo-autocomplete-dropdown absolute z-[10000] bg-white flex flex-col rounded-sm overflow-hidden animate-in fade-in zoom-in-95 duration-200"
             style={{
               top: coords.top,
               left: coords.left,
@@ -367,7 +367,7 @@ export function OdooAutocomplete({
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleSelect(opt)}
                       onMouseEnter={() => setHighlightedIndex(idx)}
-                      className={`w-full text-right px-3 py-2 text-[14px] rounded-lg flex flex-col items-start transition-all duration-150 ${
+                      className={`w-full text-right px-3 py-2 text-[14px] rounded-sm flex flex-col items-start transition-all duration-150 ${
                         opt.id === value
                           ? 'bg-teal-50/80 text-teal-900 font-semibold'
                           : idx === highlightedIndex

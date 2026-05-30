@@ -244,7 +244,7 @@ export default function PartnerLedgerPage() {
         {" "}
         <button
           onClick={() => setOpen(!open)}
-          className={`flex items-center justify-between gap-2 px-3 py-1.5 rounded text-[13px] font-bold border transition-colors ${activeCount > 0 ? "bg-[#017E84] text-white border-[#017E84]" : "bg-[#017E84] text-white border-[#017E84] hover:bg-[#016e73]"}`}
+          className={`flex items-center justify-between gap-2 px-3 h-[34px] rounded text-[13px] font-bold border transition-colors ${activeCount > 0 ? "bg-[#017E84] text-white border-[#017E84]" : "bg-[#017E84] text-white border-[#017E84] hover:bg-[#016e73]"}`}
         >
           <div className="flex items-center gap-1.5">
             <Filter className="w-3.5 h-3.5" />
@@ -443,7 +443,7 @@ export default function PartnerLedgerPage() {
             {" "}
             <button
               onClick={() => setOptionsOpen(!optionsOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded text-[13px] font-bold border-2 bg-white text-slate-700 border-[#017E84] hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 px-3 h-[34px] rounded text-[13px] font-bold border bg-white text-slate-700 border-slate-300 hover:bg-slate-50 transition-colors"
             >
               <Settings className="w-4 h-4 text-slate-600" />
               <span>خيارات</span>

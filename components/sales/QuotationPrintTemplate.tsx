@@ -43,60 +43,58 @@ export default function QuotationPrintTemplate({
   const totalBeforeDiscount = amountUntaxed + totalDiscount;
 
   return (
-    <div className="p-10 bg-white text-black min-h-[29.7cm] font-sans" dir="rtl">
+    <div className="bg-white text-black font-sans relative" dir="rtl" style={{ width: '21cm', minHeight: '29.7cm', maxHeight: '29.7cm', padding: '1.2cm 1.5cm', boxSizing: 'border-box', overflow: 'hidden' }}>
       
-      {/* Header Area */}
-      <div className="flex justify-between items-center mb-10 pb-4 border-b border-slate-200">
-        <div className="flex flex-col gap-1 items-start">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={order.company?.logo || '/hsn-logo.png'} alt="HSN GROUP" className="h-16 object-contain" />
+      {/* Header */}
+      <div className="flex justify-between items-start mb-4 pb-3 border-b-2 border-slate-300">
+        <div className="text-right">
+          <h1 className="text-2xl font-black text-slate-900 leading-tight">{order.company?.name || "النجار للأدوات الصحية"}</h1>
         </div>
-
-        <div className="text-left">
-          <h1 className="text-3xl font-bold text-slate-900">{order.company?.name || "النجار للأدوات الصحية"}</h1>
+        <div className="flex flex-col items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={order.company?.logo || '/hsn-logo.png'} alt="HSN GROUP" className="h-12 object-contain" />
         </div>
       </div>
 
       {/* Meta Info Row 1 */}
-      <div className="flex justify-between items-center mb-8 text-sm font-bold text-slate-800">
+      <div className="flex justify-between items-center mb-3 text-[13px] font-bold text-slate-800">
         <div>
-          <span>نوع المستند : دفتر / المبيعات</span>
+          <span>رقم {orderTypeLabel} : {order.name}</span>
         </div>
         <div className="text-center">
           <span>تحريرا في : {formatDate(order.dateOrder)}</span>
         </div>
         <div>
-          <span>رقم {orderTypeLabel} : {order.name}</span>
+          <span>نوع الفاتورة : دفتر / المبيعات</span>
         </div>
       </div>
 
       {/* Meta Info Row 2 */}
-      <div className="flex justify-between items-center mb-6 text-lg font-bold text-slate-900">
-        <div>
-          <span>مسئول البيع : {salesperson}</span>
-        </div>
+      <div className="flex justify-between items-center mb-5 text-[15px] font-bold text-slate-900">
         <div>
           <span>أسم العميل : {order.partner?.name || "-"}</span>
+        </div>
+        <div>
+          <span>مسئول البيع : {salesperson}</span>
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="border-2 border-slate-800 mb-6">
-        <table className="w-full text-sm text-center">
-          <thead className="bg-slate-50 border-b-2 border-slate-800 font-bold text-slate-900">
+      <div className="border border-slate-500 mb-4">
+        <table className="w-full text-[12px] text-center border-collapse">
+          <thead className="bg-slate-100 font-bold text-slate-900">
             <tr>
-              <th className="py-2 px-2 border-l border-slate-400 w-12">م.</th>
-              <th className="py-2 px-2 border-l border-slate-400">اسم الصنف</th>
-              <th className="py-2 px-2 border-l border-slate-400">الوصف</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-24">الكمية</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-20">الوحدة</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-24">سعر الوحدة</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-24">{design === "2" ? "الخصم %" : "قيمة الخصم"}</th>
-              <th className="py-2 px-2 border-l border-slate-400 w-28">الاجمالي</th>
-              <th className="py-2 px-2 w-32">ك. ثانوية</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-8">م.</th>
+              <th className="py-1.5 px-1 border border-slate-400">اسم الصنف</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-16">الكمية</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-14">الوحدة</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-20">سعر الوحدة</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-16">{design === "2" ? "الخصم %" : "قيمة الخصم"}</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-20">الاجمالي</th>
+              <th className="py-1.5 px-1 border border-slate-400 w-24">الكمية الثانوية</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-300">
+          <tbody>
             {order.lines.map((line: any, index: number) => {
               const qty = Number(line.quantity) || 0;
               const price = Number(line.priceUnit) || 0;
@@ -104,24 +102,19 @@ export default function QuotationPrintTemplate({
               const discountValue = (qty * price * discPercentage) / 100;
               const subtotal = Number(line.priceSubtotal) || 0;
               const secondaryQty = Number(line.secondaryQuantity) || 0;
-              const secondaryUomName = line.product?.secondaryUom?.name || "";
+              const secondaryUomName = line.product?.secondaryUom || "";
 
               return (
-                <tr key={line.id}>
-                  <td className="py-3 px-2 border-l border-slate-400">{index + 1}</td>
-                  <td className="py-3 px-2 border-l border-slate-400 text-right">{line.product?.name || "-"}</td>
-                  <td className="py-3 px-2 border-l border-slate-400 text-right">{line.name !== line.product?.name ? line.name : ""}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{qty.toFixed(1)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{line.product?.uom?.name || "قطعه"}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{price.toFixed(2)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{design === "2" ? `${discPercentage.toFixed(0)}%` : discountValue.toFixed(2)}</td>
-                  <td className="py-3 px-2 border-l border-slate-400">{subtotal.toFixed(2)}</td>
-                  <td className="py-3 px-2 font-semibold">
-                    {secondaryQty > 0 ? (
-                       `${secondaryUomName} / ${secondaryQty.toFixed(1)}`
-                    ) : (
-                      "0.0"
-                    )}
+                <tr key={line.id} className="border-b border-slate-300">
+                  <td className="py-2 px-1 border-l border-slate-400">{index + 1}</td>
+                  <td className="py-2 px-2 border-l border-slate-400 text-right text-[12px] font-semibold">{line.product?.name || line.name || "-"}</td>
+                  <td className="py-2 px-1 border-l border-slate-400">{qty.toFixed(1)}</td>
+                  <td className="py-2 px-1 border-l border-slate-400">{line.product?.uom || "قطعه"}</td>
+                  <td className="py-2 px-1 border-l border-slate-400">{price.toFixed(2)}</td>
+                  <td className="py-2 px-1 border-l border-slate-400">{design === "2" ? `${discPercentage.toFixed(0)}%` : discountValue.toFixed(1)}</td>
+                  <td className="py-2 px-1 border-l border-slate-400">{subtotal.toFixed(1)}</td>
+                  <td className="py-2 px-1 font-semibold">
+                    {secondaryQty > 0 ? `${secondaryUomName} / ${secondaryQty.toFixed(0)}` : "0"}
                   </td>
                 </tr>
               );
@@ -131,49 +124,47 @@ export default function QuotationPrintTemplate({
       </div>
 
       {/* Totals Table */}
-      <div className="border-2 border-slate-800 mb-8">
-        <table className="w-full text-sm text-center font-bold text-slate-800">
-          <tbody className="divide-y divide-slate-400">
-            <tr>
-              <td className="py-3 w-3/4 text-right pr-6">الإجمالي قبل الخصم</td>
-              <td className="py-3 w-1/4 border-r border-slate-400 text-left pl-6">{totalBeforeDiscount.toFixed(2)}</td>
+      <div className="border border-slate-500 mb-4 w-full">
+        <table className="w-full text-[13px] text-center font-bold text-slate-800 border-collapse">
+          <tbody>
+            <tr className="border-b border-slate-400">
+              <td className="py-2 text-right pr-4 w-2/3">الإجمالي قبل الخصم</td>
+              <td className="py-2 border-r border-slate-400 text-left pl-4 w-1/3">{totalBeforeDiscount.toFixed(1)}</td>
+            </tr>
+            <tr className="border-b border-slate-400">
+              <td className="py-2 text-right pr-4">الخصم</td>
+              <td className="py-2 border-r border-slate-400 text-left pl-4">{totalDiscount.toFixed(1)}</td>
+            </tr>
+            <tr className="border-b border-slate-400">
+              <td className="py-2 text-right pr-4">الضريبة</td>
+              <td className="py-2 border-r border-slate-400 text-left pl-4">{amountTax.toFixed(1)}</td>
             </tr>
             <tr>
-              <td className="py-3 text-right pr-6">الخصم</td>
-              <td className="py-3 border-r border-slate-400 text-left pl-6">{totalDiscount.toFixed(2)}</td>
-            </tr>
-            {design === "2" && (
-              <tr>
-                <td className="py-3 text-right pr-6">السعر بعد الخصم</td>
-                <td className="py-3 border-r border-slate-400 text-left pl-6">{amountUntaxed.toFixed(2)}</td>
-              </tr>
-            )}
-            <tr>
-              <td className="py-3 text-right pr-6">الضريبة</td>
-              <td className="py-3 border-r border-slate-400 text-left pl-6">{amountTax.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td className="py-3 text-right pr-6 text-lg">الصافي بعد الخصم</td>
-              <td className="py-3 border-r border-slate-400 text-lg text-left pl-6">{amountTotal.toFixed(2)}</td>
+              <td className="py-2 text-right pr-4 text-[15px]">الصافي بعد الخصم</td>
+              <td className="py-2 border-r border-slate-400 text-[15px] text-left pl-4">{amountTotal.toFixed(1)}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       {/* Tafqeet Section */}
-      <div className="text-right mb-12">
-        <h3 className="text-xl font-bold text-slate-900 mb-2">اجمالي {orderTypeLabel} : {amountTotal.toFixed(2)} فقط لا غير</h3>
-        <p className="text-lg font-bold text-slate-800">{tafqeet(amountTotal)}</p>
+      <div className="text-right mb-4">
+        <h3 className="text-[15px] font-bold text-slate-900 mb-1">اجمالي {orderTypeLabel} : {Math.round(amountTotal)} فقط لا غير</h3>
+        <p className="text-[13px] font-bold text-slate-700">{tafqeet(amountTotal)}</p>
       </div>
       
-      {/* Footer Instructions */}
+      {/* Notes */}
       {order.note && (
-        <div className="text-right border-t-2 border-slate-800 pt-4 mt-8">
-          <h4 className="font-bold text-slate-900 mb-2">ملاحظات:</h4>
-          <p className="text-slate-700 whitespace-pre-wrap">{order.note}</p>
+        <div className="text-right border-t border-slate-400 pt-2 mt-2">
+          <h4 className="font-bold text-slate-900 text-[13px] mb-1">ملاحظات:</h4>
+          <p className="text-[12px] text-slate-700 whitespace-pre-wrap">{order.note}</p>
         </div>
       )}
 
+      {/* Page Number Footer */}
+      <div className="absolute bottom-4 left-0 right-0 text-center text-[11px] text-slate-400 font-bold" style={{ bottom: '1cm' }}>
+        الصفحة: 1/1
+      </div>
     </div>
   );
 }

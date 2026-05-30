@@ -370,7 +370,7 @@ export function ProductListClient({
         {/* Search Row */}{" "}
         <div className="flex items-center justify-end px-4 py-1.5 border-b border-gray-100">
           {" "}
-          {isLoadingBulk && <span className="text-[10px] text-gray-500 mr-2 bg-gray-100 px-2 py-0.5 rounded-full animate-pulse">
+          {isLoadingBulk && <span className="text-[10px] text-gray-500 mr-2 bg-gray-100 px-2 py-0.5 rounded-sm animate-pulse">
               جاري التحميل...
             </span>}{" "}
           {/* Search Field */}{" "}
@@ -481,7 +481,7 @@ export function ProductListClient({
                   <AlignLeft className="w-3.5 h-3.5" /> التجميع حسب{" "}
                   <ChevronDown className="w-3 h-3 opacity-60" />{" "}
                 </button>{" "}
-                {showGroupBy && <div className="absolute top-[110%] right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-lg py-1 z-50 overflow-hidden text-right">
+                {showGroupBy && <div className="absolute top-[110%] right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-sm py-1 z-50 overflow-hidden text-right">
                     {" "}
                     <div className="px-4 py-1.5 text-[11px] font-bold text-gray-400 uppercase">
                       تجميع البيانات
@@ -514,7 +514,7 @@ export function ProductListClient({
                   <Star className="w-3.5 h-3.5" /> المفضلات{" "}
                   <ChevronDown className="w-3 h-3 opacity-60" />{" "}
                 </button>{" "}
-                {showFavorites && <div className="absolute top-[110%] right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-lg py-1 z-50 overflow-hidden text-right">
+                {showFavorites && <div className="absolute top-[110%] right-0 w-48 bg-white border border-gray-200 shadow-sm rounded-sm py-1 z-50 overflow-hidden text-right">
                     {" "}
                     <button className="w-full text-right px-4 py-1.5 text-[13px] flex items-center justify-between hover:bg-gray-100 transition-colors">
                       {" "}
@@ -819,7 +819,7 @@ export function ProductListClient({
         {/* ════════ KANBAN VIEW (Odoo White Minimalist Style) ════════ */}{" "}
         {viewMode === "grid" && <div className="p-4 bg-gray-50 min-h-full">
             {" "}
-            {products.length === 0 ? <div className="text-center py-20 text-gray-400 font-medium bg-white rounded-lg border border-gray-100 shadow-sm">
+            {products.length === 0 ? <div className="text-center py-20 text-gray-400 font-medium bg-white rounded-sm border border-gray-100 shadow-sm">
                 لا توجد سجلات مطابقة.
               </div> : groupBy ? (() => {
           const groups: Record<string, Product[]> = {};
@@ -921,7 +921,7 @@ export function ProductListClient({
       />
       {isConfirmOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[999] flex items-center justify-center p-4 font-arabic">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-2xl border border-gray-200" dir="rtl">
+          <div className="bg-white rounded-sm p-6 max-w-sm w-full shadow-2xl border border-gray-200" dir="rtl">
             <h3 className="text-base font-bold text-gray-900 mb-2">تأكيد الإجراء</h3>
             <p className="text-xs text-gray-500 mb-6">
               {isConfirmOpen === 'delete' && `هل أنت متأكد من رغبتك في حذف ${selectedIds.size} عنصر؟ لا يمكن التراجع عن هذا الإجراء.`}
