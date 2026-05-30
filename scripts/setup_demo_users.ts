@@ -250,7 +250,7 @@ const DEMO_USERS = [
   },
   // --- يوزر المبيعات ---
   {
-    name: 'مستخدم المبيعات',
+    name: 'مبيعات',
     email: 'sales@demo.arb',
     phone: '01000000001',
     password: 'sales123',
@@ -266,7 +266,7 @@ const DEMO_USERS = [
   },
   // --- يوزر المشتريات ---
   {
-    name: 'مستخدم المشتريات',
+    name: 'مشتريات',
     email: 'purchases@demo.arb',
     phone: '01000000002',
     password: 'purchases123',
@@ -282,7 +282,7 @@ const DEMO_USERS = [
   },
   // --- يوزر المخازن ---
   {
-    name: 'مستخدم المخازن',
+    name: 'مخازن',
     email: 'inventory@demo.arb',
     phone: '01000000003',
     password: 'inventory123',
@@ -298,7 +298,7 @@ const DEMO_USERS = [
   },
   // --- يوزر المحاسبة ---
   {
-    name: 'مستخدم المحاسبة',
+    name: 'محاسبه',
     email: 'accounting@demo.arb',
     phone: '01000000004',
     password: 'accounting123',
@@ -314,7 +314,7 @@ const DEMO_USERS = [
   },
   // --- يوزر المدير العام ---
   {
-    name: 'المدير العام',
+    name: 'مدير',
     email: 'manager@demo.arb',
     phone: '01000000005',
     password: 'manager123',
@@ -440,32 +440,13 @@ async function main() {
   console.log('\n==========================================');
   console.log('✅ تم إعداد يوزرات الديمو بنجاح!');
   console.log('==========================================\n');
-  console.log('📋 بيانات الدخول للتدريب:');
+  console.log('📋 بيانات الدخول للتدريب (اسم المستخدم = اليوزر):');
   console.log('─────────────────────────────────────────');
-  console.log('  👤 المبيعات:');
-  console.log('     📧 الإيميل: sales@demo.arb');
-  console.log('     📱 الموبايل: 01000000001');
-  console.log('     🔑 كلمة السر: sales123');
-  console.log('');
-  console.log('  👤 المشتريات:');
-  console.log('     📧 الإيميل: purchases@demo.arb');
-  console.log('     📱 الموبايل: 01000000002');
-  console.log('     🔑 كلمة السر: purchases123');
-  console.log('');
-  console.log('  👤 المخازن:');
-  console.log('     📧 الإيميل: inventory@demo.arb');
-  console.log('     📱 الموبايل: 01000000003');
-  console.log('     🔑 كلمة السر: inventory123');
-  console.log('');
-  console.log('  👤 المحاسبة:');
-  console.log('     📧 الإيميل: accounting@demo.arb');
-  console.log('     📱 الموبايل: 01000000004');
-  console.log('     🔑 كلمة السر: accounting123');
-  console.log('');
-  console.log('  👤 المدير العام:');
-  console.log('     📧 الإيميل: manager@demo.arb');
-  console.log('     📱 الموبايل: 01000000005');
-  console.log('     🔑 كلمة السر: manager123');
+  console.log('  👤 المبيعات:    اليوزر: مبيعات     | الباسورد: sales123');
+  console.log('  👤 المشتريات:   اليوزر: مشتريات    | الباسورد: purchases123');
+  console.log('  👤 المخازن:     اليوزر: مخازن      | الباسورد: inventory123');
+  console.log('  👤 المحاسبة:    اليوزر: محاسبه     | الباسورد: accounting123');
+  console.log('  👤 المدير العام: اليوزر: مدير       | الباسورد: manager123');
   console.log('─────────────────────────────────────────');
   console.log('ملاحظة: يمكنك تعديل صلاحيات أي يوزر من شاشة الإعدادات في النظام.');
   console.log('==========================================');
