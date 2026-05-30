@@ -32,6 +32,7 @@ import { useBreadcrumbsStore } from '@/store/breadcrumbsStore';
 import { usePathname } from 'next/navigation';
 import { VariantGridModal } from './VariantGridModal';
 import ImageOrderParserModal from '../inventory/ImageOrderParserModal';
+import { PromotedProductsModal } from './PromotedProductsModal';
 import { DebtFollowUpModal } from './DebtFollowUpModal';
 import { createSaleOrder, updateSaleOrder, confirmSaleOrder, cancelSaleOrder, createInvoiceFromOrder, setToDraftSaleOrder, restoreSaleOrderAndInventory, fetchPurchaseInvoiceForSales, requestReservation, approveReservation, requestNegativeStockApproval, approveNegativeStock, rejectNegativeStock } from '@/app/actions/sales';
 import { getUsers } from '@/app/actions/settings';
@@ -206,6 +207,7 @@ export function SaleOrderForm({
   });
   const [dbTaxes, setDbTaxes] = useState<any[]>([]);
   const [dbPaymentTerms, setDbPaymentTerms] = useState<any[]>([]);
+  const [promotedModalOpen, setPromotedModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [useCostPrice, setUseCostPrice] = useState(false);
   const [importRef, setImportRef] = useState('');
@@ -1975,7 +1977,7 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
                     secondaryQuantity: 0,
                     secondaryUnit: '',
                     lineType: 'note'
-                  })} onAddFromImage={() => setImageParserOpen(true)} itemsPerPage={20} rowClassName={(item, index) => {
+                  })} onAddFromImage={() => setImageParserOpen(true)} onAddPromoted={() => setPromotedModalOpen(true)} itemsPerPage={20} rowClassName={(item, index) => {
                     const line = lines[index] || {};
                     const qtyInvoiced = line.qtyInvoiced || 0;
                     const qty = line.qty || 0;
@@ -2539,6 +2541,27 @@ const smartButtonsElement = !isNewRecord && status !== 'draft' && status !== 'se
           </div>
         </div>
       </div>
+
+      <PromotedProductsModal
+        isOpen={promotedModalOpen}
+        onClose={() => setPromotedModalOpen(false)}
+        onAddProducts={(products) => {
+          products.forEach((p) => {
+            append({
+              type: 'product',
+              productId: p.product.id,
+              description: p.product.name,
+              qty: p.qty,
+              price: p.product.salePrice,
+              discount: 0,
+              tax: p.product.taxes || null,
+              secondaryQuantity: 0,
+              secondaryUnit: '',
+              lineType: 'line',
+            });
+          });
+        }}
+      />
     </FormLoadingOverlay>
   );
 }

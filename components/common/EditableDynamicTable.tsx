@@ -34,6 +34,7 @@ interface EditableDynamicTableProps<T = any> {
   onAddSection?: () => void;
   onAddNote?: () => void;
   onAddFromImage?: () => void;
+  onAddPromoted?: () => void;
   disableAdd?: boolean;
   readOnly?: boolean;
   fieldArrayName?: string;
@@ -52,6 +53,7 @@ export function EditableDynamicTable({
   onAddSection,
   onAddNote,
   onAddFromImage,
+  onAddPromoted,
   disableAdd,
   readOnly = false,
   fieldArrayName = "lines",
@@ -385,6 +387,11 @@ export function EditableDynamicTable({
                       {" "}
                       <Plus className="w-4 h-4" /> إضافة منتج{" "}
                     </button>{" "}
+                    {onAddPromoted && <button type="button" onClick={onAddPromoted} className="flex items-center gap-1.5 text-amber-600 hover:text-amber-800 text-[13px] font-bold px-2 py-1 rounded hover:bg-amber-50 transition-colors border border-amber-200">
+                        {" "}
+                        <svg className="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        الأصناف المستهدفة للبيع{" "}
+                      </button>}{" "}
                     {onAddSection && <button type="button" onClick={onAddSection} className="flex items-center gap-1 text-slate-500 hover:text-slate-800 text-[13px] font-bold px-2 py-1 rounded hover:bg-slate-100 transition-colors">
                         {" "}
                         إضافة قسم{" "}

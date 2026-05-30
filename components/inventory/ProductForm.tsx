@@ -235,6 +235,7 @@ export function ProductForm({
     can_sell: initialData?.canBeSold ?? initialData?.can_sell ?? true,
     can_purchase:
       initialData?.canBePurchased ?? initialData?.can_purchase ?? true,
+    isPromotedForSale: initialData?.isPromotedForSale ?? false,
     detailedType:
       (initialData?.detailedType === "product"
         ? "storable"
@@ -652,6 +653,7 @@ export function ProductForm({
         name: data.name,
         can_sell: data.can_sell ?? true,
         can_purchase: data.can_purchase ?? true,
+        isPromotedForSale: data.isPromotedForSale ?? false,
         detailedType: data.detailedType || "consu",
         invoicingPolicy: data.invoicingPolicy || "ordered",
         salePrice: data.price || 0,
@@ -784,6 +786,7 @@ export function ProductForm({
         name: data.name,
         can_sell: data.can_sell ?? true,
         can_purchase: data.can_purchase ?? true,
+        isPromotedForSale: data.isPromotedForSale ?? false,
         detailedType: data.detailedType || "consu",
         invoicingPolicy: data.invoicingPolicy || "ordered",
         salePrice: data.price || 0,
@@ -907,6 +910,7 @@ export function ProductForm({
               name: data.name,
               can_sell: data.can_sell ?? true,
               can_purchase: data.can_purchase ?? true,
+              isPromotedForSale: data.isPromotedForSale ?? false,
               detailedType: data.detailedType || "consu",
               invoicingPolicy: data.invoicingPolicy || "ordered",
               salePrice: data.price || 0,
@@ -1941,6 +1945,31 @@ export function ProductForm({
                   </div>{" "}
                   <span className="text-sm font-bold text-slate-600 group-hover:text-slate-900 transition-colors">
                     يمكن شراؤه
+                  </span>{" "}
+                </label>{" "}
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  {" "}
+                  <div className="relative flex items-center">
+                    {" "}
+                    <Controller
+                      name="isPromotedForSale"
+                      control={control}
+                      render={({ field }) => (
+                        <input autoComplete="off" autoCorrect="off" spellCheck={false}
+                          type="checkbox"
+                          checked={!!field.value}
+                          onChange={(e) => {
+                            field.onChange(e.target.checked);
+                            setHasUnsavedChangesSync(true);
+                          }}
+                          className="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-sm checked:bg-[#017E84] checked:border-[#017E84] focus:outline-none transition-all cursor-pointer"
+                        />
+                      )}
+                    />{" "}
+                    <Check className="absolute w-3.5 h-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity left-0.5 pointer-events-none" />{" "}
+                  </div>{" "}
+                  <span className="text-sm font-bold text-[#017E84] group-hover:text-teal-900 transition-colors">
+                    صنف مستهدف للبيع
                   </span>{" "}
                 </label>{" "}
               </div>{" "}

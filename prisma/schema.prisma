@@ -980,8 +980,9 @@ model Product {
   sku          String? @unique
   manufacturer String?
 
-  canBeSold      Boolean @default(true)
-  canBePurchased Boolean @default(true)
+  canBeSold         Boolean @default(true)
+  canBePurchased    Boolean @default(true)
+  isPromotedForSale Boolean @default(false)
 
   createdById String?
   updatedById String?

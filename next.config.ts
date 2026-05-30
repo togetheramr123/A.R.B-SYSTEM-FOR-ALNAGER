@@ -14,11 +14,11 @@ const nextConfig: NextConfig = {
             fullUrl: true,
         },
     },
+    serverActions: {
+        bodySizeLimit: '50mb',
+    },
     experimental: {
         optimizePackageImports: ['lucide-react', 'recharts'],
-        serverActions: {
-            bodySizeLimit: '20mb',
-        },
     },
     typescript: {
         ignoreBuildErrors: true,

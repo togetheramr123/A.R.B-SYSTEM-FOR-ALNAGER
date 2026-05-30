@@ -226,3 +226,35 @@ export async function getVariantGridData(productId: string) {
     variants: variantsWithStock
   };
 }
+
+export async function getPromotedProducts() {
+  const session = await getSession();
+  if (!session) throw new Error("غير مصرح");
+  await ensureAccess("base", "read");
+
+  const products = await prisma.product.findMany({
+    where: {
+      active: true,
+      companyId: session.companyId,
+      isPromotedForSale: true
+    },
+    orderBy: {
+      name: 'asc'
+    },
+    select: {
+      id: true,
+      name: true,
+      salePrice: true,
+      costPrice: true,
+      uom: true,
+      taxes: true
+    }
+  });
+
+  return products.map(product => ({
+    ...product,
+    salePrice: product.salePrice ? Number(product.salePrice.toString()) : 0,
+    costPrice: product.costPrice ? Number(product.costPrice.toString()) : 0,
+    taxes: product.taxes ? Number(product.taxes.toString()) : 0,
+  }));
+}
