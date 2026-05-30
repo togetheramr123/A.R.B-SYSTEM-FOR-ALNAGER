@@ -24,7 +24,7 @@ export default function QuotationPrintTemplate({
     });
   };
 
-  const isQuotation = order.state === "draft" || order.state === "sent";
+  const isQuotation = order.status === "draft" || order.status === "sent";
   const orderTypeLabel = isQuotation ? "عرض سعر" : "أمر بيع";
   const salesperson = order.user?.name || "عبدالعزيز"; 
 

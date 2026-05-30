@@ -24,7 +24,7 @@ export default function PurchasePrintTemplate({
     });
   };
 
-  const isQuotation = order.state === "draft" || order.state === "sent";
+  const isQuotation = order.status === "draft" || order.status === "sent";
   const orderTypeLabel = isQuotation ? "طلب عرض سعر" : "أمر شراء";
   const buyer = order.user?.name || "عبدالعزيز"; 
 
