@@ -42,12 +42,6 @@ export function ActionMenu({
         <ChevronDown className="w-3 h-3 text-slate-400" />
       </button>
       {isOpen && <div className="absolute top-full rtl:right-0 ltr:left-0 mt-1 w-48 bg-white border border-slate-200 shadow-sm rounded-sm z-50 py-1">
-          {onPrint && <button type="button" onClick={() => {
-        setIsOpen(false);
-        onPrint();
-      }} className="w-full text-start px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-2">
-              <Printer className="w-4 h-4 text-slate-400" /> طباعة
-            </button>}
           {onDuplicate && <button type="button" onClick={() => {
         setIsOpen(false);
         onDuplicate();
