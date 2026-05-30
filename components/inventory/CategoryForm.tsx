@@ -52,13 +52,12 @@ export function CategoryForm({
     "category_new",
     isNewRecord,
   );
+  // دائماً نرجع الحساب الافتراضي لو مش محدد
   const getAccountByCode = (code: string) => {
-    if (category) return "";
     return accounts.find((a) => a.code === code)?.id || "";
   };
 
   const getJournalByNameOrCode = () => {
-    if (category) return "";
     const j = journals.find(
       (j) =>
         j.name.includes("المخزون") ||
