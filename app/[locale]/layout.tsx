@@ -17,6 +17,7 @@ import FloatingChatWidget from '@/components/chat/FloatingChatWidget';
 import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NotificationBlocker } from '@/components/layout/NotificationBlocker';
+import { MaintenanceBanner } from '@/components/layout/MaintenanceBanner';
 import { ArabicNumeralsConverter } from '@/components/ArabicNumeralsConverter';
 import { AutocompleteBlocker } from '@/components/AutocompleteBlocker';
 import { ShiftTimerProvider } from '@/components/ShiftTimerProvider';
@@ -63,6 +64,7 @@ export default async function RootLayout(props: {
       <body className={cn("bg-gray-50/80 text-gray-900 font-sans antialiased", locale === 'ar' ? 'font-arabic' : 'font-sans')}>
         <NextIntlClientProvider messages={messages}>
           <NotificationBlocker />
+          <MaintenanceBanner />
           <Toaster position="top-center" theme="light" duration={2500} dir={locale === 'ar' ? 'rtl' : 'ltr'} toastOptions={{
             className: cn(locale === 'ar' ? 'font-arabic' : 'font-sans', '!bg-slate-100 !border !border-slate-200 !text-slate-600 !text-xs !py-2 !px-3 !min-h-0 !w-auto !max-w-fit !mx-auto !shadow-sm')
           }} />

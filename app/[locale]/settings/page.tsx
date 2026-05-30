@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { getCompanySettings } from "@/app/actions/settings";
 import { toast } from "sonner";
-import { Settings, Link2, Users, Building2, Globe, CreditCard, ChevronLeft, Save, X, Shield, Bell, Database, Palette, Languages, Mail, Phone, MapPin, Calendar, Clock, DollarSign, Printer, FileText } from "lucide-react";
+import { Settings, Link2, Users, Building2, Globe, CreditCard, ChevronLeft, Save, X, Shield, Bell, Database, Palette, Languages, Mail, Phone, MapPin, Calendar, Clock, DollarSign, Printer, FileText, AlertTriangle, RefreshCw, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TopPortal } from "@/components/common/TopPortal";
+import { enableMaintenanceMode, disableMaintenanceMode, getMaintenanceStatus } from "@/app/actions/maintenance";
 export default function SettingsPage() {
   const settingSections = [{
     title: "الإعدادات العامة",
@@ -43,6 +44,13 @@ export default function SettingsPage() {
   const [allowHalfQuantities, setAllowHalfQuantities] = useState(false);
   const [demoPin, setDemoPin] = useState("3000");
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Maintenance Mode State
+  const [maintenanceEnabled, setMaintenanceEnabled] = useState(false);
+  const [maintenanceMinutes, setMaintenanceMinutes] = useState(1);
+  const [maintenanceMsg, setMaintenanceMsg] = useState('');
+  const [isTogglingMaintenance, setIsTogglingMaintenance] = useState(false);
+
   useEffect(() => {
     getCompanySettings().then(res => {
       if (res) {
@@ -50,6 +58,9 @@ export default function SettingsPage() {
         setDemoPin(res.demoPin || "3000");
       }
       setIsLoading(false);
+    });
+    getMaintenanceStatus().then(res => {
+      setMaintenanceEnabled(res.enabled);
     });
   }, []);
   const handleSave = async () => {
@@ -445,6 +456,107 @@ export default function SettingsPage() {
                 </p>
               </Link>
             </div>{" "}
+
+            {/* Section: Maintenance Mode */}
+            <div className="bg-white border border-amber-200 rounded-sm shadow-sm overflow-hidden">
+              <div className="px-5 py-3.5 bg-amber-50 border-b border-amber-100 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <h2 className="font-bold text-sm text-slate-800">
+                  وضع الصيانة (قبل التحديث)
+                </h2>
+                {maintenanceEnabled && (
+                  <span className="mr-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold animate-pulse">مفعّل الآن</span>
+                )}
+              </div>
+              <div className="p-5">
+                <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+                  عند تفعيل وضع الصيانة، سيظهر إشعار تحذيري لكل المستخدمين في الشريط العلوي
+                  يطلب منهم حفظ عملهم الحالي. بعد انتهاء العد التنازلي، تظهر شاشة كاملة &quot;جاري التحديث&quot;
+                  تمنع أي عمليات حتى يتم إعادة التحميل بعد التحديث.
+                </p>
+
+                {!maintenanceEnabled ? (
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs font-bold text-slate-500 block mb-1.5">وقت التنبيه (بالدقائق)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={maintenanceMinutes}
+                          onChange={e => setMaintenanceMinutes(Number(e.target.value))}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none text-center font-mono"
+                          dir="ltr"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold text-slate-500 block mb-1.5">رسالة مخصصة (اختياري)</label>
+                        <input
+                          type="text"
+                          value={maintenanceMsg}
+                          onChange={e => setMaintenanceMsg(e.target.value)}
+                          placeholder="جاري تحديث النظام..."
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none"
+                        />
+                      </div>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        setIsTogglingMaintenance(true);
+                        const res = await enableMaintenanceMode(maintenanceMinutes, maintenanceMsg || undefined);
+                        if (res.success) {
+                          setMaintenanceEnabled(true);
+                          toast.success(`تم تفعيل وضع الصيانة — التحديث بعد ${maintenanceMinutes} دقيقة`);
+                        } else {
+                          toast.error(res.error || 'حدث خطأ');
+                        }
+                        setIsTogglingMaintenance(false);
+                      }}
+                      disabled={isTogglingMaintenance}
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      {isTogglingMaintenance ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <AlertTriangle className="w-4 h-4" />
+                      )}
+                      تفعيل وضع الصيانة وإشعار المستخدمين
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                      <RefreshCw className="w-8 h-8 text-red-500 mx-auto mb-2 animate-spin" style={{ animationDuration: '3s' }} />
+                      <p className="text-sm font-bold text-red-700">وضع الصيانة مفعّل</p>
+                      <p className="text-xs text-red-500 mt-1">كل المستخدمين يشاهدون إشعار التحذير الآن</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        setIsTogglingMaintenance(true);
+                        const res = await disableMaintenanceMode();
+                        if (res.success) {
+                          setMaintenanceEnabled(false);
+                          toast.success('تم إلغاء وضع الصيانة');
+                        } else {
+                          toast.error(res.error || 'حدث خطأ');
+                        }
+                        setIsTogglingMaintenance(false);
+                      }}
+                      disabled={isTogglingMaintenance}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      {isTogglingMaintenance ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4" />
+                      )}
+                      إلغاء وضع الصيانة (النظام يعمل)
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>{" "}
         </main>{" "}
       </div>{" "}

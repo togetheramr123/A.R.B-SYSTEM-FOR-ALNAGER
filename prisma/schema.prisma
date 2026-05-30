@@ -233,6 +233,11 @@ model Company {
   // === النسخة التجريبية ===
   demoPin String @default("3000") // الرقم السري للنسخة التجريبية
 
+  // === وضع الصيانة (قبل التحديث) ===
+  maintenanceMode    Boolean   @default(false)  // هل النظام في وضع الصيانة؟
+  maintenanceMessage String?                    // رسالة مخصصة للمستخدمين
+  maintenanceAt      DateTime?                  // وقت بدء الصيانة المتوقع
+
   portalUsers               PortalUser[]
   portalBanners             PortalBanner[]
   companyPaymentMethods     CompanyPaymentMethod[]
