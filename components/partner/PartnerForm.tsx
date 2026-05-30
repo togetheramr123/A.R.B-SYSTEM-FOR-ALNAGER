@@ -340,42 +340,17 @@ export default function PartnerForm({
   };
   const smartButtonsElement = !isModal && initialData?.id ? <>
         {" "}
-        {permissions.canSeeAccounting && <>
+        {permissions.canSeeSales && <Link href={`/${locale}/sales/orders?partner_id=${initialData.id}`} className="oe_stat_button">
             {" "}
-            <Link href={`/${locale}/accounting/bills?partner_id=${initialData.id}`} className="oe_stat_button">
+            <ShoppingCart className="w-5 h-5 o_stat_icon" />{" "}
+            <div className="o_stat_info">
               {" "}
-              <Receipt className="w-5 h-5 o_stat_icon" />{" "}
-              <div className="o_stat_info">
-                {" "}
-                <span className="o_stat_value">
-                  {initialData?._count?.invoices || 0}
-                </span>{" "}
-                <span className="o_stat_text">فواتير المورد</span>{" "}
-              </div>{" "}
-            </Link>{" "}
-            <Link href={`/${locale}/accounting/partner_ledger?partnerId=${initialData.id}&partnerName=${initialData?.name || ""}`} className="oe_stat_button">
-              {" "}
-              <Banknote className="w-5 h-5 o_stat_icon" />{" "}
-              <div className="o_stat_info">
-                {" "}
-                <span className="o_stat_value">
-                  {(initialData?.totalReceivable || 0).toLocaleString()} LE
-                </span>{" "}
-                <span className="o_stat_text">مفتوح</span>{" "}
-              </div>{" "}
-            </Link>{" "}
-            <Link href={`/${locale}/accounting/partner_ledger?partnerId=${initialData.id}&partnerName=${initialData?.name || ""}`} className="oe_stat_button">
-              {" "}
-              <CreditCard className="w-5 h-5 o_stat_icon" />{" "}
-              <div className="o_stat_info">
-                {" "}
-                <span className="o_stat_value">
-                  % {initialData?.paymentRate || 0}
-                </span>{" "}
-                <span className="o_stat_text">نسبة الدفعة في</span>{" "}
-              </div>{" "}
-            </Link>{" "}
-          </>}{" "}
+              <span className="o_stat_value">
+                {initialData?._count?.saleOrders || 0}
+              </span>{" "}
+              <span className="o_stat_text">المبيعات</span>{" "}
+            </div>{" "}
+          </Link>}{" "}
         {permissions.canSeePurchases && <Link href={`/${locale}/purchases/orders?partner_id=${initialData.id}`} className="oe_stat_button">
             {" "}
             <ShoppingCart className="w-5 h-5 o_stat_icon" />{" "}
@@ -387,17 +362,31 @@ export default function PartnerForm({
               <span className="o_stat_text">المشتريات</span>{" "}
             </div>{" "}
           </Link>}{" "}
-        {permissions.canSeeSales && <Link href={`/${locale}/sales/orders?partner_id=${initialData.id}`} className="oe_stat_button">
+        {permissions.canSeeAccounting && <>
             {" "}
-            <Banknote className="w-5 h-5 o_stat_icon" />{" "}
-            <div className="o_stat_info">
+            <Link href={`/${locale}/accounting/invoices?partner_id=${initialData.id}`} className="oe_stat_button">
               {" "}
-              <span className="o_stat_value">
-                ${initialData?._count?.saleOrders || 0}
-              </span>{" "}
-              <span className="o_stat_text">المبيعات</span>{" "}
-            </div>{" "}
-          </Link>}{" "}
+              <Receipt className="w-5 h-5 o_stat_icon" />{" "}
+              <div className="o_stat_info">
+                {" "}
+                <span className="o_stat_value">
+                  {initialData?._count?.saleInvoices || initialData?._count?.invoices || 0}
+                </span>{" "}
+                <span className="o_stat_text">المفوتر مبيعات</span>{" "}
+              </div>{" "}
+            </Link>{" "}
+            <Link href={`/${locale}/accounting/bills?partner_id=${initialData.id}`} className="oe_stat_button">
+              {" "}
+              <Receipt className="w-5 h-5 o_stat_icon" />{" "}
+              <div className="o_stat_info">
+                {" "}
+                <span className="o_stat_value">
+                  {initialData?._count?.billInvoices || 0}
+                </span>{" "}
+                <span className="o_stat_text">المفوتر مشتريات</span>{" "}
+              </div>{" "}
+            </Link>{" "}
+          </>}{" "}
       </> : undefined;
   const formContent = <form id="partner-form" onSubmit={handleSubmit(onSubmit)} className="font-sans text-right" dir="rtl">
       {" "}

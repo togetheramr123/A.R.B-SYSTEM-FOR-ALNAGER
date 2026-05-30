@@ -14,7 +14,7 @@ import { Chatter } from '@/components/chatter/Chatter';
 import { AttachmentPanel } from '@/components/common/AttachmentPanel';
 import { useRouter } from 'next/navigation';
 import { TopPortal } from '@/components/common/TopPortal';
-import { ActionMenu } from '@/components/common/ActionMenu';
+import { ActionMenu, PrintMenu } from '@/components/common/ActionMenu';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 import OdooFormShell from '../common/OdooFormShell';
 
@@ -230,12 +230,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
     });
   }
 
-  actions.push({
-    label: 'طباعة',
-    onClick: () => window.print(),
-    style: 'secondary' as const,
-    icon: <Printer className="w-4 h-4 ml-1" />
-  });
+
 
   if (status === 'done' && isLocked) {
     actions.push({
@@ -288,7 +283,11 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
           <button type="button" onClick={() => window.location.reload()} className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-sm transition-colors ml-1" title="تحديث">
             <RotateCcw className="w-4 h-4" />
           </button>
-          <ActionMenu onPrint={() => window.print()} onDuplicate={() => {}} onDelete={() => {}} />
+          <PrintMenu options={[
+            { label: 'تصميم 1 (مع هوية الشركة)', onClick: () => window.open(`/${locale}/inventory/operations/${picking.pickingType === 'INCOMING' ? 'receipts' : 'delivery'}/${picking.id}/print?design=1`, '_blank') },
+            { label: 'تصميم 2 (بدون هوية)', onClick: () => window.open(`/${locale}/inventory/operations/${picking.pickingType === 'INCOMING' ? 'receipts' : 'delivery'}/${picking.id}/print?design=2`, '_blank') },
+          ]} />
+          <ActionMenu onDuplicate={() => {}} onDelete={() => {}} />
         </div>
       </TopPortal>
 

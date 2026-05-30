@@ -48,14 +48,8 @@ export default function QuotationPrintTemplate({
       {/* Header Area */}
       <div className="flex justify-between items-center mb-10 pb-4 border-b border-slate-200">
         <div className="flex flex-col gap-1 items-start">
-          {order.company?.logo ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={order.company.logo} alt="Logo" className="h-16 object-contain" />
-          ) : (
-            <div className="h-16 flex items-center">
-              <span className="text-3xl font-black text-indigo-800 tracking-tighter">H&N GROUP</span>
-            </div>
-          )}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={order.company?.logo || '/hsn-logo.png'} alt="HSN GROUP" className="h-16 object-contain" />
         </div>
 
         <div className="text-left">

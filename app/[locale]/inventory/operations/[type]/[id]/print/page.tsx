@@ -8,15 +8,19 @@ interface Props {
     type: string;
     id: string;
   }>;
+  searchParams: Promise<{ design?: string }>;
 }
 export default async function OperationPrintPage({
-  params
+  params,
+  searchParams
 }: Props) {
   const {
     locale,
     id,
     type
   } = await params;
+  const { design: designParam } = await searchParams;
+  const design = designParam === "2" ? 2 : 1;
   const session = await getSession();
   if (!session) redirect(`/${locale}/login`);
   const picking = await prisma.stockPicking.findUnique({
@@ -38,5 +42,5 @@ export default async function OperationPrintPage({
   if (!picking) {
     notFound();
   }
-  return <StockPickingPrintTemplate picking={picking} locale={locale} />;
+  return <StockPickingPrintTemplate picking={picking} locale={locale} design={design} />;
 }

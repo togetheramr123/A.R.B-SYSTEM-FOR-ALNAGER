@@ -70,12 +70,8 @@ export function PartnerStatementPrint({
         {/* Header Area Matching Odoo */}
         <div className="flex justify-between items-start mb-8 text-sm font-bold text-slate-900 border-b-2 border-black pb-4">
           <div className="flex flex-col items-start justify-center h-20 w-1/3">
-            {statement.company?.logo ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={statement.company.logo} alt="Logo" className="h-12 object-contain" />
-            ) : (
-              <span className="text-2xl font-black text-indigo-800 tracking-tighter">H&N GROUP</span>
-            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={statement.company?.logo || '/hsn-logo.png'} alt="HSN GROUP" className="h-12 object-contain" />
           </div>
 
           <div className="flex flex-col items-center justify-end h-20 pb-2 w-1/3">

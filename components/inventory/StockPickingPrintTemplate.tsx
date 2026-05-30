@@ -6,11 +6,13 @@ import { Barcode } from "lucide-react";
 interface StockPickingPrintTemplateProps {
   picking: any;
   locale: string;
+  design?: number; // 1 = with company branding, 2 = without
 }
 
 export default function StockPickingPrintTemplate({
   picking,
-  locale: _locale
+  locale: _locale,
+  design = 1
 }: StockPickingPrintTemplateProps) {
   const isIncoming = picking.pickingType === "INCOMING";
   
@@ -32,18 +34,18 @@ export default function StockPickingPrintTemplate({
       
       {/* Header Area */}
       <div className="flex justify-between items-start mb-8 pb-6 border-b border-slate-200">
-        <div className="flex flex-col gap-2">
-          {picking.company?.logo ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img src={picking.company.logo} alt="Logo" className="h-16 object-contain" />
-          ) : (
-            <div className="h-16 flex items-center">
-              <span className="text-2xl font-black text-indigo-900 tracking-tighter">H&N GROUP</span>
-            </div>
-          )}
-          <h2 className="font-bold text-xl text-slate-900">النجار للأدوات الصحية</h2>
-          <p className="text-sm text-slate-500">مصر</p>
-        </div>
+        {design === 1 ? (
+          <div className="flex flex-col gap-2">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={picking.company?.logo || '/hsn-logo.png'} alt="HSN GROUP" className="h-16 object-contain" />
+            <h2 className="font-bold text-xl text-slate-900">{picking.company?.name || "النجار للأدوات الصحية"}</h2>
+            <p className="text-sm text-slate-500">{picking.company?.country || "مصر"}</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <div className="h-16" />
+          </div>
+        )}
 
         <div className="text-left flex flex-col items-end gap-2">
           <div className="flex items-center gap-2">

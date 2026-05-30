@@ -24,7 +24,7 @@ export default function InvoiceDocument({
         <div className="w-1/2">
           {" "}
           {/* Logo Placeholder - standard Odoo size */}{" "}
-          {company.logoUrl ? <img src={company.logoUrl} alt="Logo" className="max-h-[80px] object-contain" /> : <div className="text-2xl font-bold text-slate-800">
+          {true ? <img src={company.logoUrl || '/hsn-logo.png'} alt="HSN GROUP" className="max-h-[80px] object-contain" /> : <div className="text-2xl font-bold text-slate-800">
               {company.name || "Company Name"}
             </div>}{" "}
         </div>{" "}
