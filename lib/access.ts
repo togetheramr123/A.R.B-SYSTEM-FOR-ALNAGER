@@ -7,8 +7,8 @@ type AccessOperation = 'read' | 'write' | 'create' | 'unlink';
 export async function checkAccess(model: string, operation: AccessOperation): Promise<boolean> {
     const session = await getSession();
 
-    // 1. Superuser / Admin Bypass
-    if (session?.role === 'ADMIN') {
+    // 1. Superuser / Admin / Owner Bypass
+    if (session?.role === 'ADMIN' || session?.role === 'OWNER') {
         return true;
     }
 
@@ -20,13 +20,21 @@ export async function checkAccess(model: string, operation: AccessOperation): Pr
     // 2. Fetch User Groups and their Access Rights for this model
     // We need to see if *any* of the user's groups grant this permission.
     try {
+        const modelNames = [model];
+        if (model === 'product') modelNames.push('products');
+        if (model === 'products') modelNames.push('product');
+        if (model === 'partner') modelNames.push('partners');
+        if (model === 'partners') modelNames.push('partner');
+        if (model === 'user') modelNames.push('users');
+        if (model === 'users') modelNames.push('user');
+
         const userWithGroups = await prisma.user.findUnique({
             where: { id: session.userId },
             include: {
                 groups: {
                     include: {
                         accessRights: {
-                            where: { model: model }
+                            where: { model: { in: modelNames } }
                         }
                     }
                 }
@@ -49,12 +57,14 @@ export async function checkAccess(model: string, operation: AccessOperation): Pr
         // 4. Fallback: check UI permissions JSON configured on each group
         for (const group of userWithGroups.groups) {
             if (!group.permissions) continue;
-            let perms: Record<string, boolean> = {};
+            let perms: any = {};
             try {
                 perms = JSON.parse(group.permissions);
             } catch {
                 continue;
             }
+
+            if (perms.fullAccess === true) return true;
 
             const modelClean = model.toLowerCase().replace(/_/g, '.');
 

@@ -39,6 +39,7 @@
   "exclude": [
     "node_modules",
     "scripts",
-    "test_smartdata.ts"
+    "test_smartdata.ts",
+    "tests"
   ]
 }
