@@ -211,7 +211,12 @@ export default async function ProductListPage(props: {
   // Enhance products with metrics and users
   let productsWithStock = await Promise.all(
     serializedProducts.map(async (product: any) => {
-      const metrics = await getProductMetrics(product.id);
+      let metrics: any = { forecasted: 0, sold: 0, purchased: 0, onHand: 0 };
+      try {
+        metrics = await getProductMetrics(product.id);
+      } catch (e) {
+        console.error(`Failed to fetch metrics for product ${product.id}:`, e);
+      }
       const totalStock = product.stockQuants?.reduce((sum: number, q: any) => sum + (Number(q.quantity) || 0), 0) || 0;
       return {
         ...product,

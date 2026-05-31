@@ -65,7 +65,7 @@ export async function checkAccess(model: string, operation: AccessOperation): Pr
 
             // Check pricelist permissions
             if (modelClean === 'pricelist' || modelClean === 'product.pricelist') {
-                if (operation === 'read' && perms.pricelist_view) return true;
+                if (operation === 'read' && (perms.pricelist_view || perms.canManageDiscounts)) return true;
                 if (operation === 'create' && perms.pricelist_create) return true;
                 if (operation === 'write' && perms.pricelist_edit) return true;
                 if (operation === 'unlink' && perms.pricelist_delete) return true;
@@ -73,50 +73,50 @@ export async function checkAccess(model: string, operation: AccessOperation): Pr
 
             // Check sale order permissions
             if (modelClean === 'sale.order' || modelClean === 'sale' || modelClean === 'saleorder') {
-                if (operation === 'read' && perms.sales_view) return true;
-                if (operation === 'create' && perms.sales_create) return true;
-                if (operation === 'write' && perms.sales_edit) return true;
-                if (operation === 'unlink' && perms.sales_delete) return true;
+                if (operation === 'read' && (perms.sales_view || perms.canCreateOrders || perms.canApproveOrders)) return true;
+                if (operation === 'create' && (perms.sales_create || perms.canCreateOrders)) return true;
+                if (operation === 'write' && (perms.sales_edit || perms.canCreateOrders || perms.canApproveOrders)) return true;
+                if (operation === 'unlink' && (perms.sales_delete || perms.canCreateOrders)) return true;
             }
 
             // Check purchase order permissions
             if (modelClean === 'purchase.order' || modelClean === 'purchase' || modelClean === 'purchaseorder') {
-                if (operation === 'read' && perms.purch_view) return true;
-                if (operation === 'create' && perms.purch_create) return true;
-                if (operation === 'write' && perms.purch_edit) return true;
-                if (operation === 'unlink' && perms.purch_delete) return true;
+                if (operation === 'read' && (perms.purch_view || perms.canCreatePurchaseOrders || perms.canApprovePurchases)) return true;
+                if (operation === 'create' && (perms.purch_create || perms.canCreatePurchaseOrders)) return true;
+                if (operation === 'write' && (perms.purch_edit || perms.canCreatePurchaseOrders || perms.canApprovePurchases)) return true;
+                if (operation === 'unlink' && (perms.purch_delete || perms.canCreatePurchaseOrders)) return true;
             }
 
             // Check partner permissions
             if (modelClean === 'partner' || modelClean === 'res.partner') {
-                if (operation === 'read' && perms.cust_view) return true;
-                if (operation === 'create' && perms.cust_create) return true;
-                if (operation === 'write' && perms.cust_edit) return true;
-                if (operation === 'unlink' && perms.cust_edit) return true;
+                if (operation === 'read' && (perms.cust_view || perms.canCreateOrders || perms.canCreatePurchaseOrders || perms.canManageVendors)) return true;
+                if (operation === 'create' && (perms.cust_create || perms.canCreateOrders || perms.canCreatePurchaseOrders || perms.canManageVendors)) return true;
+                if (operation === 'write' && (perms.cust_edit || perms.canCreateOrders || perms.canCreatePurchaseOrders || perms.canManageVendors)) return true;
+                if (operation === 'unlink' && (perms.cust_edit || perms.canCreateOrders || perms.canCreatePurchaseOrders || perms.canManageVendors)) return true;
             }
 
             // Check product permissions
             if (modelClean === 'product' || modelClean === 'product.product' || modelClean === 'product.template') {
-                if (operation === 'read' && perms.inv_view) return true;
-                if (operation === 'create' && perms.inv_create_product) return true;
-                if (operation === 'write' && perms.inv_edit_product) return true;
-                if (operation === 'unlink' && perms.inv_edit_product) return true;
+                if (operation === 'read' && (perms.inv_view || perms.canManageProducts || perms.canViewStock || perms.canManageWarehouse || perms.canReceiveGoods || perms.canShipGoods)) return true;
+                if (operation === 'create' && (perms.inv_create_product || perms.canManageProducts)) return true;
+                if (operation === 'write' && (perms.inv_edit_product || perms.canManageProducts)) return true;
+                if (operation === 'unlink' && (perms.inv_edit_product || perms.canManageProducts)) return true;
             }
 
             // Check stock picking permissions
             if (modelClean === 'stock.picking' || modelClean === 'stock_picking') {
-                if (operation === 'read' && (perms.inv_view || perms.inv_view_picking)) return true;
-                if (operation === 'create' && perms.inv_view_picking) return true;
-                if (operation === 'write' && perms.inv_validate_picking) return true;
-                if (operation === 'unlink' && perms.inv_validate_picking) return true;
+                if (operation === 'read' && (perms.inv_view || perms.inv_view_picking || perms.canViewStock || perms.canManageWarehouse || perms.canReceiveGoods || perms.canShipGoods)) return true;
+                if (operation === 'create' && (perms.inv_view_picking || perms.canManageWarehouse || perms.canReceiveGoods)) return true;
+                if (operation === 'write' && (perms.inv_validate_picking || perms.canManageWarehouse || perms.canReceiveGoods || perms.canShipGoods)) return true;
+                if (operation === 'unlink' && (perms.inv_validate_picking || perms.canManageWarehouse || perms.canReceiveGoods || perms.canShipGoods)) return true;
             }
 
             // Check accounting move / invoice permissions
             if (modelClean === 'account.move' || modelClean === 'account_move' || modelClean === 'invoice') {
-                if (operation === 'read' && perms.acc_view_invoices) return true;
-                if (operation === 'create' && perms.acc_create_invoice) return true;
-                if (operation === 'write' && perms.acc_create_invoice) return true;
-                if (operation === 'unlink' && perms.acc_cancel_invoice) return true;
+                if (operation === 'read' && (perms.acc_view_invoices || perms.canManageAccounts || perms.canViewReports)) return true;
+                if (operation === 'create' && (perms.acc_create_invoice || perms.canCreateJournalEntries)) return true;
+                if (operation === 'write' && (perms.acc_create_invoice || perms.canCreateJournalEntries)) return true;
+                if (operation === 'unlink' && (perms.acc_cancel_invoice || perms.canCreateJournalEntries)) return true;
             }
         }
 

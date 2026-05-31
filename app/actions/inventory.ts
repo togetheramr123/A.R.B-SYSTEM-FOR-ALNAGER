@@ -1530,7 +1530,7 @@ export async function deleteProduct(id: string) {
 export async function archiveProduct(id: string, active: boolean) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "write");
   try {
     await prisma.product.update({
       where: {
@@ -1560,7 +1560,7 @@ export async function archiveProduct(id: string, active: boolean) {
 export async function duplicateProduct(id: string) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "create");
   try {
     const original = await prisma.product.findUnique({
       where: {
@@ -1599,7 +1599,7 @@ export async function duplicateProduct(id: string) {
 export async function getProductCategories() {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "read");
   try {
     const categories = await prisma.productCategory.findMany({
       where: {
@@ -1624,7 +1624,7 @@ export async function getProductCategories() {
 export async function getPartners() {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("partner", "read");
   const cprisma = await getCompanyPrisma();
   try {
     const partners = await cprisma.partner.findMany({
@@ -1644,7 +1644,7 @@ export async function getPartners() {
 export async function getProductMetrics(productId: string) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "read");
 
   try {
     const sold = await prisma.saleOrderLine.aggregate({
@@ -1799,7 +1799,7 @@ export async function getProductMetrics(productId: string) {
 export async function createTag(name: string) {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "write");
+  await ensureAccess("product", "write");
   try {
     const tag = await prisma.productTag.create({
       data: {
@@ -1815,7 +1815,7 @@ export async function createTag(name: string) {
 export async function getTags() {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "read");
 
   try {
     return await prisma.productTag.findMany();
@@ -1826,7 +1826,7 @@ export async function getTags() {
 export async function getAttributes() {
   const session = await getSession();
   if (!session) throw new Error("غير مصرح");
-  await ensureAccess("stock_picking", "read");
+  await ensureAccess("product", "read");
 
   try {
     return await prisma.attribute.findMany({
@@ -3474,7 +3474,12 @@ export async function fetchProductsForGroup(groupBy: string, groupKey: string) {
 
   const enhanced = await Promise.all(
     products.map(async (product: any) => {
-      const metrics = await getProductMetrics(product.id);
+      let metrics: any = { forecasted: 0, sold: 0, purchased: 0, onHand: 0 };
+      try {
+        metrics = await getProductMetrics(product.id);
+      } catch (e) {
+        console.error(`Failed to fetch metrics for product ${product.id}:`, e);
+      }
       const totalStock = product.stockQuants?.reduce((sum: number, q: any) => sum + (Number(q.quantity) || 0), 0) || 0;
       return {
         ...product,
