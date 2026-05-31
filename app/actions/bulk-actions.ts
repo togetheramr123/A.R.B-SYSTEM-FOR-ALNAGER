@@ -213,7 +213,7 @@ export async function bulkDeleteRecords(modelName: string, ids: string[]) {
           await tx.resPartnerBank.deleteMany({ where: { partnerId: id } });
           await tx.purchaseAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
           await tx.saleAgreement.deleteMany({ where: { partnerId: id } }).catch(() => {});
-          await tx.partner.delete({ where: { id } });
+          await tx.partner.deleteMany({ where: { id } });
         } else if (normalizedModel === "product") {
           await tx.productAttributeLine.deleteMany({ where: { productId: id } });
           await tx.productSupplierInfo.deleteMany({ where: { productId: id } });
@@ -236,30 +236,30 @@ export async function bulkDeleteRecords(modelName: string, ids: string[]) {
           await tx.stockScrap.deleteMany({ where: { productId: id } });
           await tx.stockLot.deleteMany({ where: { productId: id } });
           await tx.stockValuationLayer.deleteMany({ where: { productId: id } });
-          await tx.product.delete({ where: { id } });
+          await tx.product.deleteMany({ where: { id } });
         } else if (normalizedModel === "saleorder" || normalizedModel === "sale_order") {
           await tx.saleOrderLine.deleteMany({ where: { orderId: id } });
           await tx.saleOrderOption.deleteMany({ where: { orderId: id } });
           await tx.message.deleteMany({ where: { saleOrderId: id } });
           await tx.attachment.deleteMany({ where: { saleOrderId: id } });
-          await tx.saleOrder.delete({ where: { id } });
+          await tx.saleOrder.deleteMany({ where: { id } });
         } else if (normalizedModel === "purchaseorder" || normalizedModel === "purchase_order") {
           await tx.purchaseOrderLine.deleteMany({ where: { orderId: id } });
           await tx.message.deleteMany({ where: { purchaseOrderId: id } });
           await tx.attachment.deleteMany({ where: { purchaseOrderId: id } });
-          await tx.purchaseOrder.delete({ where: { id } });
+          await tx.purchaseOrder.deleteMany({ where: { id } });
         } else if (normalizedModel === "invoice") {
           await tx.invoiceLine.deleteMany({ where: { invoiceId: id } });
           await tx.message.deleteMany({ where: { invoiceId: id } });
           await tx.attachment.deleteMany({ where: { invoiceId: id } });
-          await tx.invoice.delete({ where: { id } });
+          await tx.invoice.deleteMany({ where: { id } });
         } else if (normalizedModel === "productcategory" || normalizedModel === "product_category") {
           await tx.stockPutawayRule.deleteMany({ where: { categoryId: id } });
-          await tx.productCategory.delete({ where: { id } });
+          await tx.productCategory.deleteMany({ where: { id } });
         } else {
           const m = (tx as any)[modelName];
           if (m) {
-            await m.delete({ where: { id } });
+            await m.deleteMany({ where: { id } });
           } else {
             throw new Error(`Model ${modelName} not supported for delete`);
           }

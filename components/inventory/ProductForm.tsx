@@ -2616,7 +2616,14 @@ export function ProductForm({
                 toast.error(result.error);
               } else if (result?.success) {
                 toast.success("تم حذف المنتج بنجاح");
-                router.push(`/${locale}/inventory/products`);
+                router.refresh();
+                if (adjacentIds.prev) {
+                  router.push(`/${locale}/inventory/products/${adjacentIds.prev}`);
+                } else if (adjacentIds.next) {
+                  router.push(`/${locale}/inventory/products/${adjacentIds.next}`);
+                } else {
+                  router.push(`/${locale}/inventory/products`);
+                }
               } else {
                 toast.error("حدث خطأ غير متوقع أثناء الحذف");
               }
