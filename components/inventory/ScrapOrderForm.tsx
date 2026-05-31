@@ -35,8 +35,8 @@ export default function ScrapOrderForm({
       setLoading(true);
       setError('');
       const res = await createScrapOrder(null, formData);
-      if (res?.error) {
-        setError(res.error);
+      if (res?.error || !res?.id) {
+        setError(res?.error || "Unknown error occurred");
         return;
       }
       const valRes = await validateScrap(res.id);

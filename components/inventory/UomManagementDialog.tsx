@@ -34,7 +34,10 @@ export function UomManagementDialog({
     defaultValues: {
       name: "",
       categoryId: "",
-      type: "consu" /* default, will map to reference ratio: 1.0, rounding: 0.01, active: true */
+      type: "reference",
+      ratio: 1.0,
+      rounding: 0.01,
+      active: true
     }
   });
   const categoryId = watch("categoryId");

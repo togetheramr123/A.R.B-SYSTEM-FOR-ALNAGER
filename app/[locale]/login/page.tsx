@@ -163,16 +163,16 @@ export default function LoginPage({
 
       {/* Demo Modal */}
       <Dialog open={isDemoModalOpen} onOpenChange={setIsDemoModalOpen}>
-        <DialogContent className="sm:max-w-md bg-white border-0 shadow-2xl overflow-hidden rounded-2xl p-0" dir="rtl">
+        <DialogContent className="sm:max-w-md bg-white border-0 shadow-2xl overflow-hidden rounded-2xl p-0">
           <div className="absolute top-0 right-0 w-full h-1.5 bg-[#714B67]"></div>
           
-          <DialogHeader className="pt-6 pb-2 px-6 text-right border-b-0 flex flex-col items-center">
+          <DialogHeader>
             <div className="bg-[#714B67]/10 w-12 h-12 rounded-full flex items-center justify-center mb-3">
               <Lock className="w-6 h-6 text-[#714B67]" />
             </div>
-            <DialogTitle className="text-xl font-bold text-slate-800 text-center">النسخة التجريبية</DialogTitle>
-            <DialogDescription className="text-slate-500 text-sm text-center mt-1">
-              يرجى إدخال الرقم السري الخاص بالشركة للوصول إلى بيئة الاختبار
+            <DialogTitle><span className="text-xl font-bold text-slate-800 text-center block">النسخة التجريبية</span></DialogTitle>
+            <DialogDescription>
+              <span className="text-slate-500 text-sm text-center mt-1 block">يرجى إدخال الرقم السري الخاص بالشركة للوصول إلى بيئة الاختبار</span>
             </DialogDescription>
           </DialogHeader>
 

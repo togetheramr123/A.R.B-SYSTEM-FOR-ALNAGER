@@ -17,7 +17,7 @@ export default async function CreateScrapPage(props: {
     where: {
       type: 'product'
     },
-    name: true
+    select: { id: true, name: true, uom: true }
   });
   const locations = await prisma.location.findMany({
     where: {

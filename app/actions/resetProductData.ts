@@ -148,7 +148,7 @@ export async function resetProductData(confirmCode: string) {
 
     // === المرحلة 9: حذف سمات المنتجات (اختياري) ===
     try { await prisma.attributeValue.deleteMany({}); } catch(e) { console.log('attributeValue skip'); }
-    try { await prisma.productAttribute.deleteMany({}); } catch(e) { console.log('productAttribute skip'); }
+    try { await prisma.attributeValue.deleteMany({}); } catch(e) { console.log('attributeValue skip'); }
     try { await prisma.productTag.deleteMany({}); } catch(e) { console.log('productTag skip'); }
 
     return {

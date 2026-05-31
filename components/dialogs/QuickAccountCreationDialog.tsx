@@ -70,7 +70,6 @@ export function QuickAccountCreationDialog({
     }
   };
   if (!isOpen) return null;
-  Arabic;
   const typeLabels: Record<string, string> = {
     asset: 'أصول',
     asset_current: 'أصول متداولة',

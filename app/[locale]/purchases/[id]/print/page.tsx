@@ -29,7 +29,6 @@ export default async function PurchasePrintPage(props: {
     include: {
       partner: true,
       company: true,
-      user: true,
       lines: {
         include: {
           product: true

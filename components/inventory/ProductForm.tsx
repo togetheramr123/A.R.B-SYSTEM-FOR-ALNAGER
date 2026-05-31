@@ -82,7 +82,7 @@ import { useFormTracking } from "@/hooks/useFormTracking";
 import { useAutoSaveOnLeave } from "@/hooks/useAutoSaveOnLeave";
 import { convertArabicToEnglishNumbers } from "@/lib/utils/numberUtils";
 import { parsePrismaError } from "@/lib/utils/errorHandler";
-import { ProductGeneralTab } from "./product-tabs/ProductGeneralTab";
+
 import { ProductSalesTab } from "./product-tabs/ProductSalesTab";
 import { ProductAccountingTab } from "./product-tabs/ProductAccountingTab";
 import { ProductComponentsTab } from "./product-tabs/ProductComponentsTab";
@@ -273,6 +273,7 @@ export function ProductForm({
     propertyAccountExpenseId: initialData?.propertyAccountExpenseId || "",
     assetType: initialData?.assetType || "",
     priceDifferenceAccount: initialData?.priceDifferenceAccount || "",
+    saleDelay: initialData?.saleDelay || 0,
   };
   const {
     register,
@@ -711,21 +712,18 @@ export function ProductForm({
         );
       const productData = sanitizePayload(rawProductData);
       if (currentId && !isDuplicate) {
-        const res = await updateProduct(currentId, productData);
-        if (res?.error) {
-          toast.error(`فشل الحفظ التلقائي: ${res.error}`);
-        } else {
+        try {
+          const res = await updateProduct(currentId, productData);
           console.log("[BackgroundSave] Product updated successfully.");
+        } catch (err: any) {
+          toast.error(`فشل الحفظ التلقائي: ${err.message || "Unknown error"}`);
         }
       } else if (data.name && data.name.trim() !== "") {
-        const newAttr = await createProduct({
-          ...productData,
-          name: data.name,
-        });
-        if (newAttr?.error) {
-          toast.error(`فشل حفظ المنتج الجديد تلقائياً: ${newAttr.error}`);
-          console.error("[BackgroundSave] Error:", newAttr.error);
-        } else {
+        try {
+          const newAttr = await createProduct({
+            ...productData,
+            name: data.name,
+          });
           console.log("[BackgroundSave] Product auto-created successfully.");
           if (newAttr && newAttr.id) {
             setDraftId(newAttr.id);
@@ -737,6 +735,9 @@ export function ProductForm({
               `/${locale}/inventory/products/${newAttr.id}`,
             );
           }
+        } catch (err: any) {
+          toast.error(`فشل حفظ المنتج الجديد تلقائياً: ${err.message || "Unknown error"}`);
+          console.error("[BackgroundSave] Error:", err);
         }
       }
     } catch (error: any) {
@@ -2357,7 +2358,7 @@ export function ProductForm({
             {activeTab === "components" && <ProductComponentsTab bomLines={bomLines} productOptions={productOptions} handleAddComponent={handleAddBomLine} handleComponentChange={handleBomChange} handleRemoveComponent={handleRemoveBomLine} convertArabicToEnglishNumbers={convertArabicToEnglishNumbers} initialDataId={initialData?.id} uomOptionsState={uomOptionsState} />}
             {activeTab === "attributes" && <ProductAttributesTab attributeLines={attributeLines} availableAttributes={availableAttributes} handleAddAttributeLine={handleAddAttributeLine} handleRemoveAttributeLine={handleRemoveAttributeLine} handleAttributeChange={handleAttributeChange} handleCreateAttribute={handleCreateAttribute} handleValueSelect={handleValueSelect} handleValueRemove={handleValueRemove} handleCreateValue={handleCreateValue} />}
             {activeTab === "purchases" && <ProductPurchasesTab supplierLines={supplierLines} vendorOptions={vendorOptions} handleAddSupplierLine={handleAddSupplierLine} handleSupplierChange={handleSupplierChange} handleRemoveSupplierLine={handleRemoveSupplierLine} register={register} setValue={setValue} convertArabicToEnglishNumbers={convertArabicToEnglishNumbers} />}
-            {activeTab === "accounting" && <ProductAccountingTab register={register} setValue={setValue} watch={watch} control={control} accountOptions={accountOptions} handleOpenAccountDialog={handleOpenAccountDialog} />}
+            {activeTab === "accounting" && <ProductAccountingTab register={register} setValue={setValue} watch={watch} control={control as any} accountOptions={accountOptions} handleOpenAccountDialog={handleOpenAccountDialog} />}
             {activeTab === "inventory" && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 {" "}

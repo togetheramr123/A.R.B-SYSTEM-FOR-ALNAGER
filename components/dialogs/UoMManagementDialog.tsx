@@ -25,7 +25,9 @@ interface UoMManagementDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (uom: any) => void;
-  initialName?: string; /* New props for state management units: UoM[]; uomCategories?: any[]; */
+  initialName?: string;
+  units: UoM[];
+  uomCategories?: any[];
 }
 export function UoMManagementDialog({
   isOpen,

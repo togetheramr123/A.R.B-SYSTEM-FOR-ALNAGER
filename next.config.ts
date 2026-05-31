@@ -5,27 +5,22 @@ import type { NextConfig } from 'next';
 const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
-    devIndicators: {
-        buildActivityPosition: 'bottom-right',
-    },
     output: 'standalone',
     logging: {
         fetches: {
             fullUrl: true,
         },
     },
-    serverActions: {
-        bodySizeLimit: '50mb',
-    },
     experimental: {
         optimizePackageImports: ['lucide-react', 'recharts'],
+        serverActions: {
+            bodySizeLimit: '50mb',
+        },
     },
     typescript: {
         ignoreBuildErrors: true,
     },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
+
     async headers() {
         return [
             {

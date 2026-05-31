@@ -37,7 +37,7 @@ export function OutstandingPayments({
   useEffect(() => {
     if (shouldShow && partnerId) {
       setLoading(true);
-      getOutstandingPayments(partnerId, invoiceType).then(setPayments).finally(() => setLoading(false));
+      getOutstandingPayments(partnerId, invoiceType).then(data => setPayments(data as any)).finally(() => setLoading(false));
     }
   }, [shouldShow, partnerId, invoiceType]);
   const handleApply = async (paymentId: string) => {

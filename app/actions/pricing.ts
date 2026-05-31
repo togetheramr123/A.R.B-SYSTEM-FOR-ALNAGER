@@ -7,6 +7,10 @@ export type PricingResult = {
   discount?: number;
   appliedPriceListName?: string | null;
   warnings?: string[];
+  priceListDiscount1?: number;
+  priceListDiscount2?: number;
+  priceListDiscount3?: number;
+  priceListAddition?: number;
 };
 export async function getProductPrice(params: {
   productId: string;

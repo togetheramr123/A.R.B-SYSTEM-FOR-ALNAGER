@@ -8,7 +8,7 @@ export async function logAuditAction(params: {
   action: string;
   model: string;
   recordId: string;
-  recordName?: string;
+  recordName?: string | null;
   oldValues?: Record<string, any>;
   newValues?: Record<string, any>;
 }) {

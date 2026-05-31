@@ -362,8 +362,8 @@ export function PurchasesTableClient({
                   <BarChart data={graphData} margin={{ top: 5, right: 30, left: 20, bottom: 60 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => v >= 1e6 ? `${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : String(v)} />
-                    <Tooltip formatter={(v: number) => [fmt(v) + " LE", "الإجمالي"]} />
+                    <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: any) => v >= 1e6 ? `${(v/1e6).toFixed(1)}M` : v >= 1e3 ? `${(v/1e3).toFixed(0)}K` : String(v)} />
+                    <Tooltip formatter={(v: any) => [fmt(v) + " LE", "الإجمالي"]} />
                     <Bar dataKey="total" fill="#017E84" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

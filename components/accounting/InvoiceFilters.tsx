@@ -9,7 +9,10 @@ interface FilterProps {
   locale: string;
   currentFilters: {
     search?: string;
-    state?: string; // comma-separated: "draft,posted" payment?: string; // comma-separated: "not_paid,paid" overdue?: string; group?: string;
+    state?: string;
+    payment?: string;
+    overdue?: string;
+    group?: string;
   };
   filterCounts: {
     draft: number;

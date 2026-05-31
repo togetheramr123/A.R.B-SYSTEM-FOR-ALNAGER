@@ -21,7 +21,6 @@ export default async function BudgetPage({
     }
   });
   /* Handle initial state for */
-  new budgets();
   const initialData = budget || (params.id === "new" ? {
     state: "draft",
     dateFrom: new Date().toISOString(),

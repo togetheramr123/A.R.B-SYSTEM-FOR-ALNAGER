@@ -229,7 +229,7 @@ export default async function ReorderPointPage(props: {
                       </td>{" "}
                       <td className="py-3 px-4 text-center">
                         {" "}
-                        <StatusBadge status={row.status} />{" "}
+                        <StatusBadge status={row.status as "ok" | "low" | "critical"} />{" "}
                       </td>{" "}
                     </tr>)}{" "}
               </tbody>{" "}

@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { MoreVertical } from "lucide-react";
 function fmt(amount: number) {
-  new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
@@ -119,26 +119,46 @@ export function JournalsKanban({ locale }: { locale: string }) {
                 </div>{" "}
                 {}{" "}
                 <div className="w-1/3 flex flex-col justify-start items-center pt-1">
-                  {" "}
                   <Link
-                    href={`/${locale}/accounting/${journal.type === "sale" ? "invoices" : "bills"} )} { } {(journal.type === 'bank' || journal.type === 'cash') && ( <div className="flex justify-between h-full"> { } <div className="space-y-4 flex-1 pr-2 border-l border-slate-100 pl-4"> <div className="flex justify-between items-center group/link cursor-pointer"> <span className="text-sm text-slate-600 hover:text-[#017E84] hover:underline">الرصيد في د.أستاذ</span> <span className="text-sm font-bold text-slate-700" dir="ltr">{fmt(journal.stats.balance || 0)} LE</span> </div> <div className="flex justify-between items-center text-slate-400"> <span className="text-sm">آخر كشف حساب</span> <span className="text-sm font-bold" dir="ltr">--</span> </div> </div> { } <div className="w-1/3 flex flex-col justify-start items-center space-y-2 pt-1"> <Link href={ {locale}/accounting/bank-statements/new?journalId=${journal.id}`}
+                    href={`/${locale}/accounting/${journal.type === "sale" ? "invoices/new" : "bills/new"}`}
                     className="bg-[#017E84] hover:bg-[#015e63] text-white text-sm font-bold px-4 py-2 rounded shadow-sm w-full text-center transition-colors"
                   >
-                    {" "}
-                    إنشاء كشف{" "}
-                  </Link>{" "}
+                    فاتورة جديدة
+                  </Link>
+                </div>
+              </div>
+            )}
+            
+            {(journal.type === 'bank' || journal.type === 'cash') && (
+              <div className="flex justify-between h-full">
+                <div className="space-y-4 flex-1 pr-2 border-l border-slate-100 pl-4">
+                  <div className="flex justify-between items-center group/link cursor-pointer">
+                    <span className="text-sm text-slate-600 hover:text-[#017E84] hover:underline">الرصيد في د.أستاذ</span>
+                    <span className="text-sm font-bold text-slate-700" dir="ltr">{fmt(journal.stats.balance || 0)} LE</span>
+                  </div>
+                  <div className="flex justify-between items-center text-slate-400">
+                    <span className="text-sm">آخر كشف حساب</span>
+                    <span className="text-sm font-bold" dir="ltr">--</span>
+                  </div>
+                </div>
+                
+                <div className="w-1/3 flex flex-col justify-start items-center space-y-2 pt-1">
+                  <Link
+                    href={`/${locale}/accounting/bank-statements/new?journalId=${journal.id}`}
+                    className="bg-[#017E84] hover:bg-[#015e63] text-white text-sm font-bold px-4 py-2 rounded shadow-sm w-full text-center transition-colors"
+                  >
+                    إنشاء كشف
+                  </Link>
                   <Link
                     href={`/${locale}/accounting/payments/new?journalId=${journal.id}`}
                     className="text-[#017E84] hover:text-[#015e63] text-sm font-bold w-full text-center hover:underline"
                   >
-                    {" "}
-                    دفعة جديدة{" "}
-                  </Link>{" "}
-                </div>{" "}
+                    دفعة جديدة
+                  </Link>
+                </div>
               </div>
-            )}{" "}
-          </div>{" "}
-          {} <div className="h-2 w-full flex"> {} </div>{" "}
+            )}
+          </div>
         </div>
       ))}{" "}
     </div>

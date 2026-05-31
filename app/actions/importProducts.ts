@@ -94,7 +94,7 @@ export async function importProductsData(rows: ImportedProductRow[]) {
           uom = await tx.uom.create({
             data: { name: uomName, categoryId: uomCat!.id, type, ratio }
           });
-        } else if (uom.ratio !== ratio) {
+        } else if (Number(uom.ratio) !== ratio) {
           uom = await tx.uom.update({
             where: { id: uom.id },
             data: { ratio }

@@ -182,12 +182,13 @@ export default function ImageOrderParserModal({ isOpen, onClose, onConfirmItems,
       const linesBboxes: { text: string; bbox: { x0: number; y0: number; x1: number; y1: number } }[] = [];
       
       // Debug: log the Tesseract data structure to understand what's available
+      const dataAny = data as any;
       console.log('[OCR DEBUG] data keys:', Object.keys(data));
-      console.log('[OCR DEBUG] data.lines exists:', !!data.lines, 'count:', data.lines?.length);
-      console.log('[OCR DEBUG] data.blocks exists:', !!data.blocks, 'count:', data.blocks?.length);
+      console.log('[OCR DEBUG] data.lines exists:', !!dataAny.lines, 'count:', dataAny.lines?.length);
+      console.log('[OCR DEBUG] data.blocks exists:', !!dataAny.blocks, 'count:', dataAny.blocks?.length);
       
-      if (data.lines && data.lines.length > 0) {
-        for (const line of data.lines) {
+      if (dataAny.lines && dataAny.lines.length > 0) {
+        for (const line of dataAny.lines) {
           if (line.text && line.text.trim()) {
             console.log('[OCR DEBUG] Line:', line.text.trim().substring(0, 40), 'bbox:', JSON.stringify(line.bbox));
             linesBboxes.push({
@@ -199,9 +200,9 @@ export default function ImageOrderParserModal({ isOpen, onClose, onConfirmItems,
       }
       
       // If no line bboxes found, try to extract from blocks -> paragraphs -> lines
-      if (linesBboxes.length === 0 && data.blocks) {
+      if (linesBboxes.length === 0 && dataAny.blocks) {
         console.log('[OCR DEBUG] Falling back to blocks->paragraphs->lines');
-        for (const block of data.blocks) {
+        for (const block of dataAny.blocks) {
           if (block.paragraphs) {
             for (const para of block.paragraphs) {
               if (para.lines) {

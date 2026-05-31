@@ -347,8 +347,7 @@ export function VendorBillForm() {
             uom: "",
             price: 0,
             taxes: false
-          })} readOnly={status !== "draft"} // Lock table
-          if posted />{" "}
+          })} readOnly={status !== "draft"} />{" "}
           </div>{" "}
           {/* Footer Totals */}{" "}
           <div className="flex justify-end">

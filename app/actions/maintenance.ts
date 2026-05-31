@@ -34,8 +34,7 @@ export async function enableMaintenanceMode(minutesFromNow: number = 1, message?
     action: 'MAINTENANCE_ENABLED',
     model: 'Company',
     recordId: company.id,
-    userId: session.userId,
-    details: `تفعيل وضع الصيانة — التحديث بعد ${minutesFromNow} دقيقة`,
+    newValues: { details: `تفعيل وضع الصيانة — التحديث بعد ${minutesFromNow} دقيقة` },
   });
 
   revalidatePath('/');
@@ -67,8 +66,7 @@ export async function disableMaintenanceMode() {
     action: 'MAINTENANCE_DISABLED',
     model: 'Company',
     recordId: company.id,
-    userId: session.userId,
-    details: 'إلغاء وضع الصيانة',
+    newValues: { details: 'إلغاء وضع الصيانة' },
   });
 
   revalidatePath('/');

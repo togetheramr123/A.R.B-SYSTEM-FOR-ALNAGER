@@ -59,7 +59,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                       </thead>{" "}
                       <tbody className="divide-y">
                         {" "}
-                        {supplierLines.map((line) => (
+                        {supplierLines.map((line: any) => (
                           <tr key={line.id} className="group hover:bg-slate-50">
                             {" "}
                             <td className="p-1">
@@ -181,7 +181,7 @@ export function ProductPurchasesTab({ supplierLines, vendorOptions, handleAddSup
                             type="number"
                             step="0.01"
                             {...register("tax_vendor", {
-                              onChange: (e) => {
+                              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                                 const englishVal =
                                   convertArabicToEnglishNumbers(e.target.value);
                                 setValue("tax_vendor", englishVal, {

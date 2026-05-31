@@ -60,7 +60,7 @@ export default function ShortagesReportPage() {
       }));
       const result = await createPoFromShortages(payload);
       toast.success("تم إنشاء أمر الشراء بنجاح");
-      router.push(`/${locale}/purchases/orders/${result.orderId}`);
+      router.push(`/${locale}/purchases/orders/${result.id}`);
     } catch (e: any) {
       toast.error(e.message || "حدث خطأ أثناء إنشاء أمر الشراء");
       setCreatingPo(false);

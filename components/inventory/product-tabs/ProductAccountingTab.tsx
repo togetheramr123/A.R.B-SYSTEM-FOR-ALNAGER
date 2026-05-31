@@ -10,7 +10,7 @@ export function ProductAccountingTab({ register, setValue, watch, control, accou
   watch: UseFormWatch<ProductFormValues>;
   control: Control<ProductFormValues>;
   accountOptions: { income: Option[], expense: Option[] };
-  handleOpenAccountDialog: (name: string, type: "income" | "expense", field: string) => void;
+  handleOpenAccountDialog: (name: string, type: "income" | "expense", field: "propertyAccountIncomeId" | "propertyAccountExpenseId") => void;
 }) {
   return (
     <>

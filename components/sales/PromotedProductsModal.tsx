@@ -80,15 +80,18 @@ export function PromotedProductsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl" dir="rtl">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-[#017E84]">
-            <Target className="w-5 h-5" />
-            الأصناف المستهدفة للبيع
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-3xl">
+        <div dir="rtl">
+          <DialogHeader>
+            <DialogTitle>
+              <div className="flex items-center gap-2 text-[#017E84]">
+                <Target className="w-5 h-5" />
+                الأصناف المستهدفة للبيع
+              </div>
+            </DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4">
           <div className="relative">
             <Search className="absolute right-3 top-2.5 h-4 w-4 text-slate-400" />
             <input
@@ -156,6 +159,7 @@ export function PromotedProductsModal({
             <Plus className="w-4 h-4" />
             إضافة الأصناف المحددة
           </Button>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

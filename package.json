@@ -16,7 +16,15 @@
     "deploy:prepare": "npm run check && npm run db:generate && npx prisma db push --accept-data-loss && npm run build",
     "verify:master": "ts-node -r tsconfig-paths/register --project tsconfig.script.json scripts/verify_master_cycle.ts",
     "test": "npx playwright test",
-    "test:report": "npx playwright show-report",
+    "test:smoke": "npx playwright test smoke-all-pages",
+    "test:accounting": "npx playwright test tests/accounting/",
+    "test:inventory": "npx playwright test tests/inventory/",
+    "test:sales": "npx playwright test tests/sales/",
+    "test:purchases": "npx playwright test tests/purchases/",
+    "test:hr": "npx playwright test tests/hr/",
+    "test:settings": "npx playwright test tests/settings/",
+    "test:all": "npx playwright test --reporter=html",
+    "test:report": "npx playwright show-report test-results/html-report",
     "backup": "node scripts/backup.js"
   },
   "dependencies": {

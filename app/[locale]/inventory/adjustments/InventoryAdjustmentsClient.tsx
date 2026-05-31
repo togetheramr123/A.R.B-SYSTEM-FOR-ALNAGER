@@ -38,9 +38,9 @@ export default function InventoryAdjustmentsClient({
       if (q.id === id) {
         const isValid = !isNaN(val);
         const finalQty = isValid ? val : 0;
-        isChanged: finalQty !== q.theoreticalQty;
+        return { ...q, realQty: finalQty, isChanged: finalQty !== q.theoreticalQty };
       }
-      ;
+      return q;
     }));
   };
   const handleSetStateQty = (id: string, val: number) => {

@@ -67,6 +67,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+test-results/.auth/
 
 # Development artifacts
 *.bak

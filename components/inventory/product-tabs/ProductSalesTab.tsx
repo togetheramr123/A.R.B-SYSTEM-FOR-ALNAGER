@@ -45,7 +45,7 @@ export function ProductSalesTab({ register, setValue, convertArabicToEnglishNumb
                               const englishVal = convertArabicToEnglishNumbers(
                                 e.target.value,
                               );
-                              setValue("tax_customer", englishVal, {
+                              setValue("tax_customer", englishVal ? parseFloat(englishVal) : 0, {
                                 shouldValidate: true,
                                 shouldDirty: true,
                               });

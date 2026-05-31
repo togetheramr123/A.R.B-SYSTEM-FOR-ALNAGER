@@ -2,6 +2,8 @@ export interface ProductFormValues {
   name: string;
   can_sell: boolean;
   can_purchase: boolean;
+  isPromotedForSale: boolean;
+  saleDelay: number;
   detailedType: string;
   invoicingPolicy: string;
   price: number;
@@ -65,7 +67,7 @@ export interface BomLine {
 export interface AttributeState {
   id: string;
   attributeId: string;
-  values: { id: string; valueId: string; extraPrice: number }[];
+  valueIds: string[];
 }
 
 export interface Metrics {

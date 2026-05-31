@@ -398,7 +398,6 @@ export function PriceListForm({
                           }}
                           onFocus={() => setPartnerSearchOpen(true)}
                           placeholder="ابحث وأضف شخص..."
-                          autoComplete="new-password"
                           className="flex-1 bg-transparent border-b border-gray-200 focus:border-[#017E84] hover:border-slate-300 outline-none py-1 text-[13px] placeholder:text-gray-300 transition-colors"
                         />
                         <UserPlus className="w-4 h-4 text-gray-300" />

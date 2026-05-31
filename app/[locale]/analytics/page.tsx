@@ -87,7 +87,6 @@ export default async function AnalyticsPage(props: {
     revenue: revNum * 0.18,
     expenses: expNum * 0.23
   }]; /* 3. Top Categories (Pie Chart) // We'll find top partners instead of categories for now to show real */
-  variety;
   const topPartners = await prisma.invoice.groupBy({
     by: ['partnerId'],
     _sum: {

@@ -69,7 +69,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
       startTransition(async () => {
         const result = await createReturnPicking(picking.id);
         if (result?.success) {
-          router.push(`/${locale}/inventory/transfers/${result.id}`);
+          router.push(`/${locale}/inventory/transfers/${result.pickingId}`);
         } else {
           setPageError(`خطأ في الإرجاع: ${parsePrismaError(result?.error)}`);
         }
@@ -88,7 +88,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
         const isEditingDone = status === 'done';
         const finalMoves = (!isEditingDone && !hasProvidedQuantities) ? data.moves.map((m: any) => ({ ...m, qtyDone: m.qty })) : data.moves;
         
-        const result = await validatePicking(picking.id, finalMoves, backorderAction);
+        const result = await validatePicking(picking.id, finalMoves, backorderAction) as any;
         
         if (result?.error) {
           if (result.error === 'CONCURRENCY_ERROR') {
@@ -176,7 +176,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
             valueAsNumber: true,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
               const val = convertArabicToEnglishNumbers(e.target.value);
-              control?._setValue(`moves.${index}.qtyDone`, val ? parseFloat(val) : 0, { shouldValidate: true, shouldDirty: true });
+              setValue(`moves.${index}.qtyDone`, val ? parseFloat(val) : 0, { shouldValidate: true, shouldDirty: true });
             }
           })}
           className={`w-full p-1 border-b border-slate-300 focus:border-teal-600 outline-none text-center font-bold ${(watch(`moves.${index}.qtyDone`) === field.qty) ? 'text-green-600' : (watch(`moves.${index}.qtyDone`) > field.qty) ? 'text-orange-600' : 'text-slate-900'}`}
@@ -192,7 +192,7 @@ export default function PickingForm({ picking, locations, readOnly = false }: Pr
             valueAsNumber: true,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
               const val = convertArabicToEnglishNumbers(e.target.value);
-              control?._setValue(`moves.${index}.secQtyDone`, val ? parseFloat(val) : 0, { shouldValidate: true, shouldDirty: true });
+              setValue(`moves.${index}.secQtyDone`, val ? parseFloat(val) : 0, { shouldValidate: true, shouldDirty: true });
             }
           })}
           className="w-full p-1 bg-slate-50 border-b border-transparent focus:border-teal-600 outline-none text-center text-xs"

@@ -90,8 +90,7 @@ export function CategoryCreationDialog({
               propertyStockAccountOutputId: cat.propertyStockAccountOutputId || '',
               propertyAccountIncomeId: cat.propertyAccountIncomeId || '',
               propertyAccountExpenseId: cat.propertyAccountExpenseId || '',
-              propertyAccountDifferenceId: '',
-              f: ''
+              propertyAccountDifferenceId: ''
             });
           }
           setIsLoading(false);
