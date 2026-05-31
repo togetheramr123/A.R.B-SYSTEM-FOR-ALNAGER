@@ -655,7 +655,7 @@ export function ProductForm({
         can_sell: data.can_sell ?? true,
         can_purchase: data.can_purchase ?? true,
         isPromotedForSale: data.isPromotedForSale ?? false,
-        detailedType: data.detailedType || "consu",
+        detailedType: data.detailedType || "storable",
         invoicingPolicy: data.invoicingPolicy || "ordered",
         salePrice: data.price || 0,
         costPrice: data.cost || 0,
@@ -788,7 +788,7 @@ export function ProductForm({
         can_sell: data.can_sell ?? true,
         can_purchase: data.can_purchase ?? true,
         isPromotedForSale: data.isPromotedForSale ?? false,
-        detailedType: data.detailedType || "consu",
+        detailedType: data.detailedType || "storable",
         invoicingPolicy: data.invoicingPolicy || "ordered",
         salePrice: data.price || 0,
         costPrice: data.cost || 0,
@@ -912,7 +912,7 @@ export function ProductForm({
               can_sell: data.can_sell ?? true,
               can_purchase: data.can_purchase ?? true,
               isPromotedForSale: data.isPromotedForSale ?? false,
-              detailedType: data.detailedType || "consu",
+              detailedType: data.detailedType || "storable",
               invoicingPolicy: data.invoicingPolicy || "ordered",
               salePrice: data.price || 0,
               costPrice: data.cost || 0,
@@ -2334,8 +2334,12 @@ export function ProductForm({
                                         `/${locale}/inventory/config/categories?returnUrl=/${locale}/inventory/products/${savedId}`,
                                       );
                                       return;
+                                    } else {
+                                      return; // Stop if validation failed
                                     }
-                                  } catch (e) {}
+                                  } catch (e) {
+                                    return; // Stop on error
+                                  }
                                 }
                                 router.push(
                                   `/${locale}/inventory/config/categories`,
